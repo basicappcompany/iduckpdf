@@ -27,7 +27,7 @@ export const GUIDES: Guide[] = [
     ],
     faq: [
       { q: 'Does merging lower the quality?', a: 'No. Pages are copied as they are, so text and images are unchanged.' },
-      { q: 'Can I merge a password-protected PDF?', a: 'Not yet. Remove the password first. Unlocking is on our roadmap.' },
+      { q: 'Can I merge a password-protected PDF?', a: 'Not directly. Remove the password first with the Remove a password tool (you need to know it), then merge.' },
     ],
   },
   {
@@ -175,7 +175,47 @@ export const GUIDES: Guide[] = [
     ],
     faq: [
       { q: 'Does iDuckPDF upload my files?', a: 'Most tools run entirely in your browser tab. The AI tools are the exception: with your own key, the PDF’s text goes to the AI provider you choose, and the tool says so first.' },
-      { q: 'What about files with passwords?', a: 'We do not handle password-protected files yet.' },
+      { q: 'What about files with passwords?', a: 'Yes. Add a password and Remove a password both run in your browser, so neither the file nor the password is uploaded. You do need to know a password to remove it.' },
+    ],
+  },
+  {
+    slug: 'how-to-password-protect-a-pdf',
+    title: 'How to password protect a PDF',
+    seoTitle: 'How to Password Protect a PDF (Free, AES-256)',
+    description: 'Put a password on a PDF in under a minute, choose whether people can print or copy it, and keep the file private: all in your browser.',
+    tool: 'lock',
+    related: ['unlock', 'properties', 'redact'],
+    intro: 'To password protect a PDF, add it to the Add a password tool, type a password twice and download the protected copy. The file is encrypted with AES-256 inside your browser, so neither the document nor the password is uploaded.',
+    sections: [
+      { h: 'Protect a PDF in four steps', p: ['Open Add a password and add your PDF. Type the password you want twice.', 'Decide what people may do after they open it: print, copy text and images, or edit and annotate. Printing and copying are allowed by default; editing is not.', 'Press Add password and download the new file. Open it once yourself to confirm that it asks for the password.'] },
+      { h: 'Choose a password people cannot guess', p: ['Length matters more than tricks. A phrase of four or five unrelated words is far stronger than a short password with a symbol in it. Do not reuse a password you use elsewhere.', 'Send the password by a different route from the file: the file by email, the password by message or phone.'] },
+      { h: 'What the permission boxes really do', p: ['Printing, copying and editing limits are honoured by most PDF viewers, but they are a courtesy. Someone with the file can often get around them. Only the open-password stops people reading the document.'] },
+      { h: 'Keep the original and the password', p: ['The tool saves a new file and leaves yours untouched. We cannot recover a forgotten password, because it never leaves your browser. Keep the original somewhere safe, and store the password in a password manager.'] },
+    ],
+    faq: [
+      { q: 'How strong is the encryption?', a: 'AES-256, the strongest standard PDF encryption. The password you choose decides how hard it is to break.' },
+      { q: 'Will Adobe Reader and phones open it?', a: 'Yes. Acrobat, Preview, Chrome, Edge, Firefox and current phone viewers open AES-256 PDFs. Very old software may not.' },
+      { q: 'Can I remove the password later?', a: 'Yes, with the Remove a password tool, as long as you know the password.' },
+    ],
+  },
+  {
+    slug: 'how-to-remove-a-password-from-a-pdf',
+    title: 'How to remove a password from a PDF',
+    seoTitle: 'How to Remove a Password from a PDF (When You Know It)',
+    description: 'Unlock a PDF you have the password for so it opens without one, and lift print or copy restrictions. Free, in your browser, nothing uploaded.',
+    tool: 'unlock',
+    related: ['lock', 'merge', 'compress'],
+    intro: 'To remove a password from a PDF, add it to the Remove a password tool, type the password and download the unlocked copy. This works only when you know the password: the tool does not guess or crack anything.',
+    sections: [
+      { h: 'Unlock a PDF in three steps', p: ['Open Remove a password and add the protected file.', 'Type the password. If the file opens without one but blocks printing or copying, leave the box empty.', 'Press Remove password and download the copy. It opens in any viewer without asking for anything.'] },
+      { h: 'Two kinds of PDF password', p: ['An open-password is asked for when you open the file. A permissions password is set by the author to restrict printing, copying or editing, and the file opens normally. This tool handles both: an open-password needs to be typed in, a permissions-only file needs nothing.'] },
+      { h: 'If you have forgotten the password', p: ['There is no honest shortcut. Ask whoever sent you the file, or look for the original version before it was protected. A tool that promises to open any protected file for you is either not telling you everything or is sending your document to a server.'] },
+      { h: 'Only unlock what you may use', p: ['Removing a password does not change who owns a document. Unlock files that are yours, or that you have permission to use. The unlocked copy is open to anyone, so store it with care.'] },
+    ],
+    faq: [
+      { q: 'Does this work without the password?', a: 'Only for files that already open without one (restrictions only). It cannot open a file that needs a password you do not have.' },
+      { q: 'Is the password sent anywhere?', a: 'No. The file is decrypted inside your browser tab.' },
+      { q: 'Does it change the content?', a: 'Pages, text and images are kept as they are. Bookmarks and form fields are not carried over to the unlocked copy.' },
     ],
   },
 ];

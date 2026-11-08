@@ -9,6 +9,7 @@ import { convertTools } from './convert';
 import { shrinkTools } from './shrink';
 import { privacyTools } from './privacy';
 import { insightTools } from './insight';
+import { secureTools } from './secure';
 import { soonTools } from './soon';
 
 // Re-exported so the UI can reach JSZip through the lazy engine chunk instead of pulling it into the first load.
@@ -22,5 +23,6 @@ export const ALL_TOOLS: ToolDef[] = [
   ...shrinkTools,
   ...privacyTools,
   ...insightTools,
+  ...secureTools,
   ...soonTools,
 ];

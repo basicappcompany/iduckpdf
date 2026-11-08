@@ -2107,39 +2107,134 @@
  {
   "id": "lock",
   "name": "Add a password",
-  "short": "Encrypt a PDF so it needs a password.",
-  "desc": "Protect a PDF with a password before you share it.",
+  "short": "Encrypt a PDF so it needs a password to open.",
+  "desc": "Protect a PDF with a password (AES-256) before you share it. The file is encrypted inside your browser tab, so the password and the document never leave your device.",
+  "category": "privacy",
   "icon": "🔒",
   "keywords": [
    "encrypt",
    "password",
    "protect",
    "secure",
-   "lock"
+   "lock",
+   "password protect",
+   "aes",
+   "restrict"
   ],
-  "phase": 2,
-  "reason": "Needs a PDF engine that can write encrypted files. Planned as a WebAssembly add-on.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF to protect",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "password",
+    "type": "password",
+    "label": "Password to open the file",
+    "placeholder": "Choose a password",
+    "hint": "Anyone who opens the PDF will be asked for this. We cannot recover it for you, so keep a copy somewhere safe."
+   },
+   {
+    "key": "confirm",
+    "type": "password",
+    "label": "Type it again",
+    "placeholder": "Repeat the password"
+   },
+   {
+    "key": "allowPrint",
+    "type": "toggle",
+    "label": "Allow printing",
+    "default": true
+   },
+   {
+    "key": "allowCopy",
+    "type": "toggle",
+    "label": "Allow copying text and images",
+    "default": true,
+    "hint": "Restrictions are honoured by most PDF viewers, but they are a courtesy: only the open-password is real security."
+   },
+   {
+    "key": "allowModify",
+    "type": "toggle",
+    "label": "Allow editing and annotating",
+    "default": false
+   }
+  ],
+  "runLabel": "Add password",
+  "tips": [
+   "Use a long password with several words. Short ones can be guessed.",
+   "The result is a new file. Your original is untouched, so keep it somewhere safe."
+  ],
+  "faq": [
+   {
+    "q": "How strong is the protection?",
+    "a": "The file is encrypted with AES-256, the strongest standard PDF encryption. The strength then depends on your password, so choose a long one."
+   },
+   {
+    "q": "Can you recover a forgotten password?",
+    "a": "No. The password never leaves your browser, so there is nothing for us to recover. Keep a copy of the original file."
+   },
+   {
+    "q": "Will every PDF app open it?",
+    "a": "Modern readers (Acrobat, Preview, Chrome, Edge, Firefox) open AES-256 files. Very old software may not."
+   }
+  ],
+  "status": "ready"
  },
  {
   "id": "unlock",
   "name": "Remove a password",
   "short": "Unlock a PDF you have the password for.",
-  "desc": "Remove the password from a PDF you own so it opens freely.",
+  "desc": "Take the password off a PDF you own so it opens freely. You need to know the password: this tool does not guess or break passwords. It also lifts printing and copying restrictions.",
+  "category": "privacy",
   "icon": "🔓",
   "keywords": [
    "decrypt",
    "password",
    "unlock",
-   "open protected"
+   "open protected",
+   "remove password",
+   "restrictions",
+   "unprotect"
   ],
-  "phase": 2,
-  "reason": "Needs a decryption engine (WebAssembly). Planned alongside Add a password.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
+  "inputs": [
+   {
+    "key": "files",
+    "label": "Protected PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "password",
+    "type": "password",
+    "label": "Password",
+    "placeholder": "Leave empty if it opens without one",
+    "hint": "Files that open fine but block printing or copying usually need no password here."
+   }
+  ],
+  "runLabel": "Remove password",
+  "tips": [
+   "This works only with the correct password. It does not crack or bypass anything.",
+   "Only unlock documents you have the right to use."
+  ],
+  "faq": [
+   {
+    "q": "Can you unlock a PDF if I forgot the password?",
+    "a": "No. This tool needs the password. It cannot guess or break passwords, and nothing is sent anywhere to try."
+   },
+   {
+    "q": "What if the PDF opens but I cannot print or copy?",
+    "a": "That is a permissions restriction, not an open-password. Leave the password empty and the tool saves a copy without the restrictions."
+   },
+   {
+    "q": "Is my password sent to a server?",
+    "a": "No. The file is decrypted inside your browser tab, and neither the file nor the password leaves your device."
+   }
+  ],
+  "status": "ready"
  },
  {
   "id": "ocr",
