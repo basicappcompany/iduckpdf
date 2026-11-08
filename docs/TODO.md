@@ -40,7 +40,7 @@ Code is done; it stays **off** until the steps below are complete.
 - [ ] Read both pages once and confirm they describe you correctly. Then confirm the contact inbox (§1). The operator name (`SITE.operator` = Basic App Company) is already on both pages, About, the footer and the structured data; change it in `src/config.ts` if the legal name differs. If you want a governing-law or jurisdiction clause, tell me which one, or have a lawyer add it: I left it out rather than guess.
 - [ ] Check Dodo's own requirements for the refund wording (terms promise a refund within 14 days for mistaken tips) and change the terms if Dodo needs something different.
 - [x] Duck app icons, favicon and social-share image are in place (regenerate with `npm run icons`). Still to do: a splash screen for the future mobile apps.
-- [ ] Decide on analytics (none today, and the site sets no cookies).
+- [x] Analytics decided 2026-11-09: keep Cloudflare Web Analytics (cookie-free, page views only). The privacy policy discloses it. Figures: Cloudflare dashboard → Analytics & Logs → Web Analytics → iduckpdf.
 
 ## 5. Still to verify
 The browser-only tools were run in Chrome and Chromium with generated files (see `TRACKER.md`). What is left:
@@ -74,9 +74,9 @@ No code can guarantee a ranking. These steps, which need your accounts, are what
 - [ ] **Names and trust (E-E-A-T):** put a real maker name or organisation and a real contact address on the About page, then add `sameAs` links (GitHub, X/LinkedIn, Product Hunt) to the Organization data in `src/lib/seoData.ts`. Add the privacy policy and terms pages (§4).
 - [ ] **Backlinks and mentions, the main ranking driver:** publish the code on GitHub with a clear README and topics; submit to Product Hunt, AlternativeTo, and relevant "free tools" / privacy-tools lists; write a genuine Show HN or community post; link the guides from places that already rank. Do not buy links or spam communities; both backfire.
 - [ ] **AI visibility:** AI assistants cite pages that search engines index and that other sites mention. After a few weeks, test real questions ("best free PDF merger that does not upload files", "how to redact a PDF properly") in ChatGPT, Gemini, Perplexity and Copilot, note whether iDuckPDF appears, and write a new guide for gaps.
-- [ ] **Analytics:** add cookie-free analytics (e.g. Cloudflare Web Analytics) to see search and AI referrals. Revisit the privacy wording if you add any.
+- [x] **Analytics:** Cloudflare Web Analytics is on (cookie-free). Check it for search and AI referrals. If you ever add or change an analytics service, update `src/content/legal.ts` in the same change.
 - [ ] **Keep content fresh:** edit `SITE.updated` in `src/config.ts` when copy changes (feeds the sitemap and "last updated" lines), add roughly one guide a month aimed at a real search query, and re-run `npm run audit` before every deploy.
 - [x] **Performance:** the PDF engine and tool code are now a lazy chunk, so first-load JavaScript dropped from 572 KB to 366 KB gzipped. What is left is the framework (about 294 KB gzipped, React Native for Web plus the router).
 - [x] Lighthouse run 2026-11-09 (see `TRACKER.md`). Re-run on the live site after each deploy: `npx lighthouse https://iduckpdf.com/ --only-categories=performance,accessibility,best-practices,seo`.
-- [ ] **Cloudflare Web Analytics is switched on** (a `static.cloudflareinsights.com/beacon.min.js` script loads on every page), which contradicts the privacy policy ("no analytics", "no third-party loading"). Either keep it and update `src/content/legal.ts` (and the About/home FAQ wording), or turn it off in Cloudflare (Workers & Pages → iduckpdf → Metrics → Web Analytics). Needs your decision.
+- [x] **Cloudflare Web Analytics beacon** (a `static.cloudflareinsights.com` script that Cloudflare injects at its edge): you chose to keep it, so the privacy policy now has an "Analytics" section and no longer claims "no analytics" or "no third-party loading".
 - [ ] *Later, carefully:* "alternative to X" comparison pages. They rank well, but only write claims about other products that you can back up.
