@@ -140,6 +140,64 @@ const pages = async (b: Uint8Array) => (await PDFDocument.load(b)).getPageCount(
     }
   }
 
+  // ---- passwords (AES-256 through @cantoo/pdf-lib) ----
+  {
+    const has = (b: Uint8Array, needle: string) => Buffer.from(b).includes(needle);
+    const lock = await run('lock', { files: [A] }, { password: 'correct horse', confirm: 'correct horse' });
+    const locked = lock.files![0].bytes;
+    check('lock: the output is encrypted', has(locked, '/Encrypt') && has(locked, '/AESV3'));
+    let refused = false;
+    try {
+      await PDFDocument.load(locked);
+    } catch {
+      refused = true;
+    }
+    check('lock: the ordinary engine cannot open it without the password', refused);
+    const lockedFile = pf('a-protected.pdf', locked);
+    let ur = await run('unlock', { files: [lockedFile] }, { password: 'correct horse' });
+    check('unlock: right password gives back 5 readable pages', (await pages(ur.files![0].bytes)) === 5 && !has(ur.files![0].bytes, '/Encrypt'));
+    try {
+      await run('unlock', { files: [lockedFile] }, { password: 'wrong' });
+      check('unlock: a wrong password is refused', false, 'did not throw');
+    } catch (e) {
+      check('unlock: a wrong password is refused', e instanceof ToolError && (e as any).code === 'wrong-password', e instanceof Error ? e.message.slice(0, 50) : '');
+    }
+    try {
+      await run('unlock', { files: [lockedFile] }, { password: '' });
+      check('unlock: a missing password is refused', false, 'did not throw');
+    } catch (e) {
+      check('unlock: a missing password is refused', e instanceof ToolError);
+    }
+    ur = await run('unlock', { files: [A] }, { password: '' });
+    check('unlock: an unprotected PDF comes back unchanged with a note', ur.files![0].bytes.length === (await A.bytes()).length && (ur.notes || []).join(' ').includes('no password'));
+    for (const [label, opts] of [
+      ['lock: empty password is refused', { password: '', confirm: '' }],
+      ['lock: mismatched confirmation is refused', { password: 'abcdef', confirm: 'abcdeg' }],
+      ['lock: a 3-character password is refused', { password: 'abc', confirm: 'abc' }],
+    ] as [string, Record<string, any>][]) {
+      try {
+        await run('lock', { files: [A] }, opts);
+        check(label, false, 'did not throw');
+      } catch (e) {
+        check(label, e instanceof ToolError, e instanceof Error ? e.message.slice(0, 50) : '');
+      }
+    }
+    try {
+      await run('lock', { files: [lockedFile] }, { password: 'another one', confirm: 'another one' });
+      check('lock: an already protected PDF is refused with advice', false, 'did not throw');
+    } catch (e) {
+      check('lock: an already protected PDF is refused with advice', e instanceof ToolError && /already has a password/.test((e as Error).message));
+    }
+    // a PDF that opens freely but forbids copying: an empty password lifts the restriction
+    const { PDFDocument: P2 } = await import('@cantoo/pdf-lib');
+    const restricted = await P2.create();
+    restricted.addPage([300, 300]);
+    restricted.encrypt({ userPassword: '', ownerPassword: 'owner-secret', permissions: { copying: false, printing: false } });
+    const rb = await restricted.save();
+    ur = await run('unlock', { files: [pf('restricted.pdf', rb)] }, { password: '' });
+    check('unlock: lifts restrictions on a PDF that opens without a password', !has(ur.files![0].bytes, '/Encrypt') && (await pages(ur.files![0].bytes)) === 1);
+  }
+
   const browserOnly = ['images-to-pdf', 'scan-to-pdf', 'pdf-to-images', 'extract-text', 'compress (balanced/strong/tiny)', 'restyle', 'redact', 'compare', 'summarize', 'ask', 'text-watermark image variant'];
   console.log(`\n${pass} passed, ${fail} failed.`);
   console.log(`Ready tools: ${READY.length}. Browser-only (need canvas / pdf.js / network), verify in the browser: ${browserOnly.join(', ')}`);

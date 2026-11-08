@@ -309,4 +309,30 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
       { q: 'Does it work on scanned PDFs?', a: 'Not yet. Scans have no text layer, and OCR is on the roadmap.' },
     ],
   },
+  lock: {
+    title: 'Password Protect a PDF (AES-256), Free',
+    description: 'Add a password to a PDF with AES-256 encryption, in your browser. Optionally block printing and copying. Free, no upload, no sign-up.',
+    answer: 'To password protect a PDF, add the file, type a password twice, choose what viewers may do (print, copy, edit) and press Add password. The PDF is encrypted with AES-256 inside your browser tab, and you download a new, protected copy.',
+    steps: ['Add the PDF you want to protect.', 'Type a password twice and tick what people may do: print, copy, edit.', 'Press Add password and download the protected copy. Keep the original and the password safe.'],
+    uses: ['Send a contract or payslip by email with a password', 'Protect scans of ID documents before storing them', 'Share a draft report with one person only'],
+    faq: [
+      { q: 'How strong is the protection?', a: 'The file is encrypted with AES-256, the strongest standard PDF encryption. How hard it is to break then depends on your password, so use a long one.' },
+      { q: 'Can you recover a forgotten password?', a: 'No. The password never leaves your browser, so there is nothing for us to recover. Keep a copy of the original file and store the password safely.' },
+      { q: 'Are the printing and copying restrictions secure?', a: 'Most viewers respect them, but they are a courtesy rather than security. The open-password is the real protection.' },
+      { q: 'Is my file or password uploaded?', a: 'No. Encryption happens inside your browser tab and nothing is sent to a server.' },
+    ],
+  },
+  unlock: {
+    title: 'Remove a PDF Password (If You Know It), Free',
+    description: 'Unlock a password-protected PDF you own by entering its password. Also lifts print and copy restrictions. Runs in your browser, nothing is uploaded.',
+    answer: 'To remove a password from a PDF, add the file, type its password and press Remove password. You download a copy that opens without a password. This works only when you know the password: the tool cannot guess or break one.',
+    steps: ['Add the protected PDF.', 'Type its password. Leave it empty if the file opens but blocks printing or copying.', 'Press Remove password and download the unlocked copy.'],
+    uses: ['Stop typing the same password for a file you open every day', 'Merge or edit a PDF that a colleague protected for you', 'Print or copy from a document with restrictions you are allowed to lift'],
+    faq: [
+      { q: 'Can you unlock a PDF if I forgot the password?', a: 'No. This tool needs the password. It does not guess or crack passwords, and nothing is sent anywhere to try.' },
+      { q: 'The PDF opens, but I cannot print or copy. What do I do?', a: 'That is a permissions restriction rather than an open-password. Leave the password empty and the tool saves a copy without the restrictions.' },
+      { q: 'Is my password sent to a server?', a: 'No. The file is decrypted inside your browser tab and neither the file nor the password leaves your device.' },
+      { q: 'Are bookmarks and form fields kept?', a: 'Pages, text and images are kept. Bookmarks and form fields are not carried over to the unlocked copy.' },
+    ],
+  },
 };

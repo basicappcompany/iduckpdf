@@ -28,8 +28,8 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
     const ld = await p.locator('script[type="application/ld+json"]').allTextContents();
     let parsed = true; try { ld.forEach((t) => JSON.parse(t)); } catch { parsed = false; }
     ok('no-JS: JSON-LD blocks parse', parsed && ld.length >= 4, `${ld.length} blocks`);
-    await p.goto(BASE + '/unlock-pdf');
-    ok('no-JS: roadmap tool page is noindex', (await p.locator('meta[name=robots]').getAttribute('content')).includes('noindex'));
+    await p.goto(BASE + '/feedback');
+    ok('no-JS: the feedback form page is noindex', (await p.locator('meta[name=robots]').getAttribute('content')).includes('noindex'));
     await ctx.close();
   }
 
