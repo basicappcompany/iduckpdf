@@ -9,6 +9,7 @@ import { READY, TOOLS, byId } from '../tools';
 import { TOOL_SEO } from '../content/toolSeo';
 import { GUIDES, guideBySlug } from '../content/guides';
 import { HOME_FAQ } from '../content/homeFaq';
+import { PRIVACY, TERMS } from '../content/legal';
 
 export type PageSeo = {
   title: string; // full <title>
@@ -161,6 +162,17 @@ export function seoForPath(raw: string): PageSeo {
       noindex: false,
       type: 'website',
       jsonLd: [{ '@context': 'https://schema.org', '@type': 'AboutPage', name: 'About iDuckPDF', url: abs(path) }, breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'About', path }])],
+    };
+  }
+  if (path === '/privacy' || path === '/terms') {
+    const doc = path === '/privacy' ? PRIVACY : TERMS;
+    return {
+      title: full(doc.seoTitle),
+      description: doc.description,
+      path,
+      noindex: false,
+      type: 'website',
+      jsonLd: [{ '@context': 'https://schema.org', '@type': 'WebPage', name: doc.title, url: abs(path), dateModified: SITE.legalUpdated }, breadcrumbLd([{ name: 'Home', path: '/' }, { name: doc.title, path }])],
     };
   }
   if (path === '/roadmap') {

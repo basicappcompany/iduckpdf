@@ -1,6 +1,6 @@
 // Canvas-based image helpers (browser). Used by Images→PDF, Scan→PDF, Compress and the restyle tools.
 import type { PickedFile } from './types';
-import { ToolError } from './util';
+import { ToolError } from './base';
 
 export type ImgMode = 'color' | 'gray' | 'bw' | 'enhance';
 export type Processed = { bytes: Uint8Array; kind: 'jpg' | 'png'; width: number; height: number };

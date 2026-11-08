@@ -44,6 +44,19 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.waitForFunction(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')), null, { timeout: 20000 }).catch(() => {});
   const hydrated = await page.evaluate(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')));
   ok('home hydrates', hydrated);
+  // bundle split: the PDF engine chunk (all-*.js) must not load on pages that only list tools, but must preload on a tool page
+  {
+    const seen = [];
+    const probe = await ctx.newPage();
+    probe.on('request', (r) => seen.push(r.url()));
+    await probe.goto(BASE + '/'); await probe.waitForTimeout(3500);
+    const isEngine = (u) => u.includes('/_expo/static/js/web/all-');
+    ok('home does not download the PDF engine chunk', !seen.some(isEngine));
+    seen.length = 0;
+    await probe.goto(BASE + '/tool/merge'); await probe.waitForTimeout(4500);
+    ok('tool page preloads the PDF engine chunk when idle', seen.some(isEngine));
+    await probe.close();
+  }
   const frames = await page.evaluate(() => new Promise((res) => { let n = 0; const t0 = performance.now(); (function f() { n++; performance.now() - t0 < 1000 ? requestAnimationFrame(f) : res(n); })(); }));
   ok('home runs at a healthy frame rate', frames > 20, `${frames} fps`);
   ok('no console errors or warnings on load', problems.length === 0, problems.slice(0, 3).join(' | '));

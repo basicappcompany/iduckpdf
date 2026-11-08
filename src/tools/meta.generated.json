@@ -1,0 +1,2307 @@
+[
+ {
+  "id": "merge",
+  "name": "Merge PDFs",
+  "short": "Stitch several PDFs into one file.",
+  "desc": "Add your PDFs, put them in the order you want, and download a single combined file.",
+  "category": "join",
+  "icon": "🧩",
+  "keywords": [
+   "combine",
+   "join",
+   "append",
+   "concatenate",
+   "stitch",
+   "one file"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDFs to merge",
+    "accept": "pdf",
+    "multiple": true,
+    "min": 2,
+    "hint": "Use the arrows to change the order."
+   }
+  ],
+  "runLabel": "Merge now",
+  "tips": [
+   "Files are joined top to bottom, exactly as listed.",
+   "Want to interleave pages instead? Try “Weave two PDFs”."
+  ],
+  "faq": [
+   {
+    "q": "Is there a limit on how many files I can merge?",
+    "a": "Not one we set. The practical limit is your device’s memory, so very large batches may be slow."
+   },
+   {
+    "q": "Will bookmarks and links survive?",
+    "a": "Page content is kept. Bookmarks and document-level links from the originals are not carried over."
+   }
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "weave",
+  "name": "Weave two PDFs",
+  "short": "Interleave pages, handy for double-sided scans.",
+  "desc": "Alternate pages from two PDFs: A1, B1, A2, B2… Perfect when your scanner did fronts and backs separately.",
+  "category": "join",
+  "icon": "🪢",
+  "keywords": [
+   "interleave",
+   "alternate",
+   "mix",
+   "duplex",
+   "fronts",
+   "backs",
+   "double sided"
+  ],
+  "inputs": [
+   {
+    "key": "a",
+    "label": "First PDF (front sides)",
+    "accept": "pdf"
+   },
+   {
+    "key": "b",
+    "label": "Second PDF (back sides)",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "reverseB",
+    "type": "toggle",
+    "label": "Second file is in reverse order",
+    "default": true,
+    "hint": "Most sheet-fed scanners give you the backs last-to-first."
+   }
+  ],
+  "runLabel": "Weave now",
+  "faq": [
+   {
+    "q": "The two files have different page counts.",
+    "a": "Pages are woven until one file runs out; the leftover pages of the longer file go at the end."
+   }
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "split",
+  "name": "Split a PDF",
+  "short": "Cut one PDF into several, by range or size.",
+  "desc": "Break a PDF into separate files: custom ranges, every N pages, or one file per page.",
+  "category": "join",
+  "icon": "✂️",
+  "keywords": [
+   "separate",
+   "divide",
+   "cut",
+   "chapters",
+   "pieces",
+   "ranges"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF to split",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "mode",
+    "type": "select",
+    "label": "How to split",
+    "default": "ranges",
+    "options": [
+     {
+      "value": "ranges",
+      "label": "By ranges"
+     },
+     {
+      "value": "every",
+      "label": "Every N pages"
+     },
+     {
+      "value": "each",
+      "label": "One file per page"
+     }
+    ]
+   },
+   {
+    "key": "ranges",
+    "type": "text",
+    "label": "Ranges",
+    "placeholder": "e.g. 1-3, 4, 5-",
+    "hint": "Each comma-separated range becomes its own file.",
+    "showIf": {
+     "key": "mode",
+     "eq": "ranges"
+    }
+   },
+   {
+    "key": "n",
+    "type": "number",
+    "label": "Pages per file",
+    "default": 5,
+    "showIf": {
+     "key": "mode",
+     "eq": "every"
+    }
+   }
+  ],
+  "runLabel": "Split now",
+  "tips": [
+   "Several outputs? Use “Download all (ZIP)” on the results."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "extract-pages",
+  "name": "Pull out pages",
+  "short": "Keep only the pages you pick.",
+  "desc": "Type the pages you want and get a new PDF containing just those, in the order you typed them.",
+  "category": "join",
+  "icon": "🧲",
+  "keywords": [
+   "extract",
+   "keep",
+   "select",
+   "subset",
+   "pick pages"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages to keep",
+    "placeholder": "e.g. 2, 4-6, last",
+    "hint": "Also works: odd, even, first, last."
+   }
+  ],
+  "runLabel": "Extract now",
+  "status": "ready"
+ },
+ {
+  "id": "remove-pages",
+  "name": "Delete pages",
+  "short": "Drop the pages you do not need.",
+  "desc": "List the pages to throw away and download what is left.",
+  "category": "join",
+  "icon": "🗑️",
+  "keywords": [
+   "remove",
+   "delete",
+   "discard",
+   "drop",
+   "get rid"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages to delete",
+    "placeholder": "e.g. 2, 5-7",
+    "hint": "Also works: odd, even, last."
+   }
+  ],
+  "runLabel": "Delete now",
+  "status": "ready"
+ },
+ {
+  "id": "reorder",
+  "name": "Reorder pages",
+  "short": "Type the new page order.",
+  "desc": "Write the pages in the order you want, e.g. 3, 1, 2-5. Repeat a number to duplicate a page. Leave one out to drop it.",
+  "category": "arrange",
+  "icon": "🔀",
+  "keywords": [
+   "organize",
+   "rearrange",
+   "sort",
+   "move",
+   "order",
+   "duplicate page"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "order",
+    "type": "text",
+    "label": "New order",
+    "placeholder": "e.g. 3, 1, 2, 4-6",
+    "hint": "Pages you do not list are left out."
+   }
+  ],
+  "runLabel": "Reorder now",
+  "status": "ready"
+ },
+ {
+  "id": "reverse",
+  "name": "Flip page order",
+  "short": "Last page first.",
+  "desc": "Reverse the whole document so the last page becomes the first.",
+  "category": "arrange",
+  "icon": "↩️",
+  "keywords": [
+   "reverse",
+   "backwards",
+   "flip",
+   "last to first"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "runLabel": "Flip now",
+  "status": "ready"
+ },
+ {
+  "id": "rotate",
+  "name": "Rotate pages",
+  "short": "Turn pages 90°, 180° or 270°.",
+  "desc": "Fix sideways or upside-down scans. Rotate every page, or only the ones you name.",
+  "category": "arrange",
+  "icon": "🔄",
+  "keywords": [
+   "turn",
+   "sideways",
+   "landscape",
+   "portrait",
+   "upside down",
+   "flip"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "angle",
+    "type": "select",
+    "label": "Rotate",
+    "default": "90",
+    "options": [
+     {
+      "value": "90",
+      "label": "90° clockwise"
+     },
+     {
+      "value": "180",
+      "label": "180°"
+     },
+     {
+      "value": "270",
+      "label": "90° counter-clockwise"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)",
+    "placeholder": "e.g. 2, 4-6, odd"
+   }
+  ],
+  "runLabel": "Rotate now",
+  "status": "ready"
+ },
+ {
+  "id": "insert-blank",
+  "name": "Add blank pages",
+  "short": "Slip empty pages in where you need them.",
+  "desc": "Insert one or more blank pages before or after the pages you choose, handy for double-sided printing or notes.",
+  "category": "arrange",
+  "icon": "📄",
+  "keywords": [
+   "empty",
+   "spacer",
+   "insert",
+   "blank",
+   "notes page",
+   "duplex"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Insert next to pages",
+    "placeholder": "e.g. 1, 5, last (blank = every page)"
+   },
+   {
+    "key": "where",
+    "type": "select",
+    "label": "Position",
+    "default": "after",
+    "options": [
+     {
+      "value": "after",
+      "label": "After the page"
+     },
+     {
+      "value": "before",
+      "label": "Before the page"
+     }
+    ]
+   },
+   {
+    "key": "count",
+    "type": "number",
+    "label": "Blank pages each time",
+    "default": 1
+   },
+   {
+    "key": "size",
+    "type": "select",
+    "label": "Blank page size",
+    "default": "same",
+    "options": [
+     {
+      "value": "same",
+      "label": "Same as neighbour"
+     },
+     {
+      "value": "a4",
+      "label": "A4"
+     },
+     {
+      "value": "letter",
+      "label": "Letter"
+     },
+     {
+      "value": "a3",
+      "label": "A3"
+     },
+     {
+      "value": "a5",
+      "label": "A5"
+     },
+     {
+      "value": "legal",
+      "label": "Legal"
+     }
+    ]
+   }
+  ],
+  "runLabel": "Insert now",
+  "status": "ready"
+ },
+ {
+  "id": "resize",
+  "name": "Change page size",
+  "short": "Fit every page onto A4, Letter and friends.",
+  "desc": "Scale pages to a standard paper size. Content is shrunk or enlarged to fit and centred, never stretched.",
+  "category": "arrange",
+  "icon": "📏",
+  "keywords": [
+   "a4",
+   "letter",
+   "paper size",
+   "scale",
+   "fit",
+   "legal",
+   "a3",
+   "a5"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "size",
+    "type": "select",
+    "label": "New page size",
+    "default": "a4",
+    "options": [
+     {
+      "value": "a4",
+      "label": "A4"
+     },
+     {
+      "value": "letter",
+      "label": "Letter"
+     },
+     {
+      "value": "a3",
+      "label": "A3"
+     },
+     {
+      "value": "a5",
+      "label": "A5"
+     },
+     {
+      "value": "legal",
+      "label": "Legal"
+     }
+    ]
+   }
+  ],
+  "runLabel": "Resize now",
+  "tips": [
+   "Landscape pages stay landscape."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "crop",
+  "name": "Trim margins",
+  "short": "Crop white space off the edges.",
+  "desc": "Cut a fixed amount off the top, right, bottom and left of the pages you choose.",
+  "category": "arrange",
+  "icon": "📐",
+  "keywords": [
+   "crop",
+   "cut",
+   "margin",
+   "trim",
+   "borders",
+   "white space"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "unit",
+    "type": "select",
+    "label": "Unit",
+    "default": "mm",
+    "options": [
+     {
+      "value": "mm",
+      "label": "Millimetres"
+     },
+     {
+      "value": "in",
+      "label": "Inches"
+     },
+     {
+      "value": "pt",
+      "label": "Points"
+     }
+    ]
+   },
+   {
+    "key": "top",
+    "type": "number",
+    "label": "Top",
+    "default": 10
+   },
+   {
+    "key": "right",
+    "type": "number",
+    "label": "Right",
+    "default": 10
+   },
+   {
+    "key": "bottom",
+    "type": "number",
+    "label": "Bottom",
+    "default": 10
+   },
+   {
+    "key": "left",
+    "type": "number",
+    "label": "Left",
+    "default": 10
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)"
+   }
+  ],
+  "runLabel": "Trim now",
+  "status": "ready"
+ },
+ {
+  "id": "n-up",
+  "name": "Print several per sheet",
+  "short": "2, 4, 6 or 9 pages on one sheet.",
+  "desc": "Shrink pages and tile them onto bigger sheets, great for handouts, proofs and saving paper.",
+  "category": "arrange",
+  "icon": "🧱",
+  "keywords": [
+   "handout",
+   "n-up",
+   "2 up",
+   "4 up",
+   "multiple per page",
+   "thumbnails",
+   "save paper",
+   "booklet"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "per",
+    "type": "select",
+    "label": "Pages per sheet",
+    "default": "4",
+    "options": [
+     {
+      "value": "2",
+      "label": "2"
+     },
+     {
+      "value": "4",
+      "label": "4"
+     },
+     {
+      "value": "6",
+      "label": "6"
+     },
+     {
+      "value": "9",
+      "label": "9"
+     }
+    ]
+   },
+   {
+    "key": "sheet",
+    "type": "select",
+    "label": "Sheet size",
+    "default": "a4",
+    "options": [
+     {
+      "value": "a4",
+      "label": "A4"
+     },
+     {
+      "value": "letter",
+      "label": "Letter"
+     }
+    ]
+   },
+   {
+    "key": "margin",
+    "type": "number",
+    "label": "Outer margin (mm)",
+    "default": 8
+   },
+   {
+    "key": "gap",
+    "type": "number",
+    "label": "Gap between pages (mm)",
+    "default": 4
+   },
+   {
+    "key": "border",
+    "type": "toggle",
+    "label": "Draw a thin border around each page",
+    "default": true
+   }
+  ],
+  "runLabel": "Build sheets",
+  "status": "ready"
+ },
+ {
+  "id": "repair",
+  "name": "Repair a PDF",
+  "short": "Rebuild a damaged file.",
+  "desc": "Tries to open a broken PDF, rescue every page it can read, and write them into a clean new file.",
+  "category": "arrange",
+  "icon": "🩹",
+  "keywords": [
+   "fix",
+   "broken",
+   "corrupt",
+   "damaged",
+   "recover",
+   "cannot open",
+   "error"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "Damaged PDF",
+    "accept": "pdf"
+   }
+  ],
+  "runLabel": "Repair now",
+  "tips": [
+   "If a page is truly destroyed, it cannot be brought back."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "page-numbers",
+  "name": "Number the pages",
+  "short": "Add page numbers anywhere on the page.",
+  "desc": "Stamp “Page 3 of 12” (or any format you like) on every page, or just some of them.",
+  "category": "markup",
+  "icon": "🔢",
+  "keywords": [
+   "pagination",
+   "numbering",
+   "page number",
+   "footer",
+   "count pages"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "pos",
+    "type": "select",
+    "label": "Position",
+    "default": "bc",
+    "options": [
+     {
+      "value": "bc",
+      "label": "Bottom centre"
+     },
+     {
+      "value": "br",
+      "label": "Bottom right"
+     },
+     {
+      "value": "bl",
+      "label": "Bottom left"
+     },
+     {
+      "value": "tc",
+      "label": "Top centre"
+     },
+     {
+      "value": "tr",
+      "label": "Top right"
+     },
+     {
+      "value": "tl",
+      "label": "Top left"
+     }
+    ]
+   },
+   {
+    "key": "format",
+    "type": "text",
+    "label": "Format",
+    "default": "Page {n} of {total}",
+    "hint": "Use {n} for the number and {total} for the page count."
+   },
+   {
+    "key": "start",
+    "type": "number",
+    "label": "First number",
+    "default": 1
+   },
+   {
+    "key": "size",
+    "type": "number",
+    "label": "Font size",
+    "default": 10
+   },
+   {
+    "key": "margin",
+    "type": "number",
+    "label": "Distance from edge (mm)",
+    "default": 10
+   },
+   {
+    "key": "color",
+    "type": "select",
+    "label": "Colour",
+    "default": "black",
+    "options": [
+     {
+      "value": "black",
+      "label": "Black"
+     },
+     {
+      "value": "gray",
+      "label": "Gray"
+     },
+     {
+      "value": "red",
+      "label": "Red"
+     },
+     {
+      "value": "blue",
+      "label": "Blue"
+     },
+     {
+      "value": "green",
+      "label": "Green"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Only these pages (blank = all)",
+    "placeholder": "e.g. 2-last"
+   }
+  ],
+  "runLabel": "Add numbers",
+  "tips": [
+   "Skip a cover page by entering 2-last in “Only these pages”, and set “First number” to 1 or 2 as you like."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "text-watermark",
+  "name": "Text watermark",
+  "short": "Stamp DRAFT, CONFIDENTIAL or anything else.",
+  "desc": "Place a big, translucent text stamp across your pages: centred, or tiled over the whole page.",
+  "category": "markup",
+  "icon": "💧",
+  "keywords": [
+   "watermark",
+   "stamp",
+   "draft",
+   "confidential",
+   "copy",
+   "sample"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "text",
+    "type": "text",
+    "label": "Text",
+    "default": "CONFIDENTIAL"
+   },
+   {
+    "key": "size",
+    "type": "number",
+    "label": "Size",
+    "default": 64
+   },
+   {
+    "key": "angle",
+    "type": "select",
+    "label": "Angle",
+    "default": "45",
+    "options": [
+     {
+      "value": "45",
+      "label": "Diagonal"
+     },
+     {
+      "value": "0",
+      "label": "Horizontal"
+     },
+     {
+      "value": "90",
+      "label": "Vertical"
+     }
+    ]
+   },
+   {
+    "key": "opacity",
+    "type": "select",
+    "label": "Opacity",
+    "default": "0.25",
+    "options": [
+     {
+      "value": "0.1",
+      "label": "10%"
+     },
+     {
+      "value": "0.25",
+      "label": "25%"
+     },
+     {
+      "value": "0.4",
+      "label": "40%"
+     },
+     {
+      "value": "0.6",
+      "label": "60%"
+     }
+    ]
+   },
+   {
+    "key": "color",
+    "type": "select",
+    "label": "Colour",
+    "default": "gray",
+    "options": [
+     {
+      "value": "black",
+      "label": "Black"
+     },
+     {
+      "value": "gray",
+      "label": "Gray"
+     },
+     {
+      "value": "red",
+      "label": "Red"
+     },
+     {
+      "value": "blue",
+      "label": "Blue"
+     },
+     {
+      "value": "green",
+      "label": "Green"
+     }
+    ]
+   },
+   {
+    "key": "mode",
+    "type": "select",
+    "label": "Layout",
+    "default": "center",
+    "options": [
+     {
+      "value": "center",
+      "label": "One, centred"
+     },
+     {
+      "value": "tile",
+      "label": "Tiled"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Only these pages (blank = all)"
+   }
+  ],
+  "runLabel": "Stamp now",
+  "status": "ready"
+ },
+ {
+  "id": "image-watermark",
+  "name": "Logo or image stamp",
+  "short": "Place a logo or signature image on pages.",
+  "desc": "Put a PNG or JPG, such as a logo, stamp or scanned signature, on your pages with adjustable size and transparency.",
+  "category": "markup",
+  "icon": "🖼️",
+  "keywords": [
+   "logo",
+   "signature",
+   "stamp",
+   "image watermark",
+   "seal",
+   "overlay"
+  ],
+  "inputs": [
+   {
+    "key": "pdf",
+    "label": "PDF",
+    "accept": "pdf"
+   },
+   {
+    "key": "img",
+    "label": "Image to place",
+    "accept": "image"
+   }
+  ],
+  "options": [
+   {
+    "key": "scale",
+    "type": "number",
+    "label": "Width as % of the page",
+    "default": 30
+   },
+   {
+    "key": "opacity",
+    "type": "select",
+    "label": "Opacity",
+    "default": "1",
+    "options": [
+     {
+      "value": "1",
+      "label": "100%"
+     },
+     {
+      "value": "0.6",
+      "label": "60%"
+     },
+     {
+      "value": "0.3",
+      "label": "30%"
+     },
+     {
+      "value": "0.15",
+      "label": "15%"
+     }
+    ]
+   },
+   {
+    "key": "pos",
+    "type": "select",
+    "label": "Position",
+    "default": "c",
+    "options": [
+     {
+      "value": "c",
+      "label": "Centre"
+     },
+     {
+      "value": "bc",
+      "label": "Bottom centre"
+     },
+     {
+      "value": "br",
+      "label": "Bottom right"
+     },
+     {
+      "value": "bl",
+      "label": "Bottom left"
+     },
+     {
+      "value": "tc",
+      "label": "Top centre"
+     },
+     {
+      "value": "tr",
+      "label": "Top right"
+     },
+     {
+      "value": "tl",
+      "label": "Top left"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Only these pages (blank = all)"
+   }
+  ],
+  "runLabel": "Place now",
+  "status": "ready"
+ },
+ {
+  "id": "headers-footers",
+  "name": "Headers & footers",
+  "short": "Repeat text at the top and bottom of pages.",
+  "desc": "Add left, centre and right text to the header and footer of every page. Use {n}, {total}, {date} and {file} as placeholders.",
+  "category": "markup",
+  "icon": "🏷️",
+  "keywords": [
+   "header",
+   "footer",
+   "running title",
+   "date",
+   "file name",
+   "confidential footer"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "hl",
+    "type": "text",
+    "label": "Header, left"
+   },
+   {
+    "key": "hc",
+    "type": "text",
+    "label": "Header, centre"
+   },
+   {
+    "key": "hr",
+    "type": "text",
+    "label": "Header, right"
+   },
+   {
+    "key": "fl",
+    "type": "text",
+    "label": "Footer, left",
+    "default": "{file}"
+   },
+   {
+    "key": "fc",
+    "type": "text",
+    "label": "Footer, centre",
+    "default": ""
+   },
+   {
+    "key": "fr",
+    "type": "text",
+    "label": "Footer, right",
+    "default": "{n} / {total}"
+   },
+   {
+    "key": "size",
+    "type": "number",
+    "label": "Font size",
+    "default": 9
+   },
+   {
+    "key": "margin",
+    "type": "number",
+    "label": "Distance from edge (mm)",
+    "default": 10
+   },
+   {
+    "key": "color",
+    "type": "select",
+    "label": "Colour",
+    "default": "gray",
+    "options": [
+     {
+      "value": "black",
+      "label": "Black"
+     },
+     {
+      "value": "gray",
+      "label": "Gray"
+     },
+     {
+      "value": "red",
+      "label": "Red"
+     },
+     {
+      "value": "blue",
+      "label": "Blue"
+     },
+     {
+      "value": "green",
+      "label": "Green"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Only these pages (blank = all)"
+   }
+  ],
+  "runLabel": "Apply now",
+  "status": "ready"
+ },
+ {
+  "id": "add-text",
+  "name": "Write on a PDF",
+  "short": "Place a line of text anywhere on a page.",
+  "desc": "Type a note, a date or a name and put it exactly where you want it, using percentages from the top-left corner.",
+  "category": "markup",
+  "icon": "✍️",
+  "keywords": [
+   "annotate",
+   "type on pdf",
+   "fill in",
+   "text box",
+   "note",
+   "edit text",
+   "sign"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "text",
+    "type": "textarea",
+    "label": "Text"
+   },
+   {
+    "key": "x",
+    "type": "number",
+    "label": "Distance from left (%)",
+    "default": 10
+   },
+   {
+    "key": "y",
+    "type": "number",
+    "label": "Distance from top (%)",
+    "default": 10
+   },
+   {
+    "key": "size",
+    "type": "number",
+    "label": "Font size",
+    "default": 14
+   },
+   {
+    "key": "color",
+    "type": "select",
+    "label": "Colour",
+    "default": "black",
+    "options": [
+     {
+      "value": "black",
+      "label": "Black"
+     },
+     {
+      "value": "gray",
+      "label": "Gray"
+     },
+     {
+      "value": "red",
+      "label": "Red"
+     },
+     {
+      "value": "blue",
+      "label": "Blue"
+     },
+     {
+      "value": "green",
+      "label": "Green"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages",
+    "default": "1",
+    "hint": "Use “all” for every page."
+   }
+  ],
+  "runLabel": "Write it",
+  "tips": [
+   "This adds new text on top. It does not edit text that is already in the PDF."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "images-to-pdf",
+  "name": "Photos to PDF",
+  "short": "Turn JPG, PNG or WebP images into a PDF.",
+  "desc": "Drop in your pictures, order them, and get one PDF. Big phone photos are shrunk by default so the file stays a sensible size.",
+  "category": "convert",
+  "icon": "🖼️",
+  "keywords": [
+   "jpg",
+   "jpeg",
+   "png",
+   "webp",
+   "image to pdf",
+   "picture",
+   "photo",
+   "camera roll"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "Images",
+    "accept": "image",
+    "multiple": true,
+    "min": 1,
+    "hint": "Use the arrows to change the order."
+   }
+  ],
+  "options": [
+   {
+    "key": "size",
+    "type": "select",
+    "label": "Page size",
+    "default": "fit",
+    "options": [
+     {
+      "value": "fit",
+      "label": "Match each image"
+     },
+     {
+      "value": "a4",
+      "label": "A4"
+     },
+     {
+      "value": "letter",
+      "label": "Letter"
+     }
+    ]
+   },
+   {
+    "key": "orient",
+    "type": "select",
+    "label": "Orientation",
+    "default": "auto",
+    "options": [
+     {
+      "value": "auto",
+      "label": "Automatic"
+     },
+     {
+      "value": "portrait",
+      "label": "Portrait"
+     },
+     {
+      "value": "landscape",
+      "label": "Landscape"
+     }
+    ],
+    "showIf": {
+     "key": "size",
+     "ne": "fit"
+    }
+   },
+   {
+    "key": "margin",
+    "type": "number",
+    "label": "Margin (mm)",
+    "default": 10,
+    "showIf": {
+     "key": "size",
+     "ne": "fit"
+    }
+   },
+   {
+    "key": "shrink",
+    "type": "toggle",
+    "label": "Shrink very large photos",
+    "default": true,
+    "hint": "Recommended. Caps the longest side at 2200 px."
+   }
+  ],
+  "runLabel": "Make PDF",
+  "status": "ready"
+ },
+ {
+  "id": "scan-to-pdf",
+  "name": "Scan to PDF",
+  "short": "Camera or photos in, clean document out.",
+  "desc": "Take pictures of paper documents (or choose existing photos) and turn them into a tidy PDF with the shadows evened out.",
+  "category": "convert",
+  "icon": "📱",
+  "keywords": [
+   "scanner",
+   "camera",
+   "document scan",
+   "receipt",
+   "black and white",
+   "enhance"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "Photos of your pages",
+    "accept": "image",
+    "multiple": true,
+    "min": 1,
+    "camera": true,
+    "hint": "On a phone this opens the camera."
+   }
+  ],
+  "options": [
+   {
+    "key": "mode",
+    "type": "select",
+    "label": "Look",
+    "default": "enhance",
+    "options": [
+     {
+      "value": "enhance",
+      "label": "Clean grayscale (best for text)"
+     },
+     {
+      "value": "bw",
+      "label": "High-contrast black & white"
+     },
+     {
+      "value": "gray",
+      "label": "Plain grayscale"
+     },
+     {
+      "value": "color",
+      "label": "Keep colour"
+     }
+    ]
+   },
+   {
+    "key": "size",
+    "type": "select",
+    "label": "Page size",
+    "default": "a4",
+    "options": [
+     {
+      "value": "fit",
+      "label": "Match each image"
+     },
+     {
+      "value": "a4",
+      "label": "A4"
+     },
+     {
+      "value": "letter",
+      "label": "Letter"
+     }
+    ]
+   }
+  ],
+  "runLabel": "Make PDF",
+  "status": "ready"
+ },
+ {
+  "id": "text-to-pdf",
+  "name": "Text or Markdown to PDF",
+  "short": "Write or paste text, get a neat PDF.",
+  "desc": "Paste plain text or Markdown (headings, lists, quotes, code blocks, rules) and turn it into a clean, printable PDF.",
+  "category": "convert",
+  "icon": "📝",
+  "keywords": [
+   "markdown",
+   "md",
+   "text",
+   "txt",
+   "write",
+   "notes to pdf",
+   "readme"
+  ],
+  "inputs": [],
+  "options": [
+   {
+    "key": "source",
+    "type": "textarea",
+    "label": "Your text",
+    "placeholder": "# Title\n\nSome **text**…"
+   },
+   {
+    "key": "format",
+    "type": "select",
+    "label": "Format",
+    "default": "markdown",
+    "options": [
+     {
+      "value": "markdown",
+      "label": "Markdown"
+     },
+     {
+      "value": "plain",
+      "label": "Plain text"
+     }
+    ]
+   },
+   {
+    "key": "face",
+    "type": "select",
+    "label": "Font",
+    "default": "sans",
+    "options": [
+     {
+      "value": "sans",
+      "label": "Sans-serif"
+     },
+     {
+      "value": "serif",
+      "label": "Serif"
+     },
+     {
+      "value": "mono",
+      "label": "Monospace"
+     }
+    ]
+   },
+   {
+    "key": "size",
+    "type": "select",
+    "label": "Page size",
+    "default": "a4",
+    "options": [
+     {
+      "value": "a4",
+      "label": "A4"
+     },
+     {
+      "value": "letter",
+      "label": "Letter"
+     }
+    ]
+   },
+   {
+    "key": "fontSize",
+    "type": "number",
+    "label": "Font size",
+    "default": 11
+   },
+   {
+    "key": "margin",
+    "type": "number",
+    "label": "Margin (mm)",
+    "default": 20
+   }
+  ],
+  "runLabel": "Make PDF",
+  "tips": [
+   "Characters outside Latin-1 (like emoji or non-Latin scripts) show up as “?”."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "pdf-to-images",
+  "name": "PDF to pictures",
+  "short": "Save every page as a JPG or PNG.",
+  "desc": "Render pages to high-quality images, in a ZIP or one by one. Pick the resolution that suits your use.",
+  "category": "convert",
+  "icon": "📸",
+  "keywords": [
+   "jpg",
+   "png",
+   "image",
+   "screenshot",
+   "export pages",
+   "pdf to jpg",
+   "pdf to png",
+   "zip"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "fmt",
+    "type": "select",
+    "label": "Format",
+    "default": "jpg",
+    "options": [
+     {
+      "value": "jpg",
+      "label": "JPG (smaller)"
+     },
+     {
+      "value": "png",
+      "label": "PNG (sharper)"
+     }
+    ]
+   },
+   {
+    "key": "dpi",
+    "type": "select",
+    "label": "Resolution",
+    "default": "150",
+    "options": [
+     {
+      "value": "72",
+      "label": "72 dpi, screen"
+     },
+     {
+      "value": "110",
+      "label": "110 dpi"
+     },
+     {
+      "value": "150",
+      "label": "150 dpi, good"
+     },
+     {
+      "value": "220",
+      "label": "220 dpi"
+     },
+     {
+      "value": "300",
+      "label": "300 dpi, print"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)",
+    "placeholder": "e.g. 1-3"
+   },
+   {
+    "key": "zip",
+    "type": "toggle",
+    "label": "Bundle into one ZIP",
+    "default": true
+   }
+  ],
+  "runLabel": "Convert now",
+  "tips": [
+   "300 dpi pages can be large. Convert fewer pages at a time if your browser struggles."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "extract-text",
+  "name": "Copy text out",
+  "short": "Pull the text from a PDF.",
+  "desc": "Extract the selectable text from a PDF so you can copy it or save it as a .txt file.",
+  "category": "convert",
+  "icon": "🔤",
+  "keywords": [
+   "text",
+   "copy text",
+   "txt",
+   "read",
+   "ocr",
+   "extract words"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)"
+   },
+   {
+    "key": "marks",
+    "type": "toggle",
+    "label": "Mark where each page starts",
+    "default": true
+   }
+  ],
+  "runLabel": "Extract now",
+  "tips": [
+   "A scanned PDF is really a picture, so it has no text to copy. OCR for scans is on the roadmap."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "compress",
+  "name": "Make it smaller",
+  "short": "Shrink the file size of a PDF.",
+  "desc": "Reduce a PDF so it fits an email or an upload limit. Choose a gentle clean-up that keeps text, or a stronger squeeze that flattens pages to pictures.",
+  "category": "shrink",
+  "icon": "🪶",
+  "keywords": [
+   "compress",
+   "reduce size",
+   "smaller",
+   "optimize",
+   "email",
+   "upload limit",
+   "shrink",
+   "mb"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "level",
+    "type": "select",
+    "label": "How hard to squeeze",
+    "default": "balanced",
+    "options": [
+     {
+      "value": "lossless",
+      "label": "Gentle: keep text selectable"
+     },
+     {
+      "value": "balanced",
+      "label": "Balanced: ~130 dpi pictures"
+     },
+     {
+      "value": "strong",
+      "label": "Strong: ~96 dpi pictures"
+     },
+     {
+      "value": "tiny",
+      "label": "Tiny: 72 dpi pictures"
+     }
+    ],
+    "hint": "Balanced, Strong and Tiny turn each page into a compressed image, so text can no longer be selected."
+   }
+  ],
+  "runLabel": "Shrink now",
+  "tips": [
+   "Start with Gentle. If that is not small enough, move up a level.",
+   "PDFs that are mostly text rarely get much smaller; scans and photo-heavy files shrink a lot."
+  ],
+  "faq": [
+   {
+    "q": "Why did my file barely change?",
+    "a": "Gentle mode only tidies the file structure. If the size is dominated by images, use Balanced or Strong."
+   }
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "restyle",
+  "name": "Grayscale & dark mode",
+  "short": "Black & white, inverted, sepia or crisp scan look.",
+  "desc": "Recolour a PDF: save ink with grayscale, read at night with an inverted version, or make a faint scan crisp and high-contrast.",
+  "category": "shrink",
+  "icon": "🌗",
+  "keywords": [
+   "grayscale",
+   "black and white",
+   "invert",
+   "dark mode",
+   "night",
+   "sepia",
+   "ink saving",
+   "contrast",
+   "monochrome"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "mode",
+    "type": "select",
+    "label": "Look",
+    "default": "gray",
+    "options": [
+     {
+      "value": "gray",
+      "label": "Grayscale"
+     },
+     {
+      "value": "invert",
+      "label": "Inverted (dark mode)"
+     },
+     {
+      "value": "sepia",
+      "label": "Sepia"
+     },
+     {
+      "value": "bw",
+      "label": "High-contrast black & white"
+     },
+     {
+      "value": "enhance",
+      "label": "Scan clean-up (stretch contrast)"
+     }
+    ]
+   },
+   {
+    "key": "dpi",
+    "type": "select",
+    "label": "Quality",
+    "default": "150",
+    "options": [
+     {
+      "value": "110",
+      "label": "Smaller (110 dpi)"
+     },
+     {
+      "value": "150",
+      "label": "Good (150 dpi)"
+     },
+     {
+      "value": "200",
+      "label": "Sharp (200 dpi)"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)"
+   }
+  ],
+  "runLabel": "Restyle now",
+  "tips": [
+   "The result is made of page images, so text is no longer selectable."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "inspect",
+  "name": "Inspect a PDF",
+  "short": "See what is hiding inside: metadata, size, forms.",
+  "desc": "A quick report: page count and sizes, document properties, whether it has hidden metadata, annotations or form fields, and what you may want to clean before sharing.",
+  "category": "privacy",
+  "icon": "🔬",
+  "keywords": [
+   "metadata",
+   "info",
+   "properties",
+   "privacy check",
+   "author",
+   "details",
+   "audit",
+   "scan privacy"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "runLabel": "Inspect now",
+  "status": "ready"
+ },
+ {
+  "id": "properties",
+  "name": "Clean & edit properties",
+  "short": "Edit title/author, or wipe all metadata.",
+  "desc": "Change a PDF’s title, author and other properties, or strip every piece of metadata before sending it on.",
+  "category": "privacy",
+  "icon": "🧼",
+  "keywords": [
+   "metadata",
+   "strip",
+   "remove author",
+   "anonymize",
+   "scrub",
+   "title",
+   "author",
+   "exif",
+   "clean"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "strip",
+    "type": "toggle",
+    "label": "Remove all metadata",
+    "default": true,
+    "hint": "Clears title, author, subject, keywords, software, dates and hidden XMP data."
+   },
+   {
+    "key": "title",
+    "type": "text",
+    "label": "Title",
+    "showIf": {
+     "key": "strip",
+     "off": true
+    }
+   },
+   {
+    "key": "author",
+    "type": "text",
+    "label": "Author",
+    "showIf": {
+     "key": "strip",
+     "off": true
+    }
+   },
+   {
+    "key": "subject",
+    "type": "text",
+    "label": "Subject",
+    "showIf": {
+     "key": "strip",
+     "off": true
+    }
+   },
+   {
+    "key": "keywords",
+    "type": "text",
+    "label": "Keywords (comma-separated)",
+    "showIf": {
+     "key": "strip",
+     "off": true
+    }
+   }
+  ],
+  "runLabel": "Apply now",
+  "tips": [
+   "Blank boxes leave that property unchanged."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "flatten",
+  "name": "Flatten forms",
+  "short": "Lock in form answers and strip comments.",
+  "desc": "Turn fillable form fields into plain page content so answers can’t be edited, and optionally remove comments and highlights.",
+  "category": "privacy",
+  "icon": "🧱",
+  "keywords": [
+   "flatten",
+   "forms",
+   "fillable",
+   "lock",
+   "annotations",
+   "comments",
+   "make uneditable"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "forms",
+    "type": "toggle",
+    "label": "Flatten form fields",
+    "default": true
+   },
+   {
+    "key": "annots",
+    "type": "toggle",
+    "label": "Remove comments, highlights and links",
+    "default": false
+   }
+  ],
+  "runLabel": "Flatten now",
+  "status": "ready"
+ },
+ {
+  "id": "redact",
+  "name": "Black out text",
+  "short": "Permanently hide words, numbers or patterns.",
+  "desc": "Type the words you need to hide (one per line). Pages are redrawn with black boxes over every match and saved as pictures, so the hidden text is truly gone.",
+  "category": "privacy",
+  "icon": "⬛",
+  "keywords": [
+   "redact",
+   "censor",
+   "hide",
+   "black out",
+   "sensitive",
+   "ssn",
+   "email",
+   "blackout",
+   "regex"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "terms",
+    "type": "textarea",
+    "label": "Text to black out (one per line)",
+    "placeholder": "John Smith\n555-0100"
+   },
+   {
+    "key": "regex",
+    "type": "toggle",
+    "label": "Treat lines as patterns (regular expressions)",
+    "default": false
+   },
+   {
+    "key": "matchCase",
+    "type": "toggle",
+    "label": "Match capitals exactly",
+    "default": false
+   },
+   {
+    "key": "dpi",
+    "type": "select",
+    "label": "Quality",
+    "default": "150",
+    "options": [
+     {
+      "value": "110",
+      "label": "Smaller (110 dpi)"
+     },
+     {
+      "value": "150",
+      "label": "Good (150 dpi)"
+     },
+     {
+      "value": "200",
+      "label": "Sharp (200 dpi)"
+     }
+    ]
+   }
+  ],
+  "runLabel": "Redact now",
+  "warn": "Always check the result before sharing. Text split across lines, or inside images, may not be found automatically.",
+  "tips": [
+   "Only PDFs with a text layer can be searched. Scans have none.",
+   "The result is page images, so no hidden text can be copied out of it."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "compare",
+  "name": "Spot the differences",
+  "short": "Compare the text of two PDFs.",
+  "desc": "Pick an old and a new version of a document and get a page-by-page list of lines that were removed or added.",
+  "category": "insight",
+  "icon": "🆚",
+  "keywords": [
+   "diff",
+   "compare",
+   "difference",
+   "versions",
+   "changes",
+   "redline",
+   "what changed"
+  ],
+  "inputs": [
+   {
+    "key": "a",
+    "label": "Original version",
+    "accept": "pdf"
+   },
+   {
+    "key": "b",
+    "label": "New version",
+    "accept": "pdf"
+   }
+  ],
+  "runLabel": "Compare now",
+  "tips": [
+   "Compares text only. Layout and image changes are not detected."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "summarize",
+  "name": "Summarise with AI",
+  "short": "A short summary of a long PDF (your own AI key).",
+  "desc": "Get the gist of a long document in seconds. You bring your own API key from OpenAI, Anthropic or Google, set once in Settings.",
+  "category": "insight",
+  "icon": "✨",
+  "keywords": [
+   "summary",
+   "summarize",
+   "tldr",
+   "ai",
+   "gist",
+   "key points",
+   "abstract"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "length",
+    "type": "select",
+    "label": "Length",
+    "default": "medium",
+    "options": [
+     {
+      "value": "short",
+      "label": "Short (3–5 bullets)"
+     },
+     {
+      "value": "medium",
+      "label": "Medium"
+     },
+     {
+      "value": "long",
+      "label": "Detailed"
+     }
+    ]
+   },
+   {
+    "key": "lang",
+    "type": "text",
+    "label": "Answer language (blank = same as document)"
+   }
+  ],
+  "warn": "Text from your PDF is sent straight to the AI provider you chose in Settings, using your own API key. It does not pass through iDuckPDF’s servers.",
+  "runLabel": "Summarise",
+  "status": "ready"
+ },
+ {
+  "id": "ask",
+  "name": "Ask your PDF",
+  "short": "Ask a question, get an answer with page references.",
+  "desc": "Ask anything about a document and get an answer that points to the pages it came from. Uses your own AI key from Settings.",
+  "category": "insight",
+  "icon": "💬",
+  "keywords": [
+   "chat",
+   "question",
+   "ask",
+   "ai",
+   "q&a",
+   "find",
+   "search document",
+   "explain"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "q",
+    "type": "textarea",
+    "label": "Your question",
+    "placeholder": "e.g. What is the notice period in this contract?"
+   }
+  ],
+  "warn": "Text from your PDF is sent straight to the AI provider you chose in Settings, using your own API key. It does not pass through iDuckPDF’s servers.",
+  "runLabel": "Ask",
+  "status": "ready"
+ },
+ {
+  "id": "lock",
+  "name": "Add a password",
+  "short": "Encrypt a PDF so it needs a password.",
+  "desc": "Protect a PDF with a password before you share it.",
+  "icon": "🔒",
+  "keywords": [
+   "encrypt",
+   "password",
+   "protect",
+   "secure",
+   "lock"
+  ],
+  "phase": 2,
+  "reason": "Needs a PDF engine that can write encrypted files. Planned as a WebAssembly add-on.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "unlock",
+  "name": "Remove a password",
+  "short": "Unlock a PDF you have the password for.",
+  "desc": "Remove the password from a PDF you own so it opens freely.",
+  "icon": "🔓",
+  "keywords": [
+   "decrypt",
+   "password",
+   "unlock",
+   "open protected"
+  ],
+  "phase": 2,
+  "reason": "Needs a decryption engine (WebAssembly). Planned alongside Add a password.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "ocr",
+  "name": "Read scans (OCR)",
+  "short": "Make scanned pages searchable and copyable.",
+  "desc": "Recognise text in scanned PDFs and photos.",
+  "icon": "👁️",
+  "keywords": [
+   "ocr",
+   "scan",
+   "recognise",
+   "searchable",
+   "image to text"
+  ],
+  "phase": 2,
+  "reason": "Needs an in-browser OCR engine and language packs, which are large downloads.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "sign",
+  "name": "Sign a PDF",
+  "short": "Draw or type a signature and place it.",
+  "desc": "Add your signature to a document and position it on the page.",
+  "icon": "🖊️",
+  "keywords": [
+   "signature",
+   "sign",
+   "initial",
+   "esign"
+  ],
+  "phase": 2,
+  "reason": "Needs a drawing pad and drag-to-place editor. For now, use “Logo or image stamp” with a picture of your signature.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "fill",
+  "name": "Fill in a form",
+  "short": "Type into fillable form fields.",
+  "desc": "Fill in the fields of an interactive PDF form.",
+  "icon": "📋",
+  "keywords": [
+   "form",
+   "fillable",
+   "acroform",
+   "fields"
+  ],
+  "phase": 2,
+  "reason": "Needs a field editor. For now, use “Write on a PDF” to place text.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "word-to-pdf",
+  "name": "Word to PDF",
+  "short": "Convert .docx documents to PDF.",
+  "desc": "Turn Word documents into PDFs with layout preserved.",
+  "icon": "📄",
+  "keywords": [
+   "word",
+   "docx",
+   "doc",
+   "microsoft"
+  ],
+  "phase": 3,
+  "reason": "Accurate conversion needs a document engine that does not run well in a browser. It would run on a server, and we would tell you clearly when a file leaves your device.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "pdf-to-word",
+  "name": "PDF to Word",
+  "short": "Get an editable .docx from a PDF.",
+  "desc": "Convert a PDF into an editable Word document.",
+  "icon": "📝",
+  "keywords": [
+   "word",
+   "docx",
+   "editable",
+   "convert to word"
+  ],
+  "phase": 3,
+  "reason": "Needs server-side layout analysis. Planned with a clear notice that files are sent to be converted.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "excel-to-pdf",
+  "name": "Excel to PDF",
+  "short": "Spreadsheets to tidy PDFs.",
+  "desc": "Convert .xlsx and .csv files into PDFs.",
+  "icon": "📊",
+  "keywords": [
+   "excel",
+   "xlsx",
+   "csv",
+   "spreadsheet"
+  ],
+  "phase": 3,
+  "reason": "Needs a spreadsheet layout engine, so it would run on a server.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "pdf-to-excel",
+  "name": "PDF to Excel",
+  "short": "Pull tables out into a spreadsheet.",
+  "desc": "Extract tables from a PDF into .xlsx.",
+  "icon": "📈",
+  "keywords": [
+   "table",
+   "excel",
+   "xlsx",
+   "extract table"
+  ],
+  "phase": 3,
+  "reason": "Table detection is hard to do reliably in the browser. Planned on a server.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "pptx-to-pdf",
+  "name": "PowerPoint to PDF",
+  "short": "Slides to PDF.",
+  "desc": "Turn .pptx presentations into PDFs.",
+  "icon": "📽️",
+  "keywords": [
+   "powerpoint",
+   "pptx",
+   "slides",
+   "presentation"
+  ],
+  "phase": 3,
+  "reason": "Needs a presentation renderer, so it would run on a server.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ },
+ {
+  "id": "html-to-pdf",
+  "name": "Web page to PDF",
+  "short": "Turn HTML or a web page into a PDF.",
+  "desc": "Print HTML into a PDF with styling intact.",
+  "icon": "🌐",
+  "keywords": [
+   "html",
+   "web page",
+   "website",
+   "print"
+  ],
+  "phase": 3,
+  "reason": "Needs a full browser engine to lay out pages, so it would run on a server.",
+  "category": "soon",
+  "inputs": [],
+  "status": "soon"
+ }
+]

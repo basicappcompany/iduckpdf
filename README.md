@@ -14,7 +14,8 @@ npm install                  # also copies pdf.js into public/vendor
 npm run web                  # dev server (needs a few GB of free RAM)
 npm run export:web           # production build: seo files -> static export -> SEO tag injection -> dist/
 npm run audit                # crawler-style SEO audit of dist/ (run after export:web)
-npm run typecheck
+npm run typecheck             # also regenerates src/tools/meta.generated.json
+npm run meta                  # regenerate the light tool metadata (run after editing anything in src/tools/)
 npm run test:engine          # PDF engine tests in Node, no browser needed
 npm run icons                # regenerate the duck icons and social card (outputs are committed)
 ```
@@ -26,6 +27,13 @@ Preview `dist/` with `npx serve dist -l 8080`. Do **not** use `serve -s` (single
 - `src/content/` holds the tool copy and guides. `scripts/gen-seo.ts` builds `sitemap.xml`, `llms.txt` and `llms-full.txt` from the same registries, so they cannot drift.
 - Links must be real anchors: use `Btn`/`Chip`/`ToolCard`/`LinkCard` with `to=`, never a bare `router.push`.
 
+## Deploy
+Hosted on Cloudflare Pages (project `iduckpdf`, direct upload). After `npm run export:web` and `npm run audit`:
+```bash
+npx wrangler pages deploy dist --project-name iduckpdf --branch main
+```
+Sign in once with `npx wrangler login`. `functions/` is bundled automatically. Pushes to `main` also run `.github/workflows/deploy.yml` (typecheck, engine tests, build, SEO audit, then deploy once the `CLOUDFLARE_API_TOKEN` secret exists). Domain and DNS notes are in `docs/TODO.md` §3.
+
 ## Layout
 ```
 src/app/        screens (Expo Router): home, tools, tool/[id], guides, chat, feedback, request, donate, roadmap, settings, about
@@ -35,7 +43,7 @@ src/ui/         themed building blocks, tool screen, sidebar shell
 src/content/    tool SEO copy, guides, home FAQ (plain TS, also read by the build scripts)
 src/lib/        theme, command palette, storage, AI client, mail helper, SEO data
 functions/      Cloudflare Pages Function: POST /api/donate (Dodo Payments checkout)
-scripts/        gen-seo, inject-seo, audit-seo, make-icons, test-engine, e2e-smoke
+scripts/        gen-seo, gen-tool-meta, inject-seo, audit-seo, make-icons, test-engine, e2e-smoke
 public/         robots.txt, manifest, _headers, icons, og.png, llms files (generated), pdf.js (copied)
 ```
 

@@ -1,4 +1,4 @@
-import { ToolError } from '../engine/util';
+import { ToolError } from '../engine/base';
 import { AI_DEFAULTS } from '../config';
 import { KEYS, getJSON, removeItem, setJSON } from './storage';
 

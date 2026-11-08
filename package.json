@@ -4,18 +4,19 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "start": "expo start",
-    "web": "expo start --web",
+    "start": "npm run meta && expo start",
+    "web": "npm run meta && expo start --web",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "seo": "tsx scripts/gen-seo.ts",
     "icons": "node scripts/make-icons.js",
-    "export:web": "npm run seo && expo export --platform web && tsx scripts/inject-seo.ts",
-    "typecheck": "tsc --noEmit",
+    "export:web": "npm run meta && npm run seo && expo export --platform web && tsx scripts/inject-seo.ts",
+    "typecheck": "npm run meta && tsc --noEmit",
     "audit": "tsx scripts/audit-seo.ts",
     "test:engine": "tsx scripts/test-engine.ts",
     "e2e": "node scripts/e2e-smoke.js",
-    "postinstall": "node scripts/copy-vendor.js"
+    "postinstall": "node scripts/copy-vendor.js",
+    "meta": "tsx scripts/gen-tool-meta.ts"
   },
   "dependencies": {
     "expo": "~58.0.23",

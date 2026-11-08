@@ -154,8 +154,8 @@ export const convertTools: ToolDef[] = [
     inputs: [{ key: 'files', label: 'Images', accept: 'image', multiple: true, min: 1, hint: 'Use the arrows to change the order.' }],
     options: [
       { key: 'size', type: 'select', label: 'Page size', default: 'fit', options: pageSizeOpts },
-      { key: 'orient', type: 'select', label: 'Orientation', default: 'auto', options: [{ value: 'auto', label: 'Automatic' }, { value: 'portrait', label: 'Portrait' }, { value: 'landscape', label: 'Landscape' }], showIf: (o) => o.size !== 'fit' },
-      { key: 'margin', type: 'number', label: 'Margin (mm)', default: 10, showIf: (o) => o.size !== 'fit' },
+      { key: 'orient', type: 'select', label: 'Orientation', default: 'auto', options: [{ value: 'auto', label: 'Automatic' }, { value: 'portrait', label: 'Portrait' }, { value: 'landscape', label: 'Landscape' }], showIf: { key: 'size', ne: 'fit' } },
+      { key: 'margin', type: 'number', label: 'Margin (mm)', default: 10, showIf: { key: 'size', ne: 'fit' } },
       { key: 'shrink', type: 'toggle', label: 'Shrink very large photos', default: true, hint: 'Recommended. Caps the longest side at 2200 px.' },
     ],
     runLabel: 'Make PDF',

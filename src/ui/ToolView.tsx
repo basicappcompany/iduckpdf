@@ -1,14 +1,13 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../lib/theme';
 import { KEYS, getJSON, setJSON } from '../lib/storage';
 import { setHandoff, takeHandoff } from '../lib/handoff';
-import { CATEGORIES, TOOLS, byId, inCategory, type ToolDef } from '../tools';
-import type { InputSlot, Option, OutFile, PickedFile, ToolResult } from '../engine/types';
-import { ToolError, fmtBytes } from '../engine/util';
+import { CATEGORIES, TOOLS, byId, inCategory, loadRunner, preloadEngine, type ToolDef } from '../tools';
+import { isShown, type InputSlot, type Option, type OutFile, type PickedFile, type ToolResult } from '../engine/types';
+import { ToolError, fmtBytes } from '../engine/base';
 import { copyText, saveFile } from '../engine/io';
-import { zipFiles } from '../engine/zip';
 import { Banner, Btn, Card, Choice, Chip, Field, Pill, Screen, T, TextField, Toggle } from './kit';
 import { SiteFooter } from './SiteFooter';
 import { TOOL_SEO } from '../content/toolSeo';
@@ -85,8 +84,21 @@ export function ToolView({ tool }: { tool: ToolDef }) {
   const [err, setErr] = useState<{ message: string; code?: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
+  // Fetch the PDF engine in the background once the page is usable, so the first run does not wait on the network.
+  useEffect(() => {
+    if (tool.status !== 'ready') return;
+    const go = () => void preloadEngine().catch(() => {});
+    const w = typeof window !== 'undefined' ? (window as any) : null;
+    if (w?.requestIdleCallback) {
+      const id = w.requestIdleCallback(go, { timeout: 3000 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = setTimeout(go, 1200);
+    return () => clearTimeout(id);
+  }, [tool.id, tool.status]);
+
   const ready = tool.inputs.every((s) => (files[s.key]?.length || 0) >= (s.min ?? 1));
-  const visibleOpts = (tool.options || []).filter((o) => !o.showIf || o.showIf(opts));
+  const visibleOpts = (tool.options || []).filter((o) => isShown(o.showIf, opts));
 
   const addFiles = (slot: InputSlot, list: PickedFile[]) =>
     setFiles((f) => ({ ...f, [slot.key]: slot.multiple ? [...(f[slot.key] || []), ...list] : list.slice(0, 1) }));
@@ -101,14 +113,16 @@ export function ToolView({ tool }: { tool: ToolDef }) {
     });
 
   const run = async () => {
-    if (!tool.run) return;
+    if (tool.status !== 'ready') return;
     setPhase('running');
     setErr(null);
     setRes(null);
     setProg({ f: 0, label: 'Starting…' });
     await new Promise((r) => setTimeout(r, 30));
     try {
-      const r = await tool.run({ files, opts, progress: (f, label) => setProg({ f: Math.max(0, Math.min(1, f)), label: label || '' }) });
+      const runner = await loadRunner(tool.id);
+      if (!runner) throw new ToolError('This tool is not available yet.');
+      const r = await runner({ files, opts, progress: (f, label) => setProg({ f: Math.max(0, Math.min(1, f)), label: label || '' }) });
       setRes(r);
       setPhase('done');
       const recent = getJSON<string[]>(KEYS.recent, []).filter((x) => x !== tool.id);
@@ -129,6 +143,7 @@ export function ToolView({ tool }: { tool: ToolDef }) {
 
   const downloadAll = async () => {
     if (!res?.files) return;
+    const { zipFiles } = await import('../engine/zip');
     const z = await zipFiles(res.files, `${tool.id}-results.zip`);
     saveFile(z.name, z.bytes, z.mime);
   };

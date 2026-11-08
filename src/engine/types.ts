@@ -7,10 +7,15 @@ export type PickedFile = {
 
 export type OutFile = { name: string; mime: string; bytes: Uint8Array };
 
+/** Declarative so tool metadata is plain JSON: show when opts[key] equals eq, differs from ne, or (off) is falsy. */
+export type ShowIf = { key: string; eq?: unknown; ne?: unknown; off?: true };
+export const isShown = (c: ShowIf | undefined, o: Record<string, any>): boolean =>
+  !c ? true : c.off ? !o[c.key] : 'eq' in c ? o[c.key] === c.eq : 'ne' in c ? o[c.key] !== c.ne : true;
+
 export type Option =
-  | { key: string; type: 'text' | 'textarea' | 'number' | 'password'; label: string; placeholder?: string; default?: string | number; hint?: string; showIf?: (o: Record<string, any>) => boolean }
-  | { key: string; type: 'select'; label: string; options: { value: string; label: string }[]; default: string; hint?: string; showIf?: (o: Record<string, any>) => boolean }
-  | { key: string; type: 'toggle'; label: string; default: boolean; hint?: string; showIf?: (o: Record<string, any>) => boolean };
+  | { key: string; type: 'text' | 'textarea' | 'number' | 'password'; label: string; placeholder?: string; default?: string | number; hint?: string; showIf?: ShowIf }
+  | { key: string; type: 'select'; label: string; options: { value: string; label: string }[]; default: string; hint?: string; showIf?: ShowIf }
+  | { key: string; type: 'toggle'; label: string; default: boolean; hint?: string; showIf?: ShowIf };
 
 export type InputSlot = {
   key: string;

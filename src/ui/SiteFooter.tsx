@@ -20,16 +20,6 @@ function FooterLink({ to, label }: { to: string; label: string }) {
   );
 }
 
-/** Plain <a> for static files (sitemap, llms.txt) that are not app routes. */
-function FileLink({ href, label }: { href: string; label: string }) {
-  const { t } = useTheme();
-  return (
-    <a href={href} style={{ color: t.ink, fontSize: 14.5, textDecoration: 'none', padding: '3px 0', display: 'block', opacity: 0.85 }}>
-      {label}
-    </a>
-  );
-}
-
 const POPULAR = ['merge', 'split', 'compress', 'images-to-pdf', 'rotate', 'remove-pages', 'page-numbers', 'text-watermark', 'pdf-to-images', 'redact'];
 
 export function SiteFooter() {
@@ -53,16 +43,11 @@ export function SiteFooter() {
             <FooterLink to="/chat" label="Ask the helper" />
             <FooterLink to="/roadmap" label="Roadmap" />
             <FooterLink to="/about" label="About" />
+            <FooterLink to="/privacy" label="Privacy policy" />
+            <FooterLink to="/terms" label="Terms of use" />
             <FooterLink to="/request" label="Request a feature" />
             <FooterLink to="/feedback" label="Send feedback" />
             <FooterLink to="/donate" label="Support us" />
-          </>
-        ))}
-        {col('For readers and crawlers', (
-          <>
-            <FileLink href="/sitemap.xml" label="Sitemap" />
-            <FileLink href="/llms.txt" label="llms.txt (AI summary)" />
-            <FileLink href="/robots.txt" label="robots.txt" />
           </>
         ))}
       </View>

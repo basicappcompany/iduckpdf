@@ -25,6 +25,8 @@ const pages: { path: string; prio: string; freq: string }[] = [
   { path: '/chat', prio: '0.5', freq: 'monthly' },
   { path: '/roadmap', prio: '0.4', freq: 'monthly' },
   { path: '/about', prio: '0.4', freq: 'yearly' },
+  { path: '/privacy', prio: '0.3', freq: 'yearly' },
+  { path: '/terms', prio: '0.3', freq: 'yearly' },
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -56,6 +58,8 @@ ${GUIDES.map((g) => `- [${g.title}](${abs('/guides/' + g.slug)}): ${g.descriptio
 ## Optional
 - [All tools](${abs('/tools')}): the full list, grouped by task
 - [About and privacy](${abs('/about')}): what happens to files and how the site is built
+- [Privacy policy](${abs('/privacy')}): what is and is not collected
+- [Terms of use](${abs('/terms')}): the plain terms for using the site
 - [Roadmap](${abs('/roadmap')}): planned tools and why they are not built yet
 - [Full text of every tool and guide](${abs('/llms-full.txt')})
 `;

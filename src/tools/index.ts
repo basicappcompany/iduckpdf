@@ -1,26 +1,31 @@
-import { CATEGORIES, type CategoryId, type ToolDef } from '../engine/types';
-import { joinTools } from './join';
-import { arrangeTools } from './arrange';
-import { markupTools } from './markup';
-import { convertTools } from './convert';
-import { shrinkTools } from './shrink';
-import { privacyTools } from './privacy';
-import { insightTools } from './insight';
-import { soonTools } from './soon';
+import { CATEGORIES, type CategoryId, type ToolDef, type ToolCtx, type ToolResult } from '../engine/types';
+import meta from './meta.generated.json';
 
 export { CATEGORIES };
 export type { CategoryId, ToolDef };
 
-export const TOOLS: ToolDef[] = [
-  ...joinTools,
-  ...arrangeTools,
-  ...markupTools,
-  ...convertTools,
-  ...shrinkTools,
-  ...privacyTools,
-  ...insightTools,
-  ...soonTools,
-];
+/** Light metadata for every tool (no run code). Generated from ./all.ts by scripts/gen-tool-meta.ts. */
+export const TOOLS = meta as unknown as ToolDef[];
+
+type Runner = (ctx: ToolCtx) => Promise<ToolResult>;
+let enginePromise: Promise<typeof import('./all')> | null = null;
+
+/** Starts downloading the PDF engine and the tool code. Safe to call many times; call it early (idle) to make the first run instant. */
+export function preloadEngine(): Promise<typeof import('./all')> {
+  if (!enginePromise) {
+    enginePromise = import('./all').catch((e) => {
+      enginePromise = null; // allow a retry after a network hiccup
+      throw e;
+    });
+  }
+  return enginePromise;
+}
+
+/** The run() function for a tool, loading the engine on first use. */
+export async function loadRunner(id: string): Promise<Runner | undefined> {
+  const { ALL_TOOLS } = await preloadEngine();
+  return ALL_TOOLS.find((t) => t.id === id)?.run;
+}
 
 export const READY = TOOLS.filter((t) => t.status === 'ready');
 export const SOON = TOOLS.filter((t) => t.status === 'soon');

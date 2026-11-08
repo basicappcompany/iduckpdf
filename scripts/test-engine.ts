@@ -3,7 +3,10 @@
  * Run:  npx tsx scripts/test-engine.ts
  */
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import { byId, READY } from '../src/tools';
+import { ALL_TOOLS } from '../src/tools/all';
+
+const READY = ALL_TOOLS.filter((t) => t.status === 'ready');
+const byId = (id: string) => ALL_TOOLS.find((t) => t.id === id);
 import type { PickedFile, ToolResult } from '../src/engine/types';
 import { ToolError } from '../src/engine/util';
 

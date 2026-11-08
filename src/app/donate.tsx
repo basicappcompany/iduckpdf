@@ -70,6 +70,14 @@ export default function Donate() {
         </T>
       </Card>
 
+      <T v="small" muted>
+        Tips are optional and do not unlock anything, since everything here is free either way. Mistakes can be refunded within 14 days: see the terms.
+      </T>
+      <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
+        <Btn label="Terms of use" variant="ghost" small to="/terms" />
+        <Btn label="Privacy policy" variant="ghost" small to="/privacy" />
+      </View>
+
       <Card style={{ gap: 6 }}>
         <T v="h3">Other ways to help</T>
         <T muted>Tell a friend, report a bug, or suggest the next tool. All of that helps just as much.</T>

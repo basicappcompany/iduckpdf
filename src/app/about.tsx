@@ -47,6 +47,8 @@ export default function About() {
 
       <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
         <Btn label="Browse tools" to="/tools" />
+        <Btn label="Privacy policy" variant="ghost" to="/privacy" />
+        <Btn label="Terms of use" variant="ghost" to="/terms" />
         <Btn label="Send feedback" variant="ghost" to="/feedback" />
         <Btn label="Request a feature" variant="ghost" to="/request" />
       </View>

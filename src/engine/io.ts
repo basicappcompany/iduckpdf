@@ -1,6 +1,6 @@
 // Browser file handling. (io.native.ts replaces this on iOS/Android — future scope.)
 import type { PickedFile } from './types';
-import { toBlob } from './util';
+import { toBlob } from './base';
 
 export type PickOpts = { accept: 'pdf' | 'image' | 'any'; multiple?: boolean; camera?: boolean };
 

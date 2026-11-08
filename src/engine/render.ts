@@ -1,6 +1,6 @@
 // pdf.js (served from /vendor, copied from node_modules on install) for anything that needs to
 // look at page content: rendering to images, text extraction, rasterising. Browser only for now.
-import { ToolError } from './util';
+import { ToolError } from './base';
 
 declare global {
   interface Window {
