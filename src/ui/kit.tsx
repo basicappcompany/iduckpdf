@@ -38,6 +38,11 @@ export function Card({ children, style, hot }: { children?: React.ReactNode; sty
   return <View style={[{ backgroundColor: hot ? t.duck : t.card, borderWidth: 2, borderColor: t.line, borderRadius: 14, padding: 16 }, t.shadow(4), style]}>{children}</View>;
 }
 
+/** Equal-width columns that never stretch: a short last row keeps the same card size as the rows above it. */
+export function CardGrid({ min = 240, gap = 14, children }: { min?: number; gap?: number; children?: React.ReactNode }) {
+  return <View style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(min(${min}px, 100%), 1fr))`, gap } as any}>{children}</View>;
+}
+
 export function Banner({ children, tone = 'info', style }: { children: React.ReactNode; tone?: 'info' | 'warn' | 'error' | 'ok'; style?: StyleProp<ViewStyle> }) {
   const { t } = useTheme();
   const bg = tone === 'error' ? t.danger : tone === 'ok' ? t.ok : tone === 'warn' ? t.duck : t.soft;

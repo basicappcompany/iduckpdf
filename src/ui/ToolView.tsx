@@ -8,7 +8,7 @@ import { CATEGORIES, TOOLS, byId, inCategory, loadRunner, preloadEngine, type To
 import { isShown, type InputSlot, type Option, type OutFile, type PickedFile, type ToolResult } from '../engine/types';
 import { ToolError, fmtBytes } from '../engine/base';
 import { copyText, saveFile } from '../engine/io';
-import { Banner, Btn, Card, Choice, Chip, Field, Pill, Screen, T, TextField, Toggle } from './kit';
+import { Banner, Btn, Card, Choice, Chip, Field, Pill, Screen, T, TextField, Toggle, CardGrid } from './kit';
 import { SiteFooter } from './SiteFooter';
 import { TOOL_SEO } from '../content/toolSeo';
 import { SITE } from '../config';
@@ -314,14 +314,14 @@ export function ToolView({ tool }: { tool: ToolDef }) {
 
       <View style={{ gap: 10, marginTop: 10 }}>
         <T v="h2">How to use {tool.name}</T>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        <CardGrid min={200} gap={12}>
           {(seo?.steps || ['Add your file', 'Tweak the options', 'Download the result']).map((s, i) => (
-            <Card key={i} style={{ flexGrow: 1, flexBasis: 200, gap: 4 }}>
+            <Card key={i} style={{ gap: 4 }}>
               <T v="label" muted>Step {i + 1}</T>
               <T>{s}</T>
             </Card>
           ))}
-        </View>
+        </CardGrid>
         {tool.tips?.map((x, i) => <T key={i} muted>• {x}</T>)}
       </View>
 

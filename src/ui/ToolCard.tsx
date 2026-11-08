@@ -16,9 +16,7 @@ export function ToolCard({ tool, compact }: { tool: ToolDef; compact?: boolean }
         accessibilityRole="link"
         style={((s: any) => [
           {
-            flexGrow: 1,
-            flexBasis: compact ? 220 : 240,
-            maxWidth: '100%',
+            minWidth: 0,
             borderWidth: 2,
             borderColor: t.line,
             borderRadius: 14,

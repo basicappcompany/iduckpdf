@@ -4,7 +4,7 @@ import { useTheme } from '../lib/theme';
 import { usePalette } from '../lib/palette';
 import { KEYS, getJSON } from '../lib/storage';
 import { CATEGORIES, READY, SOON, byId, inCategory } from '../tools';
-import { Btn, Card, Chip, Hl, Screen, T } from '../ui/kit';
+import { Btn, Card, Chip, Hl, Screen, T, CardGrid } from '../ui/kit';
 import { Logo } from '../ui/Logo';
 import { ToolCard } from '../ui/ToolCard';
 import { Seo } from '../lib/seo';
@@ -64,9 +64,9 @@ export default function Home() {
 
       <View style={{ gap: 12 }}>
         <T v="h2">Popular right now</T>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
+        <CardGrid min={240} gap={14}>
           {POPULAR.map((id) => byId(id)).filter(Boolean).map((tl) => <ToolCard key={tl!.id} tool={tl!} />)}
-        </View>
+        </CardGrid>
       </View>
 
       {CATEGORIES.filter((c) => c.id !== 'soon').map((c) => (
@@ -75,9 +75,9 @@ export default function Home() {
             <T v="h2">{c.icon} {c.name}</T>
             <T muted>{c.blurb}</T>
           </View>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+          <CardGrid min={220} gap={12}>
             {inCategory(c.id).map((tl) => <ToolCard key={tl.id} tool={tl} compact />)}
-          </View>
+          </CardGrid>
         </View>
       ))}
 
@@ -93,25 +93,25 @@ export default function Home() {
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
+      <CardGrid min={250} gap={14}>
         {[
           ['🔐', 'Your files stay with you', 'Most tools process PDFs inside your browser. When something does need an outside service (like the AI tools), we say so before you start.'],
           ['🎟️', 'No account, no watermark', 'Open a tool, use it, download the result. That is the whole deal.'],
           ['🗝️', 'Bring your own AI key', 'AI summaries and Q&A use a key you add yourself, so you pick the provider and stay in control of the cost.'],
         ].map(([i, h, b]) => (
-          <Card key={h} style={{ flexGrow: 1, flexBasis: 250, gap: 4 }}>
+          <Card key={h} style={{ gap: 4 }}>
             <Text style={{ fontSize: 26 }}>{i}</Text>
             <T v="h3">{h}</T>
             <T muted v="small">{b}</T>
           </Card>
         ))}
-      </View>
+      </CardGrid>
 
       <View style={{ gap: 12 }}>
         <T v="h2">📚 PDF how-to guides</T>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
+        <CardGrid min={300} gap={14}>
           {GUIDES.slice(0, 4).map((g) => <LinkCard key={g.slug} to={`/guides/${g.slug}`} icon={byId(g.tool)?.icon || '📚'} title={g.title} body={g.description} />)}
-        </View>
+        </CardGrid>
         <View style={{ alignSelf: 'flex-start' }}><Btn label="All guides" variant="ghost" small to="/guides" /></View>
       </View>
 

@@ -13,7 +13,7 @@ export function LinkCard({ to, icon, title, body }: { to: string; icon: string; 
         accessibilityRole="link"
         onPress={nav(to)}
         style={((s: any) => [
-          { flexGrow: 1, flexBasis: 300, maxWidth: '100%', borderWidth: 2, borderColor: t.line, borderRadius: 14, padding: 16, gap: 6, backgroundColor: s.hovered ? t.duck : t.card },
+          { minWidth: 0, borderWidth: 2, borderColor: t.line, borderRadius: 14, padding: 16, gap: 6, backgroundColor: s.hovered ? t.duck : t.card },
           t.shadow(4),
           s.hovered ? { transform: [{ translateX: -2 }, { translateY: -2 }] } : null,
         ]) as any}

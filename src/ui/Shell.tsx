@@ -144,7 +144,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <Text {...ds('w560')} style={{ color: t.muted, fontWeight: '700' }}>Search · Ctrl K</Text>
           </Pressable>
           <Pressable onPress={toggle} accessibilityRole="button" accessibilityLabel="Switch light or dark mode" style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
-            <Text style={{ fontSize: 16 }}>{t.dark ? '☀️' : '🌙'}</Text>
+            <Text style={{ fontSize: 16 }}><Text {...ds('moon')}>🌙</Text><Text {...ds('sun')}>☀️</Text></Text>
           </Pressable>
           <Anchor to="/donate" label="Support iDuckPDF">
             <Pressable accessibilityRole="link" onPress={nav('/donate')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.duck }, t.shadow(3)]}>

@@ -33,6 +33,25 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
     await ctx.close();
   }
 
+  // ---- A2. no flash of the light theme for dark-mode visitors: the page must already be dark before any JavaScript runs ----
+  {
+    const bgs = async (scheme, js) => {
+      const c = await browser.newContext({ colorScheme: scheme, javaScriptEnabled: js });
+      const p = await c.newPage();
+      await p.goto(BASE + '/');
+      const r = await p.evaluate(() => {
+        const root = document.getElementById('root');
+        const q = [root];
+        while (q.length) { const el = q.shift(); if (!el) continue; const col = getComputedStyle(el).backgroundColor; if (el !== root && col !== 'rgba(0, 0, 0, 0)') return col; q.push(...el.children); }
+        return 'none';
+      });
+      await c.close();
+      return r.replace(/\s/g, '');
+    };
+    ok('no-JS: dark OS gets a dark app background (no light flash)', (await bgs('dark', false)) === 'rgb(18,18,18)');
+    ok('no-JS: light OS gets the light app background', (await bgs('light', false)) === 'rgb(255,253,245)');
+  }
+
   // ---- B-G. real browser with JavaScript ----
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await ctx.newPage();
@@ -105,6 +124,9 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto(BASE + '/');
   await page.getByRole('button', { name: /Open menu/i }).waitFor({ timeout: 8000 }).catch(() => {});
+  // the menu button is in the pre-rendered HTML now, so wait until the app has started before clicking it
+  await page.waitForFunction(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(500);
   ok('phone width shows the menu button', await page.getByRole('button', { name: /Open menu/i }).isVisible().catch(() => false));
   await page.getByRole('button', { name: /Open menu/i }).click().catch(() => {});
   ok('menu button opens the drawer', (await page.locator('a[href="/tool/merge"]').count()) > 0 && await page.getByText('All tools').first().isVisible().catch(() => false));
