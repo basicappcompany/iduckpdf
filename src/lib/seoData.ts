@@ -9,6 +9,7 @@ import { READY, TOOLS, byId } from '../tools';
 import { TOOL_SEO } from '../content/toolSeo';
 import { GUIDES, guideBySlug } from '../content/guides';
 import { HOME_FAQ } from '../content/homeFaq';
+import { HUB_PATH, idForSlug, toolPath } from '../content/toolSlugs';
 import { PRIVACY, TERMS } from '../content/legal';
 import { RESPONSIVE_CSS } from './responsive';
 import { THEME_CSS, THEME_INIT_SCRIPT } from './themeColors';
@@ -65,7 +66,7 @@ const itemList = (name: string) => ({
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name,
-  itemListElement: READY.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, url: abs(`/tool/${t.id}`) })),
+  itemListElement: READY.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, url: abs(toolPath(t.id)) })),
 });
 
 const hidden = (title: string, path: string): PageSeo => ({ title: full(title), description: SITE.description, path, noindex: true, type: 'website', jsonLd: [] });
@@ -76,20 +77,20 @@ export function seoForPath(raw: string): PageSeo {
   if (path === '/') {
     return { title: SITE.title, description: SITE.description, path, noindex: false, type: 'website', jsonLd: [itemList('iDuckPDF tools'), faqLd(HOME_FAQ)] };
   }
-  if (path === '/tools') {
+  if (path === HUB_PATH) {
     return {
       title: full('All PDF Tools'),
       description: 'Every free iDuckPDF tool in one place: merge, split, compress, rotate, watermark, redact, convert and more. Search by name or by what you want to do.',
       path,
       noindex: false,
       type: 'website',
-      jsonLd: [itemList('All PDF tools'), breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'All tools', path }])],
+      jsonLd: [itemList('All PDF tools'), breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'All PDF tools', path }])],
     };
   }
 
-  const tm = path.match(/^\/tool\/([^/]+)$/);
-  if (tm) {
-    const tool = byId(tm[1]);
+  const toolId = idForSlug(path.slice(1));
+  if (toolId) {
+    const tool = byId(toolId);
     const seo = tool && TOOL_SEO[tool.id];
     if (!tool || !seo || tool.status !== 'ready') return hidden(tool ? `${tool.name} (coming soon)` : 'Tool not found', path); // roadmap pages stay out of the index
     return {
@@ -102,7 +103,7 @@ export function seoForPath(raw: string): PageSeo {
         appLd(tool.name, seo.description, path),
         howToLd(`How to use ${tool.name}`, seo.answer, seo.steps, path),
         faqLd(seo.faq),
-        breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'All tools', path: '/tools' }, { name: tool.name, path }]),
+        breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'All PDF tools', path: HUB_PATH }, { name: tool.name, path }]),
       ],
     };
   }
@@ -207,7 +208,7 @@ const orgLd = {
       description: SITE.description,
       inLanguage: 'en',
       publisher: { '@id': `${SITE.url}/#org` },
-      potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE.url}/tools?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
+      potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE.url}${HUB_PATH}?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
     },
   ],
 };

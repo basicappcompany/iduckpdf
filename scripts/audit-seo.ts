@@ -89,6 +89,24 @@ for (const u of urls) {
 }
 if (urls.length !== indexable) fail('sitemap', `${urls.length} URLs in the sitemap but ${indexable} indexable pages`);
 
+// every tool page URL contains "pdf" (a ranking requirement), and every 301 redirect points at a page that exists
+{
+  const toolPages = urls.filter((u) => /^\/[a-z0-9-]+$/.test(u) && !['/about', '/chat', '/privacy', '/terms', '/roadmap', '/guides', '/pdf-tools'].includes(u));
+  for (const u of toolPages) if (!u.includes('pdf')) fail('sitemap', `tool URL ${u} does not contain "pdf"`);
+  if (toolPages.length < 30) fail('sitemap', `only ${toolPages.length} tool URLs found`);
+  if (!existsSync(join(dist, '_redirects'))) fail('_redirects', 'missing: old /tool/<id> URLs would 404');
+  else {
+    const lines = readFileSync(join(dist, '_redirects'), 'utf8').split('\n').filter((l) => l && !l.startsWith('#'));
+    for (const l of lines) {
+      const [from, to, code] = l.trim().split(/\s+/);
+      if (code !== '301') fail('_redirects', `${l}: not a 301`);
+      const t = to.replace(/^\//, '');
+      if (!existsSync(join(dist, t + '.html'))) fail('_redirects', `${from} -> ${to}: target page is not in dist`);
+      if (from.startsWith('/tool/') && from !== '/tool/*' && existsSync(join(dist, from.slice(1) + '.html'))) fail('_redirects', `${from} is redirected but a page still exists there`);
+    }
+  }
+}
+
 for (const f of ['robots.txt', 'llms.txt', 'llms-full.txt', 'manifest.webmanifest', 'og.png', 'favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png']) {
   if (!existsSync(join(dist, f))) fail('assets', `${f} missing from dist`);
 }

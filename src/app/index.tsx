@@ -11,6 +11,7 @@ import { Seo } from '../lib/seo';
 import { HOME_FAQ } from '../content/homeFaq';
 import { SiteFooter } from '../ui/SiteFooter';
 import { LinkCard } from '../ui/LinkCard';
+import { toolPath } from '../content/toolSlugs';
 import { GUIDES } from '../content/guides';
 import { SITE } from '../config';
 
@@ -57,7 +58,7 @@ export default function Home() {
         <View style={{ gap: 8 }}>
           <T v="h3">Pick up where you left off</T>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {recent.map((id) => byId(id)).filter(Boolean).map((tl) => <Chip key={tl!.id} label={tl!.name} icon={tl!.icon} to={`/tool/${tl!.id}`} />)}
+            {recent.map((id) => byId(id)).filter(Boolean).map((tl) => <Chip key={tl!.id} label={tl!.name} icon={tl!.icon} to={toolPath(tl!.id)} />)}
           </View>
         </View>
       ) : null}
@@ -85,7 +86,7 @@ export default function Home() {
         <T v="h2">🛠️ On the roadmap</T>
         <T muted>{SOON.length} more tools are planned. Tell us which ones you need first.</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {SOON.map((tl) => <Chip key={tl.id} label={tl.name} icon={tl.icon} to={`/tool/${tl.id}`} />)}
+          {SOON.map((tl) => <Chip key={tl.id} label={tl.name} icon={tl.icon} to={toolPath(tl.id)} />)}
         </View>
         <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
           <Btn label="See the roadmap" variant="ghost" small to="/roadmap" />

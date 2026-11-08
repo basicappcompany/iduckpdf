@@ -5,14 +5,15 @@ import { Anchor } from './Anchor';
 import { useTheme } from '../lib/theme';
 import type { ToolDef } from '../tools';
 import { Pill } from './kit';
+import { toolPath } from '../content/toolSlugs';
 
 export function ToolCard({ tool, compact }: { tool: ToolDef; compact?: boolean }) {
   const { t } = useTheme();
   const nav = useNavPress();
   return (
-    <Anchor to={`/tool/${tool.id}`}>
+    <Anchor to={toolPath(tool.id)}>
       <Pressable
-        onPress={nav(`/tool/${tool.id}`)}
+        onPress={nav(toolPath(tool.id))}
         accessibilityRole="link"
         style={((s: any) => [
           {

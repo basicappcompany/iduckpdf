@@ -10,13 +10,14 @@
     "ios": "expo start --ios",
     "seo": "tsx scripts/gen-seo.ts",
     "icons": "node scripts/make-icons.js",
-    "export:web": "npm run meta && npm run seo && expo export --platform web && tsx scripts/inject-seo.ts",
+    "export:web": "npm run clean && npm run meta && npm run seo && expo export --platform web && tsx scripts/inject-seo.ts",
     "typecheck": "npm run meta && tsc --noEmit",
     "audit": "tsx scripts/audit-seo.ts",
     "test:engine": "tsx scripts/test-engine.ts",
     "e2e": "node scripts/e2e-smoke.js",
     "postinstall": "node scripts/copy-vendor.js",
-    "meta": "tsx scripts/gen-tool-meta.ts"
+    "meta": "tsx scripts/gen-tool-meta.ts",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
   "dependencies": {
     "expo": "~58.0.23",

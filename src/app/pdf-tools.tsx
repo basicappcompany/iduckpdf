@@ -16,9 +16,9 @@ export default function AllTools() {
 
   return (
     <Screen>
-      <Seo path="/tools" />
+      <Seo path="/pdf-tools" />
       <T v="h1">
-        All <Hl>tools</Hl>
+        All <Hl>PDF tools</Hl>
       </T>
       <T muted>{TOOLS.filter((t) => t.status === 'ready').length} ready to use, {TOOLS.filter((t) => t.status === 'soon').length} on the roadmap.</T>
       <TextField value={q} onChange={setQ} placeholder="Filter by name or what you want to do…" />

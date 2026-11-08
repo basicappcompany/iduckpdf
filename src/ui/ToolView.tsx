@@ -12,6 +12,7 @@ import { Banner, Btn, Card, Choice, Chip, Field, Pill, Screen, T, TextField, Tog
 import { SiteFooter } from './SiteFooter';
 import { TOOL_SEO } from '../content/toolSeo';
 import { SITE } from '../config';
+import { toolPath } from '../content/toolSlugs';
 import { DropZone } from './DropZone';
 
 const GENERIC_FAQ = [
@@ -165,7 +166,7 @@ export function ToolView({ tool }: { tool: ToolDef }) {
 
   const sendOn = (out: OutFile, to: string) => {
     setHandoff([{ name: out.name, size: out.bytes.length, type: out.mime, bytes: async () => out.bytes }]);
-    router.push(`/tool/${to}` as any);
+    router.push(toolPath(to) as any);
   };
 
   const seo = TOOL_SEO[tool.id];
@@ -191,7 +192,7 @@ export function ToolView({ tool }: { tool: ToolDef }) {
         </View>
         <T v="h2" style={{ marginTop: 8 }}>You can already do this much</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {TOOLS.filter((x) => x.status === 'ready').slice(0, 8).map((x) => <Chip key={x.id} label={x.name} icon={x.icon} to={`/tool/${x.id}`} />)}
+          {TOOLS.filter((x) => x.status === 'ready').slice(0, 8).map((x) => <Chip key={x.id} label={x.name} icon={x.icon} to={toolPath(x.id)} />)}
         </View>
       </Screen>
     );
@@ -342,7 +343,7 @@ export function ToolView({ tool }: { tool: ToolDef }) {
         <View style={{ gap: 10 }}>
           <T v="h2">More in “{cat?.name}”</T>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {related.map((x) => <Chip key={x.id} label={x.name} icon={x.icon} to={`/tool/${x.id}`} />)}
+            {related.map((x) => <Chip key={x.id} label={x.name} icon={x.icon} to={toolPath(x.id)} />)}
           </View>
         </View>
       ) : null}

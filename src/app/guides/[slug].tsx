@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { GUIDES, guideBySlug } from '../../content/guides';
 import { byId } from '../../tools';
+import { toolPath } from '../../content/toolSlugs';
 import { Btn, Card, Chip, Screen, T } from '../../ui/kit';
 import { SiteFooter } from '../../ui/SiteFooter';
 import { Seo } from '../../lib/seo';
@@ -36,7 +37,7 @@ export default function GuidePage() {
       </Card>
       {tool ? (
         <View style={{ alignSelf: 'flex-start' }}>
-          <Btn label={`Open ${tool.name}`} icon={tool.icon} to={`/tool/${tool.id}`} />
+          <Btn label={`Open ${tool.name}`} icon={tool.icon} to={toolPath(tool.id)} />
         </View>
       ) : null}
       {g.sections.map((s) => (
@@ -57,7 +58,7 @@ export default function GuidePage() {
       <View style={{ gap: 8 }}>
         <T v="h3">Related tools</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {g.related.map((id) => byId(id)).filter(Boolean).map((x) => <Chip key={x!.id} label={x!.name} icon={x!.icon} to={`/tool/${x!.id}`} />)}
+          {g.related.map((id) => byId(id)).filter(Boolean).map((x) => <Chip key={x!.id} label={x!.name} icon={x!.icon} to={toolPath(x!.id)} />)}
           <Chip label="All guides" to="/guides" />
         </View>
       </View>

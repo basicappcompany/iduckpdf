@@ -24,7 +24,7 @@ const problems: string[] = [];
 for (const file of walk(dist)) {
   const rel = relative(dist, file).split(sep).join('/');
   // Template placeholders produced for dynamic routes: not real pages, drop them.
-  if (rel === 'guides/[slug].html' || rel === 'tool/[id].html') {
+  if (rel === 'guides/[slug].html' || rel === '[slug].html') {
     rmSync(file);
     continue;
   }
