@@ -22,7 +22,7 @@ Last updated: 2026-11-09 · Status key: ✅ built and checked · 🟡 built, onl
 | Settings (theme, own AI key) | 🟡 | saving a key stores it and it survives reload; no provider call tried |
 | Donate page + Dodo checkout function | ⏳ | page works and shows a friendly “not open yet” message; function written but **off** until keys exist, see TODO §2 |
 | About page (honest privacy wording) | ✅ | renders |
-| Privacy policy + terms of use pages | ✅ | `/privacy` and `/terms`: indexable, in the sitemap, footer, About and Donate. Copy lives in `src/content/legal.ts` and matches what the site does today. Owner name and a real contact inbox are still to add, TODO §4 |
+| Privacy policy + terms of use pages | ✅ | `/privacy` and `/terms`: indexable, in the sitemap, footer, About and Donate. Copy lives in `src/content/legal.ts` and matches what the site does today. Operator (Basic App Company) shown on both pages, About, footer and Organization data; contact is `hello@iduckpdf.com` via Cloudflare Email Routing (receive only), TODO §1/§4 |
 | Android / iOS apps | 🗺️ | future scope; native stubs in place, TODO §7 |
 
 ## Deployment

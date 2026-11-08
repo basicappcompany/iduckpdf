@@ -5,6 +5,7 @@ import { Btn, Card, Hl, Screen, T } from '../ui/kit';
 import { Logo } from '../ui/Logo';
 import { Seo } from '../lib/seo';
 import { SiteFooter } from '../ui/SiteFooter';
+import { SITE } from '../config';
 
 export default function About() {
   return (
@@ -29,6 +30,11 @@ export default function About() {
         <T muted v="small">
           We are not claiming magic: your browser, extensions and any cloud-synced folders you use are outside our control. For highly sensitive files, use a trusted device.
         </T>
+      </Card>
+
+      <Card style={{ gap: 8 }}>
+        <T v="h2">Who runs it</T>
+        <T>iDuckPDF is made and operated by {SITE.operator}. Questions about the site, privacy or the terms? Email {SITE.feedbackEmail}.</T>
       </Card>
 
       <Card style={{ gap: 8 }}>

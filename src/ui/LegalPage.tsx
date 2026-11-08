@@ -22,7 +22,7 @@ export function LegalPage({ path, doc }: { path: string; doc: LegalDoc }) {
         </View>
       ))}
       <Card style={{ gap: 6 }}>
-        <T v="h3">Contact</T>
+        <T v="h3">Contact {SITE.operator}</T>
         <T muted>
           <a href={`mailto:${SITE.feedbackEmail}`} style={{ color: 'inherit', fontWeight: 700 }}>{SITE.feedbackEmail}</a>
         </T>

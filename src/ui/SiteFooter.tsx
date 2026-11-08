@@ -52,7 +52,7 @@ export function SiteFooter() {
         ))}
       </View>
       <T v="small" muted>
-        © {new Date(SITE.updated).getFullYear()} {SITE.name} · {SITE.domain} · Free PDF tools that run in your browser. Last updated {SITE.updated}.
+        © {new Date(SITE.updated).getFullYear()} {SITE.operator} · {SITE.name} · {SITE.domain} · Free PDF tools that run in your browser. Last updated {SITE.updated}.
       </T>
     </View>
   );

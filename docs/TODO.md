@@ -4,8 +4,8 @@ Anything here is deliberately stubbed so the build is never blocked on a credent
 Tick items off and update `TRACKER.md` when done.
 
 ## 1. Feedback & feature requests (email)
-- [ ] Set the real inbox in `src/config.ts` → `SITE.feedbackEmail` (currently the placeholder `hello@iduckpdf.com`).
-- [ ] Make sure that address actually receives mail (domain email / forwarding).
+- [x] `hello@iduckpdf.com` (`SITE.feedbackEmail`) now forwards to basicappcompany@gmail.com through Cloudflare Email Routing (MX + SPF published 2026-11-09; the catch-all is off, so only `hello@` is accepted). Still to do: send one real test message to it and check it arrives.
+- [ ] *Later:* Gmail "Send mail as" so replies come from `hello@iduckpdf.com`: create an app password at myaccount.google.com/apppasswords, then Gmail Settings → Accounts and Import → Add another email address (SMTP `smtp.gmail.com`, port 587, TLS, username basicappcompany@gmail.com, the app password). Gmail's mail is not covered by the Cloudflare SPF record, so also add `include:_spf.google.com` to the SPF TXT record or replies may land in spam.
 - [ ] *Later:* replace the `mailto:` flow (`src/lib/mail.ts`) with a small serverless endpoint so people without a mail app can submit too.
 
 ## 2. Donate button (Dodo Payments)
@@ -37,7 +37,7 @@ Code is done; it stays **off** until the steps below are complete.
 
 ## 4. Pages and polish still to write
 - [x] Privacy policy and terms pages are live at `/privacy` and `/terms` (copy in `src/content/legal.ts`; bump `SITE.legalUpdated` when you change them).
-- [ ] Read both pages once and confirm they describe you correctly. Then add (a) the name of the person or company running the site and (b) a real contact inbox (§1). If you want a governing-law or jurisdiction clause, tell me which one, or have a lawyer add it: I left it out rather than guess.
+- [ ] Read both pages once and confirm they describe you correctly. Then confirm the contact inbox (§1). The operator name (`SITE.operator` = Basic App Company) is already on both pages, About, the footer and the structured data; change it in `src/config.ts` if the legal name differs. If you want a governing-law or jurisdiction clause, tell me which one, or have a lawyer add it: I left it out rather than guess.
 - [ ] Check Dodo's own requirements for the refund wording (terms promise a refund within 14 days for mistaken tips) and change the terms if Dodo needs something different.
 - [x] Duck app icons, favicon and social-share image are in place (regenerate with `npm run icons`). Still to do: a splash screen for the future mobile apps.
 - [ ] Decide on analytics (none today, and the site sets no cookies).

@@ -196,7 +196,7 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').repl
 const orgLd = {
   '@context': 'https://schema.org',
   '@graph': [
-    { '@type': 'Organization', '@id': `${SITE.url}/#org`, name: SITE.name, url: SITE.url, logo: `${SITE.url}/icons/icon-512.png`, description: SITE.description },
+    { '@type': 'Organization', '@id': `${SITE.url}/#org`, name: SITE.name, url: SITE.url, logo: `${SITE.url}/icons/icon-512.png`, description: SITE.description, parentOrganization: { '@type': 'Organization', name: SITE.operator }, email: SITE.feedbackEmail },
     {
       '@type': 'WebSite',
       '@id': `${SITE.url}/#website`,

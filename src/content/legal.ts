@@ -3,6 +3,8 @@
  * (no accounts, no analytics, no cookies, files processed in the browser, optional tips via Dodo Payments).
  * If any of that changes (analytics, a backend for Office conversions, accounts), update this file in the same change.
  */
+import { SITE } from '../config';
+
 export type LegalSection = { h: string; p: string[] };
 export type LegalDoc = { title: string; seoTitle: string; description: string; intro: string; sections: LegalSection[] };
 
@@ -12,6 +14,10 @@ export const PRIVACY: LegalDoc = {
   description: 'What iDuckPDF does with your files and data: PDFs stay in your browser for most tools, no accounts, no analytics, no cookies, and how AI tools and tips work.',
   intro: 'Short version: you do not need an account, most tools never upload your PDF, we do not run analytics or ad trackers, and we do not set cookies. The details are below so you can check.',
   sections: [
+    {
+      h: 'Who we are',
+      p: [`${SITE.name} (${SITE.domain}) is operated by ${SITE.operator}. In this policy, “we” and “us” mean ${SITE.operator}. You can reach us at the contact address shown at the bottom of this page.`],
+    },
     {
       h: 'Your PDF files',
       p: [
@@ -70,7 +76,7 @@ export const TERMS: LegalDoc = {
   sections: [
     {
       h: 'What the service is',
-      p: ['iDuckPDF is a free collection of PDF tools that mostly run in your web browser. There is no account and no paywall. We may add, change or remove tools at any time.'],
+      p: [`${SITE.name} is a free collection of PDF tools that mostly run in your web browser. There is no account and no paywall. The service is operated by ${SITE.operator}, and “we” and “us” in these terms mean ${SITE.operator}. We may add, change or remove tools at any time.`],
     },
     {
       h: 'Your files and your responsibility',
@@ -105,7 +111,7 @@ export const TERMS: LegalDoc = {
     },
     {
       h: 'Open-source components',
-      p: ['iDuckPDF is built with open-source libraries, including pdf-lib, pdf.js and JSZip, each under its own licence. The iDuckPDF name, logo and original content belong to the site’s owner.'],
+      p: [`${SITE.name} is built with open-source libraries, including pdf-lib, pdf.js and JSZip, each under its own licence. The ${SITE.name} name, logo and original content belong to ${SITE.operator}.`],
     },
     {
       h: 'Changes',
