@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>iDuckPDF: project status</title>
+<script>
+  // Apply the saved theme before first paint so the page never flashes the wrong one.
+  try { var t = localStorage.getItem('iduckpdf-status-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #fffdf5; --surface: #ffffff; --surface-2: #f6f2e2; --text: #17160f; --muted: #6b685b; --border: #e3dcc2; --line: #17160f;
+    --duck: #ffd23f; --duck-ink: #17160f; --focus: #1d6fd8;
+    --done: #1b7a46;    --done-bg: #e1f3e8;
+    --prog: #1f5fbf;    --prog-bg: #e3edfb;
+    --todo: #8a5a00;    --todo-bg: #fbefd2;
+    --wait: #b3261e;    --wait-bg: #fbe5e2;
+    --later: #5d6068;   --later-bg: #eceef0;
+    --you: #b3261e;     --you-bg: #fbe5e2;
+    --me: #0b6b63;      --me-bg: #dcf2ef;
+    --both: #6b3fa0;    --both-bg: #efe6fa;
+    --ext: #5d6068;     --ext-bg: #eceef0;
+    --shadow: 3px 3px 0 var(--line);
+    --soft-shadow: 0 1px 2px rgb(40 30 0 / .08), 0 6px 18px rgb(40 30 0 / .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { color-scheme: dark;
+      --bg: #121212; --surface: #1c1c1e; --surface-2: #26262a; --text: #f5f5f5; --muted: #a1a1a6; --border: #3a3a40; --line: #f5f5f5;
+      --focus: #7fb3ff;
+      --done: #6fdc9a; --done-bg: #17321f; --prog: #8db8ff; --prog-bg: #182a46; --todo: #f2c065; --todo-bg: #352a12;
+      --wait: #ff9a92; --wait-bg: #3d1d1a; --later: #b4b8c0; --later-bg: #2b2d32;
+      --you: #ff9a92; --you-bg: #3d1d1a; --me: #6fdcd0; --me-bg: #143431; --both: #cdaaf7; --both-bg: #2e2340; --ext: #b4b8c0; --ext-bg: #2b2d32;
+      --shadow: 3px 3px 0 #000; --soft-shadow: 0 1px 2px rgb(0 0 0 / .5), 0 8px 20px rgb(0 0 0 / .4); }
+  }
+  :root[data-theme="dark"] { color-scheme: dark;
+    --bg: #121212; --surface: #1c1c1e; --surface-2: #26262a; --text: #f5f5f5; --muted: #a1a1a6; --border: #3a3a40; --line: #f5f5f5;
+    --focus: #7fb3ff;
+    --done: #6fdc9a; --done-bg: #17321f; --prog: #8db8ff; --prog-bg: #182a46; --todo: #f2c065; --todo-bg: #352a12;
+    --wait: #ff9a92; --wait-bg: #3d1d1a; --later: #b4b8c0; --later-bg: #2b2d32;
+    --you: #ff9a92; --you-bg: #3d1d1a; --me: #6fdcd0; --me-bg: #143431; --both: #cdaaf7; --both-bg: #2e2340; --ext: #b4b8c0; --ext-bg: #2b2d32;
+    --shadow: 3px 3px 0 #000; --soft-shadow: 0 1px 2px rgb(0 0 0 / .5), 0 8px 20px rgb(0 0 0 / .4); }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--focus); }
+  code, .mono { font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace; font-size: .9em; }
+  code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 .3em; }
+  button, input, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 1.1rem 4rem; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- top bar ---------- */
+  .topbar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 2px solid var(--line); }
+  .topbar-in { max-width: 1180px; margin: 0 auto; padding: .55rem 1.1rem; display: flex; align-items: center; gap: .8rem; }
+  .brand { font-weight: 900; font-size: 1.05rem; letter-spacing: -.02em; white-space: nowrap; }
+  .brand b { background: var(--duck); color: var(--duck-ink); padding: 0 .35em; border-radius: 6px; }
+  .nav { display: flex; gap: .2rem; overflow-x: auto; flex: 1; scrollbar-width: none; }
+  .nav a { text-decoration: none; color: var(--muted); padding: .25rem .6rem; border-radius: 999px; font-size: .85rem; white-space: nowrap; font-weight: 600; }
+  .nav a:hover { background: var(--surface-2); color: var(--text); }
+  .nav a.on { background: var(--duck); color: var(--duck-ink); }
+  .toggle { border: 2px solid var(--line); background: var(--surface); border-radius: 12px; padding: .3rem .7rem; cursor: pointer; font-weight: 700; box-shadow: 2px 2px 0 var(--line); white-space: nowrap; }
+  .toggle:hover { background: var(--duck); color: var(--duck-ink); }
+
+  /* ---------- header ---------- */
+  header.hero { padding: 1.6rem 0 .6rem; }
+  h1 { margin: 0 0 .3rem; font-size: clamp(1.7rem, 4vw, 2.5rem); letter-spacing: -.03em; line-height: 1.1; }
+  h1 mark { background: var(--duck); color: var(--duck-ink); padding: 0 .2em; border-radius: 8px; }
+  .sub { margin: 0; color: var(--muted); max-width: 78ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin: .9rem 0 0; color: var(--muted); font-size: .88rem; }
+  .meta b { color: var(--text); }
+
+  /* ---------- stat cards ---------- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .8rem; margin: 1.2rem 0; }
+  .stat { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: .8rem 1rem; box-shadow: var(--shadow); text-align: left; cursor: pointer; }
+  .stat:hover { transform: translate(-1px, -1px); }
+  .stat .n { font-size: 2rem; font-weight: 900; line-height: 1; letter-spacing: -.03em; }
+  .stat .l { color: var(--muted); font-size: .82rem; margin-top: .25rem; font-weight: 600; }
+  .stat.hot { background: var(--duck); color: var(--duck-ink); } .stat.hot .l { color: var(--duck-ink); opacity: .8; }
+  .bar { height: 10px; border-radius: 999px; background: var(--surface-2); border: 1.5px solid var(--line); overflow: hidden; display: flex; }
+  .bar i { display: block; height: 100%; }
+  .bar .d { background: var(--done); } .bar .p { background: var(--prog); } .bar .t { background: var(--todo); } .bar .w { background: var(--wait); } .bar .x { background: var(--later); }
+  .overall { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: .9rem 1rem; box-shadow: var(--shadow); margin-bottom: 1rem; }
+  .overall .top { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .5rem; font-weight: 700; }
+  .legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin-top: .55rem; font-size: .8rem; color: var(--muted); }
+  .legend span::before { content: ""; display: inline-block; width: .7rem; height: .7rem; border-radius: 3px; margin-right: .3rem; vertical-align: -1px; background: var(--c); }
+
+  /* ---------- sections ---------- */
+  section { margin: 2rem 0; }
+  h2 { font-size: 1.3rem; margin: 0 0 .25rem; letter-spacing: -.02em; }
+  h2 .count { background: var(--duck); color: var(--duck-ink); border-radius: 999px; font-size: .8rem; padding: .05rem .55rem; vertical-align: .15em; margin-left: .35rem; }
+  .lede { margin: 0 0 1rem; color: var(--muted); max-width: 80ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: .9rem; }
+  .card { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: .9rem 1rem; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: .45rem; }
+  .card h3 { margin: 0; font-size: 1rem; line-height: 1.3; }
+  .card p { margin: 0; color: var(--muted); font-size: .9rem; }
+  .card ol, .card ul { margin: .1rem 0 0; padding-left: 1.2rem; font-size: .88rem; }
+  .card li { margin: .15rem 0; }
+  .card .foot { margin-top: auto; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; font-size: .8rem; color: var(--muted); }
+  .card.you { border-color: var(--you); }
+  .card.me { border-color: var(--me); }
+  .card.later { border-style: dashed; border-color: var(--border); box-shadow: none; }
+  .group-title { margin: 1.1rem 0 .5rem; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 800; }
+
+  /* ---------- pills ---------- */
+  .pill { display: inline-flex; align-items: center; gap: .25rem; border-radius: 999px; padding: .02rem .55rem; font-size: .74rem; font-weight: 800; white-space: nowrap; line-height: 1.5; }
+  .st-done { background: var(--done-bg); color: var(--done); } .st-progress { background: var(--prog-bg); color: var(--prog); }
+  .st-todo { background: var(--todo-bg); color: var(--todo); } .st-waiting { background: var(--wait-bg); color: var(--wait); } .st-later { background: var(--later-bg); color: var(--later); }
+  .ow-you { background: var(--you-bg); color: var(--you); } .ow-me { background: var(--me-bg); color: var(--me); } .ow-both { background: var(--both-bg); color: var(--both); } .ow-external { background: var(--ext-bg); color: var(--ext); } .ow-none { display: none; }
+  .tag { border: 1.5px solid var(--border); border-radius: 999px; padding: 0 .5rem; font-size: .74rem; color: var(--muted); white-space: nowrap; }
+
+  /* ---------- toolbar ---------- */
+  .toolbar { position: sticky; top: 3.2rem; z-index: 10; background: var(--bg); padding: .6rem 0; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; border-bottom: 1.5px solid var(--border); }
+  .search { flex: 1 1 220px; border: 2px solid var(--line); border-radius: 12px; background: var(--surface); padding: .4rem .8rem; min-width: 0; }
+  .chip { border: 2px solid var(--line); border-radius: 999px; background: var(--surface); padding: .22rem .75rem; cursor: pointer; font-weight: 700; font-size: .85rem; }
+  .chip[aria-pressed="true"] { background: var(--duck); color: var(--duck-ink); }
+  .chip small { opacity: .75; font-weight: 600; }
+  .linkbtn { background: none; border: 0; color: var(--focus); cursor: pointer; font-weight: 700; padding: .2rem .4rem; }
+
+  /* ---------- phases ---------- */
+  details.phase { background: var(--surface); border: 2px solid var(--line); border-radius: 16px; margin: .9rem 0; box-shadow: var(--shadow); overflow: clip; }
+  details.phase > summary { list-style: none; cursor: pointer; padding: .85rem 1rem; display: grid; grid-template-columns: auto 1fr auto; gap: .2rem .8rem; align-items: center; }
+  details.phase > summary::-webkit-details-marker { display: none; }
+  .pnum { background: var(--duck); color: var(--duck-ink); font-weight: 900; border-radius: 10px; padding: .15rem .6rem; font-size: .85rem; border: 2px solid var(--line); }
+  .ptitle { font-weight: 900; font-size: 1.05rem; letter-spacing: -.01em; }
+  .pmeta { color: var(--muted); font-size: .82rem; text-align: right; }
+  .psum { grid-column: 2 / 4; color: var(--muted); font-size: .88rem; margin: 0; }
+  .pbar { grid-column: 1 / 4; margin-top: .3rem; }
+  .chev { transition: transform .15s; display: inline-block; margin-right: .2rem; }
+  details[open] > summary .chev { transform: rotate(90deg); }
+  .items { list-style: none; margin: 0; padding: 0 .6rem .7rem; }
+  details.item { border-top: 1.5px solid var(--border); }
+  details.item > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 2.6rem 1fr auto; gap: .5rem; align-items: start; padding: .55rem .4rem; border-radius: 8px; }
+  details.item > summary::-webkit-details-marker { display: none; }
+  details.item > summary:hover { background: var(--surface-2); }
+  .iid { color: var(--muted); font-size: .8rem; font-weight: 700; padding-top: .12rem; }
+  .iname { font-weight: 700; }
+  .iname.done { font-weight: 600; }
+  .itags { display: flex; flex-wrap: wrap; gap: .3rem; justify-content: flex-end; max-width: 330px; }
+  .ibody { padding: .1rem .5rem .8rem 3.2rem; font-size: .9rem; color: var(--muted); display: grid; gap: .4rem; }
+  .ibody p { margin: 0; } .ibody b { color: var(--text); }
+  .ibody ol { margin: 0; padding-left: 1.2rem; color: var(--text); } .ibody li { margin: .15rem 0; }
+  .hidden { display: none !important; }
+  .empty { padding: 1rem; color: var(--muted); text-align: center; }
+
+  /* ---------- scorecard / tables ---------- */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .8rem; }
+  .kpi { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: .8rem 1rem; box-shadow: var(--shadow); }
+  .kpi .v { font-size: 1.5rem; font-weight: 900; letter-spacing: -.02em; }
+  .kpi .k { font-weight: 700; } .kpi .d { color: var(--muted); font-size: .82rem; }
+  .tablewrap { overflow-x: auto; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  th, td { text-align: left; padding: .45rem .7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--surface-2); font-size: .76rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); position: sticky; top: 0; }
+  tr:last-child td { border-bottom: 0; }
+  .timeline { list-style: none; margin: 0; padding: 0 0 0 1.1rem; border-left: 3px solid var(--line); display: grid; gap: .9rem; }
+  .timeline li { position: relative; } .timeline li::before { content: ""; position: absolute; left: -1.62rem; top: .35rem; width: .8rem; height: .8rem; border-radius: 50%; background: var(--duck); border: 2px solid var(--line); }
+  .timeline .d { font-weight: 800; font-size: .82rem; color: var(--muted); } .timeline p { margin: .1rem 0 0; }
+  .howto { background: var(--surface-2); border: 2px dashed var(--border); border-radius: 14px; padding: .8rem 1rem; color: var(--muted); font-size: .88rem; }
+  .howto b { color: var(--text); }
+  footer { color: var(--muted); font-size: .82rem; margin-top: 2.5rem; border-top: 1.5px solid var(--border); padding-top: 1rem; }
+
+  @media (max-width: 640px) {
+    details.item > summary { grid-template-columns: 2.2rem 1fr; } .itags { grid-column: 2; justify-content: flex-start; max-width: none; }
+    .ibody { padding-left: .5rem; } .pmeta { grid-column: 2 / 4; text-align: left; } .topbar-in { flex-wrap: wrap; } .nav { order: 3; flex: 1 0 100%; padding-bottom: .2rem; } .brand { flex: 1; }
+  }
+  @media print { .topbar, .toolbar, .toggle { display: none; } details > * { display: block !important; } body { background: #fff; color: #000; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .stat:hover { transform: none; } }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+  <span class="brand">🦆 <b>iDuckPDF</b> status</span>
+  <nav class="nav" id="nav" aria-label="Sections"></nav>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour theme"><span id="themeIcon">🖥️</span> <span id="themeLabel">System</span></button>
+</div></div>
+
+<main class="wrap">
+  <header class="hero">
+    <h1>Where <mark>iDuckPDF</mark> stands</h1>
+    <p class="sub">Every phase and every item: what is done, what is next, what only you can do, and what I can do on my own. Click a count to filter, click an item to see the details and exact steps.</p>
+    <div class="meta">
+      <span>Last verified <b id="verified"></b></span>
+      <span>Live: <a id="siteLink" href="https://iduckpdf.com" target="_blank" rel="noopener">iduckpdf.com</a></span>
+      <span>Repo: <a id="repoLink" target="_blank" rel="noopener"></a></span>
+      <span>Release flow: <b>branch, pull request, merge on green CI</b></span>
+    </div>
+  </header>
+
+  <div class="overall" id="overall"></div>
+  <div class="stats" id="stats"></div>
+
+  <section id="you" data-nav="Needs you">
+    <h2>Pending from you <span class="count" id="youCount"></span></h2>
+    <p class="lede">Things I cannot do for you: accounts, secrets, decisions and anything that needs your sign-in. The number counts what you can act on today, most useful first. Where I can do the mechanical part, the card says so.</p>
+    <div id="youGroups"></div>
+  </section>
+
+  <section id="me" data-nav="I can do">
+    <h2>What I can do on my own <span class="count" id="meCount"></span></h2>
+    <p class="lede">No input needed from you. Each one goes on its own branch and pull request and is merged when CI is green, as agreed. Ranked by value for the effort.</p>
+    <div class="grid" id="meGrid"></div>
+  </section>
+
+  <section id="phases" data-nav="Phases">
+    <h2>All phases and items</h2>
+    <p class="lede">The full list, nothing hidden. Filter by who owns it or by state.</p>
+    <div class="toolbar" role="search">
+      <input class="search" id="q" type="search" placeholder="Search items, e.g. sitemap, Dodo, OCR…" aria-label="Search items">
+      <span id="chips" role="group" aria-label="Filter"></span>
+      <button class="linkbtn" id="expand" type="button">Expand all</button>
+      <button class="linkbtn" id="collapse" type="button">Collapse all</button>
+    </div>
+    <div id="phaseList"></div>
+  </section>
+
+  <section id="quality" data-nav="Scorecard">
+    <h2>Quality scorecard</h2>
+    <p class="lede">Measured, not estimated. Mobile Lighthouse uses throttled CPU and network, which is deliberately harsh.</p>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section id="tools" data-nav="Tools">
+    <h2>Every tool and its URL <span class="count" id="toolCount"></span></h2>
+    <p class="lede">Generated from the tool registry, so it cannot drift. Every built tool lives at a keyword URL that contains “pdf”; the old <code>/tool/&lt;id&gt;</code> addresses redirect with a 301.</p>
+    <div class="toolbar"><input class="search" id="tq" type="search" placeholder="Filter tools or URLs…" aria-label="Filter tools"><span id="tchips" role="group" aria-label="Tool state"></span></div>
+    <div class="tablewrap"><table><thead><tr><th>Tool</th><th>Category</th><th>URL</th><th>State</th></tr></thead><tbody id="toolRows"></tbody></table></div>
+  </section>
+
+  <section id="decisions" data-nav="Decisions">
+    <h2>Decisions on record</h2>
+    <p class="lede">Settled, so nobody has to ask again.</p>
+    <div class="grid" id="decisionGrid"></div>
+  </section>
+
+  <section id="timeline" data-nav="Shipped when">
+    <h2>What shipped when</h2>
+    <ol class="timeline" id="timelineList"></ol>
+  </section>
+
+  <section>
+    <div class="howto"><b>Keeping this page current.</b> It is <code>docs/status.html</code>, a single file with no external requests, so it opens straight from disk. Item data lives in the <code>PHASES</code> array near the bottom; the tool table is rewritten by <code>npm run status</code> (also part of <code>npm run meta</code>). Update it in the same pull request that changes the work.</div>
+  </section>
+
+  <footer>iDuckPDF · iduckpdf.com · operated by Basic App Company · this page is internal and not part of the website.</footer>
+</main>
+
+<script>
+/* ===================================================================================================================
+   DATA. Edit here. States: done | progress | todo | waiting | later.  Owners: me | you | both | external | none.
+   "me" = I can do it with no input. "you" = only you can. "both" = I do the mechanics, you sign in / approve / supply a secret.
+   =================================================================================================================== */
+const VERIFIED = "9 Nov 2026";
+const REPO = "https://github.com/basicappcompany/iduckpdf";
+
+/* GENERATED:TOOLS:START (scripts/gen-status.ts: do not edit by hand) */
+const TOOLS_DATA = [{"id":"merge","name":"Merge PDFs","icon":"🧩","category":"Join & cut","slug":"merge-pdf","status":"ready"},{"id":"weave","name":"Weave two PDFs","icon":"🪢","category":"Join & cut","slug":"interleave-pdf","status":"ready"},{"id":"split","name":"Split a PDF","icon":"✂️","category":"Join & cut","slug":"split-pdf","status":"ready"},{"id":"extract-pages","name":"Pull out pages","icon":"🧲","category":"Join & cut","slug":"extract-pdf-pages","status":"ready"},{"id":"remove-pages","name":"Delete pages","icon":"🗑️","category":"Join & cut","slug":"remove-pdf-pages","status":"ready"},{"id":"reorder","name":"Reorder pages","icon":"🔀","category":"Arrange & repair","slug":"reorder-pdf-pages","status":"ready"},{"id":"reverse","name":"Flip page order","icon":"↩️","category":"Arrange & repair","slug":"reverse-pdf-pages","status":"ready"},{"id":"rotate","name":"Rotate pages","icon":"🔄","category":"Arrange & repair","slug":"rotate-pdf","status":"ready"},{"id":"insert-blank","name":"Add blank pages","icon":"📄","category":"Arrange & repair","slug":"add-blank-page-to-pdf","status":"ready"},{"id":"resize","name":"Change page size","icon":"📏","category":"Arrange & repair","slug":"resize-pdf","status":"ready"},{"id":"crop","name":"Trim margins","icon":"📐","category":"Arrange & repair","slug":"crop-pdf","status":"ready"},{"id":"n-up","name":"Print several per sheet","icon":"🧱","category":"Arrange & repair","slug":"multiple-pages-per-sheet-pdf","status":"ready"},{"id":"repair","name":"Repair a PDF","icon":"🩹","category":"Arrange & repair","slug":"repair-pdf","status":"ready"},{"id":"page-numbers","name":"Number the pages","icon":"🔢","category":"Stamp & annotate","slug":"add-page-numbers-to-pdf","status":"ready"},{"id":"text-watermark","name":"Text watermark","icon":"💧","category":"Stamp & annotate","slug":"add-watermark-to-pdf","status":"ready"},{"id":"image-watermark","name":"Logo or image stamp","icon":"🖼️","category":"Stamp & annotate","slug":"add-logo-to-pdf","status":"ready"},{"id":"headers-footers","name":"Headers & footers","icon":"🏷️","category":"Stamp & annotate","slug":"add-header-and-footer-to-pdf","status":"ready"},{"id":"add-text","name":"Write on a PDF","icon":"✍️","category":"Stamp & annotate","slug":"add-text-to-pdf","status":"ready"},{"id":"images-to-pdf","name":"Photos to PDF","icon":"🖼️","category":"Make & extract","slug":"image-to-pdf","status":"ready"},{"id":"scan-to-pdf","name":"Scan to PDF","icon":"📱","category":"Make & extract","slug":"scan-to-pdf","status":"ready"},{"id":"text-to-pdf","name":"Text or Markdown to PDF","icon":"📝","category":"Make & extract","slug":"text-to-pdf","status":"ready"},{"id":"pdf-to-images","name":"PDF to pictures","icon":"📸","category":"Make & extract","slug":"pdf-to-image","status":"ready"},{"id":"extract-text","name":"Copy text out","icon":"🔤","category":"Make & extract","slug":"pdf-to-text","status":"ready"},{"id":"compress","name":"Make it smaller","icon":"🪶","category":"Shrink & restyle","slug":"compress-pdf","status":"ready"},{"id":"restyle","name":"Grayscale & dark mode","icon":"🌗","category":"Shrink & restyle","slug":"grayscale-pdf","status":"ready"},{"id":"inspect","name":"Inspect a PDF","icon":"🔬","category":"Privacy & cleanup","slug":"inspect-pdf","status":"ready"},{"id":"properties","name":"Clean & edit properties","icon":"🧼","category":"Privacy & cleanup","slug":"edit-pdf-metadata","status":"ready"},{"id":"flatten","name":"Flatten forms","icon":"🧱","category":"Privacy & cleanup","slug":"flatten-pdf","status":"ready"},{"id":"redact","name":"Black out text","icon":"⬛","category":"Privacy & cleanup","slug":"redact-pdf","status":"ready"},{"id":"compare","name":"Spot the differences","icon":"🆚","category":"Compare & ask","slug":"compare-pdf","status":"ready"},{"id":"summarize","name":"Summarise with AI","icon":"✨","category":"Compare & ask","slug":"summarize-pdf","status":"ready"},{"id":"ask","name":"Ask your PDF","icon":"💬","category":"Compare & ask","slug":"chat-with-pdf","status":"ready"},{"id":"lock","name":"Add a password","icon":"🔒","category":"On the roadmap","slug":"password-protect-pdf","status":"soon"},{"id":"unlock","name":"Remove a password","icon":"🔓","category":"On the roadmap","slug":"unlock-pdf","status":"soon"},{"id":"ocr","name":"Read scans (OCR)","icon":"👁️","category":"On the roadmap","slug":"ocr-pdf","status":"soon"},{"id":"sign","name":"Sign a PDF","icon":"🖊️","category":"On the roadmap","slug":"sign-pdf","status":"soon"},{"id":"fill","name":"Fill in a form","icon":"📋","category":"On the roadmap","slug":"fill-pdf-form","status":"soon"},{"id":"word-to-pdf","name":"Word to PDF","icon":"📄","category":"On the roadmap","slug":"word-to-pdf","status":"soon"},{"id":"pdf-to-word","name":"PDF to Word","icon":"📝","category":"On the roadmap","slug":"pdf-to-word","status":"soon"},{"id":"excel-to-pdf","name":"Excel to PDF","icon":"📊","category":"On the roadmap","slug":"excel-to-pdf","status":"soon"},{"id":"pdf-to-excel","name":"PDF to Excel","icon":"📈","category":"On the roadmap","slug":"pdf-to-excel","status":"soon"},{"id":"pptx-to-pdf","name":"PowerPoint to PDF","icon":"📽️","category":"On the roadmap","slug":"powerpoint-to-pdf","status":"soon"},{"id":"html-to-pdf","name":"Web page to PDF","icon":"🌐","category":"On the roadmap","slug":"html-to-pdf","status":"soon"}];
+/* GENERATED:TOOLS:END */
+
+const I = (id, name, state, owner, o = {}) => Object.assign({ id, name, state, owner }, o);
+
+const PHASES = [
+  { num: 1, name: "Product core", summary: "The app, the PDF engine and every tool that exists today. Built once, shared by every page.", items: [
+    I("1.1", "Expo web-first app with statically pre-rendered pages", "done", "none", { when: "8 Nov", note: "One Expo codebase; `npm run export:web` builds `dist/` with real HTML for every page. Android and iOS are future scope (phase 8)." }),
+    I("1.2", "PDF engine: pdf-lib, pdf.js, JSZip, in-browser canvas tools", "done", "none", { when: "8 Nov", note: "Most tools run entirely in the browser tab; only the two AI tools send text out (with the user's own key)." }),
+    I("1.3", "32 tools across 7 categories", "done", "none", { when: "8 Nov", note: "Join and cut, arrange and repair, stamp and annotate, make and extract, shrink and restyle, privacy and cleanup, compare and ask. See the tool table below." }),
+    I("1.4", "Generic tool screen: drop zone, reorder, options, progress, results, ZIP, copy text", "done", "none", { when: "8 Nov", note: "Download, drag and drop and a real two-file merge are covered by the browser test." }),
+    I("1.5", "Chain tools: send a result into the next tool", "done", "none", { when: "9 Nov", note: "Verified in a browser: the chip opens the next tool with the file already loaded." }),
+    I("1.6", "Home, sidebar and drawer, Ctrl K palette, keyword helper chat, recent tools", "done", "none", { when: "8 Nov" }),
+    I("1.7", "Light, dark and system theme; settings; bring-your-own AI key", "done", "none", { when: "8 Nov", note: "The key is stored only in the browser and sent only to the provider the user picked." }),
+    I("1.8", "Feedback and feature requests by email (mailto)", "done", "none", { when: "8 Nov", note: "Sends nothing until the visitor presses send in their own mail app. The inbox is hello@iduckpdf.com (phase 3)." }),
+  ]},
+  { num: 2, name: "Quality, speed and accessibility", summary: "Measured and fixed on 9 November: bundle size, layout shift, theme flash, accessibility and tests.", items: [
+    I("2.1", "PDF engine out of the first load (lazy chunk)", "done", "none", { when: "9 Nov", note: "First-load JavaScript 572 KB to 338 KB gzipped. The engine (about 247 KB gz) loads on the first mouse move, touch, key or scroll on a tool page, and never on home or guides." }),
+    I("2.2", "Layout shift on phones: 1.0 to 0", "done", "none", { when: "9 Nov", note: "Pre-rendered pages showed the desktop layout first and jumped when the app started. Sidebar, header labels, heading sizes and gutters now follow the screen width through CSS from the first paint. Checked at 4 widths on 8 pages." }),
+    I("2.3", "No flash of the light theme for dark-mode visitors", "done", "none", { when: "9 Nov", note: "Colours are CSS variables switched before first paint by the system setting or the saved choice. Checked with JavaScript off and with 5 combinations of system and saved theme, on the live site." }),
+    I("2.4", "Accessibility 100 on Lighthouse", "done", "none", { when: "9 Nov", note: "Main landmark, heading order, accessible names matching visible text, contrast on the green pill." }),
+    I("2.5", "Equal-size cards", "done", "none", { when: "9 Nov", note: "A short last row used to stretch its cards (that is why Copy text out, Write on a PDF and Delete pages looked big). Cards are now equal-width grid columns." }),
+    I("2.6", "Upload box: centred, whole area clickable", "done", "none", { when: "9 Nov" }),
+    I("2.7", "Automated checks", "done", "none", { when: "9 Nov", note: "Typecheck, 31 engine tests, a crawler-style SEO audit (67 pages, 49 indexable), 28 browser checks (Playwright). All run on every pull request except the browser checks, which run locally." }),
+    I("2.8", "Browser checks in CI", "todo", "me", { prio: 2, effort: "~1 h", note: "Add the Playwright smoke test to the pull-request workflow so layout shift, theme flash and the engine-loading rules are enforced automatically. Needs a Chromium download in CI (about a minute)." }),
+    I("2.9", "Mobile performance above 90", "later", "me", { effort: "1-3 days", note: "Scores 79-88 today. What is left is the framework: expo-router 444 KB, react-native-web 310 KB, react-dom 204 KB before compression. Getting further means a lighter router, which is a large and risky refactor. Worth it only if rankings need it." }),
+  ]},
+  { num: 3, name: "Hosting, domain and delivery", summary: "How the site reaches people and how changes reach the site.", items: [
+    I("3.1", "GitHub repository basicappcompany/iduckpdf (private)", "done", "none", { when: "8 Nov" }),
+    I("3.2", "Cloudflare Pages deployment", "done", "none", { when: "8 Nov", note: "Pages Functions deployed with the site; `/api/donate` answers 503 while donations are off." }),
+    I("3.3", "pages.dev address kept out of search results", "done", "none", { when: "8 Nov" }),
+    I("3.4", "iduckpdf.com on Cloudflare, HTTPS, apex and www serving", "done", "none", { when: "8 Nov" }),
+    I("3.5", "CI on every pull request; merging to main deploys", "done", "none", { when: "9 Nov", note: "Typecheck, engine tests, build and SEO audit on every PR. Only a push to main deploys (a PR never does). The Cloudflare token is stored as a GitHub secret." }),
+    I("3.6", "Workflow rule: branch, PR, merge on green CI, fix on the same PR", "done", "none", { when: "9 Nov", note: "Saved to memory so it applies every session." }),
+    I("3.7", "hello@iduckpdf.com receives mail (Cloudflare Email Routing)", "done", "none", { when: "9 Nov", note: "Forwards to basicappcompany@gmail.com. Catch-all is off, so only hello@ is accepted. MX and SPF are published." }),
+    I("3.8", "Send a real test email to hello@iduckpdf.com", "todo", "you", { prio: 1, effort: "1 min", note: "Routing and DNS are verified, but nobody has sent a message through it yet.", steps: ["From any other email account, send a message to hello@iduckpdf.com.", "Check it arrives in basicappcompany@gmail.com (spam folder too).", "Tell me and I will mark it done. Cloudflare's Activity log under Email Routing also shows it."] }),
+    I("3.9", "Redirect www.iduckpdf.com to iduckpdf.com (301)", "todo", "both", { prio: 2, effort: "5 min", note: "Both addresses serve the site today; canonical tags already point at the apex, so this is tidiness and avoids split signals.", steps: ["I can create the Cloudflare Redirect Rule through Chrome. Cloudflare settings changes sometimes need you to approve the action.", "Alternative: Cloudflare dashboard, Rules, Redirect Rules, from `www.iduckpdf.com/*` to `https://iduckpdf.com/${1}`, 301, preserve query."] }),
+    I("3.10", "SSL/TLS mode Full, and Always Use HTTPS", "todo", "both", { prio: 2, effort: "3 min", note: "Same situation as 3.9.", steps: ["Cloudflare dashboard, SSL/TLS, Overview: set Full.", "SSL/TLS, Edge Certificates: turn on Always Use HTTPS."] }),
+    I("3.11", "Reply from hello@iduckpdf.com (Gmail Send mail as)", "later", "you", { effort: "5 min", note: "Receiving works; this only matters when you want to reply as hello@. I cannot create or enter an app password, so this one is yours.", steps: ["Open myaccount.google.com/apppasswords as basicappcompany@gmail.com and create an app password.", "Gmail, Settings, Accounts and Import, Add another email address: hello@iduckpdf.com, SMTP smtp.gmail.com, port 587, TLS, username basicappcompany@gmail.com, the app password.", "Confirm via the link that arrives at hello@.", "Then I add Google's SPF (`include:_spf.google.com`) to the DNS record so replies do not land in spam."] }),
+    I("3.12", "Lockfile uses the public npm registry", "done", "none", { when: "8 Nov", note: "This machine's npm points at a private registry that writes its URLs into package-lock.json. If CI ever fails at `npm ci`, replace those URLs with https://registry.npmjs.org/." }),
+    I("3.13", "Update GitHub Actions versions (Node 20 deprecation notice)", "todo", "me", { prio: 3, effort: "15 min", note: "CI warns that checkout@v4 and setup-node@v4 target a deprecated Node runtime and that ubuntu-latest is moving to Ubuntu 26. Harmless today; best fixed before it becomes an error." }),
+  ]},
+  { num: 4, name: "Trust and legal", summary: "The pages a payment provider, a search engine and a careful visitor look for.", items: [
+    I("4.1", "Privacy policy and terms of use pages", "done", "none", { when: "9 Nov", note: "`/privacy` and `/terms`: indexable, in the sitemap, footer, About and Donate. Copy lives in `src/content/legal.ts` and matches what the site does." }),
+    I("4.2", "Operator named: Basic App Company", "done", "none", { when: "9 Nov", note: "On both policy pages, About, the footer and the structured data. One setting (`SITE.operator`) to change." }),
+    I("4.3", "Analytics disclosed in the privacy policy", "done", "none", { when: "9 Nov", note: "Cloudflare Web Analytics (cookie-free page views) is on and now described. Decision recorded below." }),
+    I("4.4", "Read both policy pages and confirm they describe you correctly", "todo", "you", { prio: 1, effort: "10 min", note: "I wrote them from what the site actually does; only you know if anything about the business is missing or wrong.", steps: ["Open iduckpdf.com/privacy and iduckpdf.com/terms.", "Note anything wrong or missing and tell me. I fix it on a branch."] }),
+    I("4.5", "Decide governing law and jurisdiction clause", "todo", "you", { prio: 2, effort: "decision", decision: true, note: "Left out on purpose: I will not guess a jurisdiction. Tell me the country or state, or have a lawyer add the clause. Not required to launch, but payment providers and larger customers like it." }),
+    I("4.6", "Confirm the full legal name of the operator", "todo", "you", { prio: 3, effort: "1 min", decision: true, note: "Pages say 'Basic App Company'. If the registered name differs (for example '... LLP'), tell me; it changes in one place." }),
+    I("4.7", "Check the 14-day refund wording against Dodo's requirements", "todo", "you", { prio: 2, effort: "10 min", note: "The terms promise a refund within 14 days for mistaken tips. Dodo, as merchant of record, may require different wording. Needed before real money.", steps: ["In Dodo's dashboard or docs, find the refund and terms requirements for sellers.", "Tell me what differs; I change the terms on a branch."] }),
+    I("4.8", "Professional legal review", "later", "external", { effort: "days", note: "Optional. Worth it before taking meaningful money or signing business customers." }),
+  ]},
+  { num: 5, name: "Search, AI answers and discovery (SEO, GEO, AEO)", summary: "Being found: in search engines, in AI assistants' answers and in directories. Rankings can never be guaranteed; these are the things that move them.", items: [
+    I("5.1", "Every page pre-rendered to real HTML, one h1, crawlable links", "done", "none", { when: "8 Nov", note: "Checked with JavaScript off and by the audit on every build." }),
+    I("5.2", "Unique title, description and canonical on every page", "done", "none", { when: "8 Nov" }),
+    I("5.3", "Structured data", "done", "none", { when: "8 Nov", note: "WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, CollectionPage, AboutPage, Organization (with parent organisation and email), WebSite with SearchAction." }),
+    I("5.4", "Answer-first copy, steps, uses and FAQ for all 32 tools; 9 guides", "done", "none", { when: "8 Nov", note: "Written originally, not copied from other sites." }),
+    I("5.5", "sitemap.xml, robots.txt, llms.txt, llms-full.txt", "done", "none", { when: "9 Nov", note: "49 URLs. Search and AI crawlers are explicitly welcome." }),
+    I("5.6", "Keyword URLs that contain 'pdf', with 301 redirects from the old ones", "done", "none", { when: "9 Nov", note: "`/merge-pdf`, `/compress-pdf`, `/pdf-to-image`, `/password-protect-pdf`; the hub is `/pdf-tools`. The build fails if any tool slug lacks 'pdf', is duplicated or collides with a route. Redirects verified live." }),
+    I("5.7", "Google Search Console: verified domain, sitemap submitted", "done", "none", { when: "8 Nov", note: "The verification TXT record in Cloudflare DNS must never be deleted." }),
+    I("5.8", "Request indexing for the new key URLs", "todo", "me", { prio: 1, effort: "10 min", note: "I tried on 9 Nov: Google answered 'Quota exceeded' (about 10 manual requests a day; earlier requests used it up). I retry from 10 Nov through Chrome: /pdf-tools, /merge-pdf, /compress-pdf, /split-pdf, /pdf-to-image. The sitemap lists only the new URLs, so Google also finds them without this." }),
+    I("5.9", "Bing Webmaster Tools: import from Search Console", "todo", "both", { prio: 1, effort: "10 min", note: "Matters most for AI visibility: Bing feeds ChatGPT search, Copilot and others. Needs you signed in to Bing.", steps: ["Sign in at bing.com/webmasters with the account you want to own it.", "Choose Import from Google Search Console and approve.", "Or sign in in Chrome and tell me; I click through the import."] }),
+    I("5.10", "IndexNow pings for Bing, Yandex and others", "todo", "me", { prio: 3, effort: "1 h", note: "Adds a key file and a small script that tells participating engines when pages change. It contacts outside services, so I will ask for your go-ahead first." }),
+    I("5.11", "Cloudflare Web Analytics on, to see search and AI referrals", "done", "none", { when: "9 Nov", note: "Figures: Cloudflare dashboard, Analytics and Logs, Web Analytics, iduckpdf." }),
+    I("5.12", "Maker or organisation on the About page, plus sameAs links", "todo", "you", { prio: 2, effort: "10 min", decision: true, note: "Search engines and AI assistants trust pages with a real, checkable maker. The operator name is there; add profile links (GitHub, X, LinkedIn, Product Hunt) and I add them to the structured data.", steps: ["Send me the public profile URLs you are happy to list."] }),
+    I("5.13", "Make the GitHub repository public, with a good README and topics", "todo", "you", { prio: 2, effort: "decision", decision: true, note: "A public repo is a real backlink and a trust signal. I prepare the README and topics; you flip Settings, Danger zone, Change visibility. Check first that nothing private is in the history (no secrets are committed)." }),
+    I("5.14", "Backlinks and mentions: Product Hunt, AlternativeTo, free-tools lists, a Show HN post", "todo", "you", { prio: 2, effort: "1-2 h", note: "The main ranking driver, and the one thing code cannot do. I draft the listing text, screenshots and descriptions; you post from your accounts. No bought links, no spamming communities.", steps: ["Tell me when you are ready and which sites; I write each listing.", "You create the accounts and submit."] }),
+    I("5.15", "New how-to guide aimed at a real search question, about monthly", "todo", "me", { prio: 2, effort: "~1 h each", note: "Each guide targets one query people actually type, links to the tool, and carries FAQ data. Ask me for the next one any time." }),
+    I("5.16", "'Alternative to X' comparison pages", "later", "me", { effort: "~2 h each", note: "They rank well, but only with claims about other products that we can back up. Later, carefully." }),
+    I("5.17", "Test AI visibility with real questions", "later", "both", { effort: "30 min", note: "A few weeks after indexing: ask ChatGPT, Gemini, Perplexity and Copilot things like 'best free PDF merger that does not upload files', note whether iDuckPDF appears, and write a guide for any gaps. I can run the questions in Chrome if you are signed in." }),
+    I("5.18", "Re-run Lighthouse after the URL change", "todo", "me", { prio: 2, effort: "15 min", note: "Last live scores (before the URL change): home 84, a tool page 79, a guide 88; accessibility 100 and SEO 100 everywhere." }),
+  ]},
+  { num: 6, name: "Donations", summary: "Optional tips through Dodo Payments. The code is finished and switched off until the accounts and keys exist.", items: [
+    I("6.1", "Donate page and checkout function (Dodo Payments)", "done", "none", { when: "8 Nov", note: "Pay-what-you-want checkout session in `functions/api/donate.ts`. `DONATE.enabled` is false; the page shows a friendly 'not open yet' message and the function answers 503." }),
+    I("6.2", "Create a Dodo Payments account and use test mode first", "todo", "you", { prio: 2, effort: "15 min", steps: ["Create the account at Dodo Payments and complete any verification they ask for.", "Stay in test mode until 6.7."] }),
+    I("6.3", "Create a one-time Pay What You Want product (USD, minimum $1)", "todo", "you", { prio: 2, effort: "5 min", note: "I can guide you through the dashboard screens.", steps: ["Dashboard, Products, create a one-time product with Pay What You Want enabled, minimum $1.", "Copy its id (pdt_...)."] }),
+    I("6.4", "Create an API key and add the secrets in Cloudflare Pages", "todo", "you", { prio: 2, effort: "10 min", note: "I cannot type or handle keys, so this is yours. Never commit them.", steps: ["Dodo: Developer, API Keys: create a test key.", "Cloudflare Pages, iduckpdf, Settings, Environment variables: add `DODO_PAYMENTS_API_KEY` (secret) and `DODO_DONATION_PRODUCT_ID`.", "Optional: `DODO_API_BASE` (default is the test URL) and `SITE_URL`."] }),
+    I("6.5", "Switch donations on and test end to end with Dodo's test card", "waiting", "me", { prio: 2, effort: "30 min", blockedBy: "6.2 to 6.4", note: "I flip `DONATE.enabled`, open a PR, and test the checkout and the return page after merge." }),
+    I("6.6", "Rate-limit /api/donate (Cloudflare WAF rule)", "todo", "both", { prio: 3, effort: "10 min", note: "So nobody can spam checkout sessions. I can create the rule through Chrome with your approval." }),
+    I("6.7", "Go live: live key and product, live API base URL, a small real payment", "waiting", "you", { effort: "30 min", blockedBy: "6.5, 4.7", note: "Only after the refund wording is confirmed." }),
+  ]},
+  { num: 7, name: "New tools (the roadmap)", summary: "Eleven tools are announced but not built. None of the first five is blocked by anything on your side.", items: [
+    I("7.1", "Sign a PDF (draw, type or upload a signature, place it)", "todo", "me", { prio: 1, effort: "1-2 days", note: "Highest-demand missing tool. Needs a drawing pad and a drag-to-place editor; no external dependencies. I will outline the options and cost before starting." }),
+    I("7.2", "Fill in a form", "todo", "me", { prio: 2, effort: "1-2 days", note: "Form-field editor on top of pdf-lib; shares the page viewer with Sign." }),
+    I("7.3", "Add a password (encrypt)", "todo", "me", { prio: 2, effort: "2-3 days", note: "pdf-lib cannot encrypt, so this needs an encryption engine compiled to WebAssembly, loaded lazily." }),
+    I("7.4", "Remove a password (decrypt)", "todo", "me", { prio: 2, effort: "1-2 days", note: "Shares the engine from 7.3. The user must supply the password." }),
+    I("7.5", "Read scans (OCR)", "todo", "me", { prio: 3, effort: "~2 days", note: "In-browser OCR with language packs, which are large downloads, so loaded on demand and cached." }),
+    I("7.6", "Word, Excel and PowerPoint to and from PDF; web page to PDF", "waiting", "you", { effort: "weeks", decision: true, blockedBy: "a backend decision", note: "Needs a server (or a heavy engine). Building one means files leave the device, which changes the privacy promise and the policy. You decide whether to want it." }),
+  ]},
+  { num: 8, name: "Mobile apps (future)", summary: "Android and iPhone apps from the same codebase. Not needed for the website.", items: [
+    I("8.1", "Apple Developer ($99 a year) and Google Play ($25 once) accounts", "later", "you", { effort: "1-2 days", note: "Only needed when publishing." }),
+    I("8.2", "Implement the native stubs (file picking, rendering, imaging, drop zone, logo)", "later", "me", { effort: "1-2 weeks", note: "`io.native.ts`, `render.native.ts`, `imaging.native.ts`, `DropZone.native.tsx`, `Logo.native.tsx`; add the Expo document-picker, file-system and sharing packages; render pages through a WebView-hosted pdf.js." }),
+    I("8.3", "EAS Build and store listings", "later", "both", { effort: "days", note: "Needs the accounts from 8.1." }),
+  ]},
+  { num: 9, name: "Verification and upkeep", summary: "Things that keep the site healthy after launch, and the checks that are still open.", items: [
+    I("9.1", "Visual pass in Chromium: light and dark, phone and desktop", "done", "none", { when: "9 Nov", note: "13 pages, no overflow, no console errors." }),
+    I("9.2", "Firefox and Safari (WebKit) checks", "todo", "me", { prio: 2, effort: "~30 min", note: "Playwright can run Firefox and WebKit headless after a browser download of a few hundred MB. A real iPhone check is still better, and is yours (9.3)." }),
+    I("9.3", "Check the site on a real iPhone and a real Android phone", "todo", "you", { prio: 3, effort: "10 min", note: "Open iduckpdf.com, merge two PDFs, download the result, toggle dark mode. Tell me anything odd." }),
+    I("9.4", "Real AI provider calls (OpenAI, Anthropic, Gemini) with a real key", "todo", "you", { prio: 3, effort: "15 min", note: "Only the missing-key path has been tried. I cannot enter API keys. You add a key in Settings and run both AI tools; I can watch the result and fix what breaks. Model names in `AI_DEFAULTS` may need updating.", steps: ["Open Settings, choose a provider, paste a key with a low spending limit.", "Run Summarise with AI and Ask your PDF on a small PDF.", "Tell me what happened."] }),
+    I("9.5", "Re-run the remaining browser-only tools on the live site", "todo", "me", { prio: 2, effort: "30 min", note: "Photos to PDF, Scan, Grayscale, Redact, Compare and Image stamp. PDF to pictures, Copy text, Compress, Watermark and Inspect were re-run after the bundle split." }),
+    I("9.6", "A mail app opens from the feedback and request links", "todo", "you", { prio: 3, effort: "2 min", note: "The message is built and the Copy fallback works; opening your real mail app is the only part nobody tested." }),
+    I("9.7", "Huge files on a phone", "later", "you", { effort: "10 min", note: "A 59 MB PDF merged and compressed fine in headless Chromium; phones have less memory." }),
+    I("9.8", "Weekly live-site health check (scheduled)", "todo", "both", { prio: 3, effort: "30 min", note: "A scheduled run that fetches the key pages, checks status codes, redirects, sitemap and Lighthouse, and flags regressions. Needs your OK to create the schedule." }),
+    I("9.9", "Security and dependency review", "todo", "me", { prio: 3, effort: "~1 h", note: "Run the review skills over the code and update vulnerable packages, on a branch." }),
+  ]},
+];
+
+const DECISIONS = [
+  ["URLs", "Flat, keyword-first tool URLs that must contain 'pdf' (/merge-pdf, /pdf-to-image). Hub is /pdf-tools. Old addresses 301.", "9 Nov"],
+  ["Privacy wording", "Never claim files 'never leave the device'. Most tools run in the browser; AI tools send text to the provider you chose.", "8 Nov"],
+  ["AI tools", "Bring your own key, stored only in the browser.", "8 Nov"],
+  ["Analytics", "Keep Cloudflare Web Analytics (cookie-free page views) and disclose it in the privacy policy.", "9 Nov"],
+  ["Operator", "Basic App Company is named as the operator on the policy pages, About, footer and structured data.", "9 Nov"],
+  ["Contact", "hello@iduckpdf.com via Cloudflare Email Routing, forwarding to the business Gmail. Receive only for now.", "9 Nov"],
+  ["Donations", "Dodo Payments pay-what-you-want, off until keys exist; never blocks the build.", "8 Nov"],
+  ["Release flow", "Every change on a new branch with a pull request; merge only when CI is green; fix failures on the same PR. Only main deploys.", "9 Nov"],
+  ["Copy", "All content, FAQs and guides are written originally.", "8 Nov"],
+  ["Rankings", "No promise of rankings. Off-site steps (backlinks, mentions, public repo) are listed and owned.", "8 Nov"],
+  ["Theme and layout", "Web colours are CSS variables and width-dependent layout is CSS, so pre-rendered pages never flash or shift.", "9 Nov"],
+  ["Docs", "Docs-only edits ride along with the next code pull request.", "9 Nov"],
+];
+
+const TIMELINE = [
+  ["8 Nov 2026", "Site built and live", "Expo web app with 32 tools, pre-rendered pages, SEO and AI-search files, Cloudflare Pages, GitHub repo, iduckpdf.com on Cloudflare with HTTPS, Search Console verified and sitemap submitted."],
+  ["9 Nov 2026", "Privacy policy and terms; engine split out of the first load", "First-load JavaScript 572 KB to 366 KB gzipped, visual pass in light and dark, Download, chain chips, saved key and roadmap verified, footer simplified."],
+  ["9 Nov 2026", "Automatic deploys", "Cloudflare API token created and stored as a GitHub secret; every push to main now builds, tests, audits and deploys."],
+  ["9 Nov 2026", "Contact inbox and operator name", "hello@iduckpdf.com forwards to the business Gmail; Basic App Company named on the policy pages."],
+  ["9 Nov 2026", "Layout shift 1.0 to 0, accessibility 100, first load 338 KB", "Found on the live site while running Lighthouse. Phones no longer see the desktop layout jump."],
+  ["9 Nov 2026", "No theme flash; equal-size cards", "Dark-mode visitors no longer see the light page for a second or two. Verified on the live site."],
+  ["9 Nov 2026", "Keyword URLs with 'pdf' and 301 redirects (PR #1)", "Every tool is at /<keyword>-pdf; /tools is /pdf-tools; old addresses redirect. CI now runs on pull requests and only main deploys."],
+  ["9 Nov 2026", "Analytics disclosed (PR #2)", "Cloudflare Web Analytics kept and described in the privacy policy."],
+  ["9 Nov 2026", "Search Console indexing request attempted", "Google's daily quota was already used, so this moves to 10 Nov (item 5.8)."],
+];
+
+const SCORECARD = [
+  { k: "Lighthouse, mobile (live)", v: "84 / 79 / 88", d: "Home / tool page / guide, performance, throttled. Before the 9 Nov work: 72-74." },
+  { k: "Accessibility, best practices, SEO", v: "100 / 100 / 100", d: "Lighthouse, on home, a tool page and a guide." },
+  { k: "Layout shift (CLS)", v: "0", d: "Measured at 390, 700, 1000 and 1280 px on 8 pages, live. Was about 1.0 on phones." },
+  { k: "First-load JavaScript", v: "338 KB gz", d: "Was 572 KB. The PDF engine (247 KB gz) loads only after a visitor interacts with a tool page." },
+  { k: "Pages", v: "67 built, 49 indexable", d: "Sitemap lists the 49; the rest are forms and roadmap pages marked noindex." },
+  { k: "Automated tests", v: "31 + 28", d: "31 engine tests in Node and 28 browser checks (Playwright), plus the crawler-style SEO audit." },
+  { k: "Tools", v: "32 built, 11 planned", d: "30 checked end to end; the 2 AI tools only up to the missing-key message." },
+  { k: "Theme flash", v: "None", d: "7 of 7 theme combinations checked on the live site, including JavaScript off." },
+];
+
+/* =================================================================================================================== */
+const STATE_LABEL = { done: "Done", progress: "In progress", todo: "To do", waiting: "Waiting", later: "Later" };
+const OWNER_LABEL = { me: "Me", you: "You", both: "Both", external: "External", none: "" };
+const OWNER_LONG = { me: "I can do this alone", you: "Needs you", both: "I do the mechanics, you approve or sign in", external: "Someone else", none: "" };
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = (s) => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const $ = (id) => document.getElementById(id);
+
+const ALL = PHASES.flatMap((p) => p.items.map((i) => Object.assign({ phase: p.num, phaseName: p.name }, i)));
+const mine = (i) => i.owner === "you" || i.owner === "both";
+const needsYou = (i) => mine(i) && (i.state === "todo" || i.state === "progress"); // actionable now
+const notYet = (i) => mine(i) && (i.state === "later" || i.state === "waiting"); // yours, but not actionable yet
+const canDo = (i) => i.state !== "done" && i.owner === "me" && i.state !== "later" && i.state !== "waiting";
+const count = (f) => ALL.filter(f).length;
+const prio = (i) => i.prio || 9;
+
+/* ---------- theme ---------- */
+const THEMES = { system: ["🖥️", "System", "light"], light: ["☀️", "Light", "dark"], dark: ["🌙", "Dark", "system"] };
+const getTheme = () => { try { return localStorage.getItem("iduckpdf-status-theme") || "system"; } catch (e) { return "system"; } };
+function setTheme(t) {
+  if (t === "system") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
+  try { t === "system" ? localStorage.removeItem("iduckpdf-status-theme") : localStorage.setItem("iduckpdf-status-theme", t); } catch (e) {}
+  $("themeIcon").textContent = THEMES[t][0]; $("themeLabel").textContent = THEMES[t][1];
+}
+setTheme(getTheme());
+$("theme").addEventListener("click", () => setTheme(THEMES[getTheme()][2]));
+
+/* ---------- header, stats ---------- */
+$("verified").textContent = VERIFIED;
+$("repoLink").href = REPO; $("repoLink").textContent = REPO.replace("https://github.com/", "");
+
+let filter = "all", query = "";
+const FILTERS = [
+  ["all", "All", () => true], ["you", "Needs you", needsYou], ["me", "I can do", canDo],
+  ["todo", "To do", (i) => i.state === "todo" || i.state === "progress"], ["waiting", "Waiting", (i) => i.state === "waiting"],
+  ["later", "Later", (i) => i.state === "later"], ["done", "Done", (i) => i.state === "done"],
+];
+
+function renderStats() {
+  const total = ALL.length, done = count((i) => i.state === "done");
+  const pct = Math.round((done / total) * 100);
+  const seg = (s) => count((i) => i.state === s);
+  const w = (n) => ((n / total) * 100).toFixed(2) + "%";
+  $("overall").innerHTML = `<div class="top"><span>Overall: ${done} of ${total} items done (${pct}%)</span><span class="mono">${PHASES.length} phases</span></div>
+    <div class="bar" role="img" aria-label="${done} done, ${seg("progress")} in progress, ${seg("todo")} to do, ${seg("waiting")} waiting, ${seg("later")} later">
+      <i class="d" style="width:${w(done)}"></i><i class="p" style="width:${w(seg("progress"))}"></i><i class="t" style="width:${w(seg("todo"))}"></i><i class="w" style="width:${w(seg("waiting"))}"></i><i class="x" style="width:${w(seg("later"))}"></i></div>
+    <div class="legend"><span style="--c:var(--done)">Done ${done}</span><span style="--c:var(--prog)">In progress ${seg("progress")}</span><span style="--c:var(--todo)">To do ${seg("todo")}</span><span style="--c:var(--wait)">Waiting ${seg("waiting")}</span><span style="--c:var(--later)">Later ${seg("later")}</span></div>`;
+  const youN = count(needsYou), meN = count(canDo);
+  const cards = [
+    ["you", youN, "Pending from you, actionable now", "hot"], ["me", meN, "I can do on my own", ""], ["todo", count((i) => i.state === "todo" || i.state === "progress"), "Open items", ""],
+    ["waiting", count((i) => i.state === "waiting"), "Waiting on something", ""], ["later", count((i) => i.state === "later"), "Parked for later", ""], ["done", done, "Done", ""],
+  ];
+  $("stats").innerHTML = cards.map(([f, n, l, c]) => `<button class="stat ${c}" type="button" data-f="${f}"><div class="n">${n}</div><div class="l">${l}</div></button>`).join("");
+  $("stats").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { setFilter(b.dataset.f); $("phases").scrollIntoView(); }));
+  $("youCount").textContent = youN; $("meCount").textContent = meN;
+}
+
+/* ---------- pending from you / what I can do ---------- */
+const pills = (i) => `<span class="pill st-${i.state}">${STATE_LABEL[i.state]}</span>${i.owner !== "none" ? `<span class="pill ow-${i.owner}" title="${esc(OWNER_LONG[i.owner])}">${OWNER_LABEL[i.owner]}</span>` : ""}`;
+function card(i, cls) {
+  const steps = i.steps ? `<ol>${i.steps.map((s) => `<li>${fmt(s)}</li>`).join("")}</ol>` : "";
+  return `<article class="card ${cls}"><h3><span class="mono" style="color:var(--muted)">${i.id}</span> ${esc(i.name)}</h3>${i.note ? `<p>${fmt(i.note)}</p>` : ""}${steps}
+    <div class="foot">${pills(i)}${i.effort ? `<span class="tag">${esc(i.effort)}</span>` : ""}${i.decision ? `<span class="tag">decision</span>` : ""}<span class="tag">Phase ${i.phase}</span></div></article>`;
+}
+function renderYou() {
+  const list = ALL.filter(needsYou).sort((a, b) => prio(a) - prio(b) || a.id.localeCompare(b.id, undefined, { numeric: true }));
+  const minutes = (i) => { const m = /^(\d+)\s*min/.exec(i.effort || ""); return m ? Number(m[1]) : 999; };
+  const quick = list.filter((i) => minutes(i) <= 10 && !i.decision);
+  const decisions = list.filter((i) => i.decision);
+  const rest = list.filter((i) => !quick.includes(i) && !decisions.includes(i));
+  const later = ALL.filter(notYet).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+  const group = (t, a, cls = "you") => a.length ? `<div class="group-title">${t} (${a.length})</div><div class="grid">${a.map((i) => card(i, cls)).join("")}</div>` : "";
+  $("youGroups").innerHTML = group("Quick wins: 10 minutes or less", quick) + group("Decisions only you can make", decisions) + group("Accounts, secrets, posting and longer tasks", rest)
+    + group("Yours, but not actionable yet (waiting on something, or parked for later)", later, "later");
+}
+function renderMe() {
+  const list = ALL.filter(canDo).sort((a, b) => prio(a) - prio(b) || a.id.localeCompare(b.id, undefined, { numeric: true }));
+  $("meGrid").innerHTML = list.map((i, n) => card(i, "me").replace('<h3>', `<h3><span class="pill st-progress">#${n + 1}</span> `)).join("");
+}
+
+/* ---------- phases ---------- */
+function itemHtml(i) {
+  const steps = i.steps ? `<div><b>Steps</b><ol>${i.steps.map((s) => `<li>${fmt(s)}</li>`).join("")}</ol></div>` : "";
+  const body = [i.note ? `<p>${fmt(i.note)}</p>` : "", i.blockedBy ? `<p><b>Waiting for:</b> ${esc(i.blockedBy)}</p>` : "", steps,
+    `<p><b>Who:</b> ${esc(OWNER_LONG[i.owner] || "Nobody, it is finished")}${i.when ? ` · <b>Shipped:</b> ${esc(i.when)}` : ""}${i.effort ? ` · <b>Effort:</b> ${esc(i.effort)}` : ""}</p>`].join("");
+  const tags = pills(i) + (i.effort && i.state !== "done" ? `<span class="tag">${esc(i.effort)}</span>` : "") + (i.when && i.state === "done" ? `<span class="tag">${esc(i.when)}</span>` : "") + (i.decision ? `<span class="tag">decision</span>` : "");
+  return `<li><details class="item" data-id="${i.id}"><summary><span class="iid">${i.id}</span><span class="iname ${i.state}">${esc(i.name)}</span><span class="itags">${tags}</span></summary><div class="ibody">${body}</div></details></li>`;
+}
+function renderPhases() {
+  $("phaseList").innerHTML = PHASES.map((p) => {
+    const its = ALL.filter((i) => i.phase === p.num), done = its.filter((i) => i.state === "done").length, n = its.length;
+    const s = (st) => its.filter((i) => i.state === st).length, w = (x) => ((x / n) * 100).toFixed(2) + "%";
+    const you = its.filter(needsYou).length;
+    return `<details class="phase" data-phase="${p.num}" ${done < n ? "open" : ""}><summary>
+      <span class="pnum">PHASE ${p.num}</span><span class="ptitle"><span class="chev">▸</span>${esc(p.name)}</span>
+      <span class="pmeta">${done}/${n} done${you ? ` · <b style="color:var(--you)">${you} need you</b>` : ""}</span>
+      <p class="psum">${esc(p.summary)}</p>
+      <div class="pbar bar" role="img" aria-label="${done} of ${n} done"><i class="d" style="width:${w(done)}"></i><i class="p" style="width:${w(s("progress"))}"></i><i class="t" style="width:${w(s("todo"))}"></i><i class="w" style="width:${w(s("waiting"))}"></i><i class="x" style="width:${w(s("later"))}"></i></div>
+      </summary><ul class="items">${its.map(itemHtml).join("")}<li class="empty hidden">No items match this filter.</li></ul></details>`;
+  }).join("");
+  applyFilter();
+}
+function applyFilter() {
+  const f = FILTERS.find((x) => x[0] === filter)[2], q = query.trim().toLowerCase();
+  document.querySelectorAll("#phaseList details.phase").forEach((ph) => {
+    let shown = 0;
+    ph.querySelectorAll("details.item").forEach((d) => {
+      const i = ALL.find((x) => x.id === d.dataset.id);
+      const hay = [i.id, i.name, i.note, i.effort, i.owner, i.state, (i.steps || []).join(" ")].join(" ").toLowerCase();
+      const ok = f(i) && (!q || hay.includes(q));
+      d.parentElement.classList.toggle("hidden", !ok); if (ok) shown++;
+    });
+    ph.classList.toggle("hidden", shown === 0);
+    if (q || filter !== "all") ph.open = shown > 0;
+  });
+}
+function renderChips() {
+  $("chips").innerHTML = FILTERS.map(([k, l, f]) => `<button class="chip" type="button" data-f="${k}" aria-pressed="${k === filter}">${l} <small>${count(f)}</small></button>`).join(" ");
+  $("chips").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => setFilter(b.dataset.f)));
+}
+function setFilter(f) { filter = f; renderChips(); applyFilter(); }
+$("q").addEventListener("input", (e) => { query = e.target.value; applyFilter(); });
+$("expand").addEventListener("click", () => { document.querySelectorAll("#phaseList details").forEach((d) => { if (!d.classList.contains("hidden")) d.open = true; }); });
+$("collapse").addEventListener("click", () => { document.querySelectorAll("#phaseList details").forEach((d) => (d.open = false)); });
+
+/* ---------- scorecard, tools, decisions, timeline ---------- */
+$("kpis").innerHTML = SCORECARD.map((k) => `<div class="kpi"><div class="k">${esc(k.k)}</div><div class="v">${esc(k.v)}</div><div class="d">${esc(k.d)}</div></div>`).join("");
+
+let toolFilter = "all", toolQuery = "";
+function renderTools() {
+  const rows = TOOLS_DATA.filter((t) => (toolFilter === "all" || t.status === toolFilter) && (!toolQuery || (t.name + " " + t.slug + " " + t.category).toLowerCase().includes(toolQuery)));
+  $("toolCount").textContent = `${TOOLS_DATA.filter((t) => t.status === "ready").length} built · ${TOOLS_DATA.filter((t) => t.status === "soon").length} planned`;
+  $("toolRows").innerHTML = rows.length ? rows.map((t) => `<tr><td>${esc(t.icon)} <b>${esc(t.name)}</b></td><td>${esc(t.category)}</td><td class="mono">${t.status === "ready" ? `<a href="https://iduckpdf.com/${esc(t.slug)}" target="_blank" rel="noopener">/${esc(t.slug)}</a>` : `/${esc(t.slug)}`}</td><td><span class="pill ${t.status === "ready" ? "st-done" : "st-later"}">${t.status === "ready" ? "Built" : "Planned"}</span>${/^pdf-to|^word|^excel|^powerpoint|^html/.test(t.slug) && t.status !== "ready" ? "" : ""}</td></tr>`).join("") : `<tr><td colspan="4" class="empty">${TOOLS_DATA.length ? "Nothing matches." : "Run <code>npm run status</code> to fill this table."}</td></tr>`;
+}
+function renderToolChips() {
+  const opts = [["all", "All"], ["ready", "Built"], ["soon", "Planned"]];
+  $("tchips").innerHTML = opts.map(([k, l]) => `<button class="chip" type="button" data-t="${k}" aria-pressed="${k === toolFilter}">${l}</button>`).join(" ");
+  $("tchips").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { toolFilter = b.dataset.t; renderToolChips(); renderTools(); }));
+}
+$("tq").addEventListener("input", (e) => { toolQuery = e.target.value.trim().toLowerCase(); renderTools(); });
+
+$("decisionGrid").innerHTML = DECISIONS.map(([t, d, w]) => `<article class="card"><h3>${esc(t)}</h3><p>${esc(d)}</p><div class="foot"><span class="tag">${esc(w)}</span></div></article>`).join("");
+$("timelineList").innerHTML = TIMELINE.slice().reverse().map(([d, t, p]) => `<li><div class="d">${esc(d)}</div><b>${esc(t)}</b><p>${esc(p)}</p></li>`).join("");
+
+/* ---------- nav with scroll spy ---------- */
+const sections = [...document.querySelectorAll("section[data-nav]")];
+$("nav").innerHTML = sections.map((s) => `<a href="#${s.id}" data-s="${s.id}">${esc(s.dataset.nav)}</a>`).join("");
+const spy = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", a.dataset.s === e.target.id)); }), { rootMargin: "-30% 0px -60% 0px" });
+sections.forEach((s) => spy.observe(s));
+
+/* ---------- go ---------- */
+renderStats(); renderYou(); renderMe(); renderChips(); renderPhases(); renderToolChips(); renderTools();
+if (location.hash) { const d = document.querySelector(`details.item[data-id="${CSS.escape(location.hash.slice(1))}"]`); if (d) { d.open = true; d.closest("details.phase").open = true; d.scrollIntoView(); } }
+</script>
+</body>
+</html>

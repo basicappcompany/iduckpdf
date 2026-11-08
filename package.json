@@ -16,8 +16,9 @@
     "test:engine": "tsx scripts/test-engine.ts",
     "e2e": "node scripts/e2e-smoke.js",
     "postinstall": "node scripts/copy-vendor.js",
-    "meta": "tsx scripts/gen-tool-meta.ts",
-    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+    "meta": "tsx scripts/gen-tool-meta.ts && tsx scripts/gen-status.ts",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "status": "tsx scripts/gen-status.ts"
   },
   "dependencies": {
     "expo": "~58.0.23",
