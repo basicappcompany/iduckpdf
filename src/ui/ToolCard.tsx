@@ -1,0 +1,48 @@
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
+import { useNavPress } from './nav';
+import { Anchor } from './Anchor';
+import { useTheme } from '../lib/theme';
+import type { ToolDef } from '../tools';
+import { Pill } from './kit';
+
+export function ToolCard({ tool, compact }: { tool: ToolDef; compact?: boolean }) {
+  const { t } = useTheme();
+  const nav = useNavPress();
+  return (
+    <Anchor to={`/tool/${tool.id}`}>
+      <Pressable
+        onPress={nav(`/tool/${tool.id}`)}
+        accessibilityRole="link"
+        accessibilityLabel={`${tool.name}: ${tool.short}`}
+        style={((s: any) => [
+          {
+            flexGrow: 1,
+            flexBasis: compact ? 220 : 240,
+            maxWidth: '100%',
+            borderWidth: 2,
+            borderColor: t.line,
+            borderRadius: 14,
+            padding: compact ? 12 : 16,
+            backgroundColor: s.hovered ? t.duck : t.card,
+            gap: 4,
+          },
+          t.shadow(4),
+          s.hovered ? { transform: [{ translateX: -2 }, { translateY: -2 }] } : null,
+          s.pressed ? { transform: [{ translateX: 3 }, { translateY: 3 }], boxShadow: '0px 0px 0px 0px transparent' } : null,
+        ]) as any}
+      >
+        {(s: any) => (
+          <>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <Text style={{ fontSize: compact ? 22 : 28 }}>{tool.icon}</Text>
+              <Text style={{ flex: 1, color: s.hovered ? t.duckInk : t.ink, fontWeight: '900', fontSize: compact ? 15 : 17 }}>{tool.name}</Text>
+              {tool.status === 'soon' ? <Pill>soon</Pill> : null}
+            </View>
+            {!compact ? <Text style={{ color: s.hovered ? t.duckInk : t.muted, fontSize: 14, lineHeight: 19 }}>{tool.short}</Text> : null}
+          </>
+        )}
+      </Pressable>
+    </Anchor>
+  );
+}

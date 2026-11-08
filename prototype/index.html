@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iDuckPDF – Free PDF tools that run in your browser</title>
+  <meta name="description" content="Merge, split, rotate, and edit PDFs for free. Files never leave your device.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg stroke='%23222' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M8 40c0-8 6-12 14-12h6c-2-12 4-20 14-20s14 8 10 16l8 4-8 4c0 12-10 22-24 22-12 0-20-4-20-14z' fill='%23ffd23f'/%3E%3Cpath d='M44 24l11 4-11 4z' fill='%23ff8a1f'/%3E%3C/g%3E%3Ccircle cx='43' cy='19' r='2.6' fill='%23222'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="duck" viewBox="0 0 64 64">
+      <g stroke="var(--line)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M8 40c0-8 6-12 14-12h6c-2-12 4-20 14-20s14 8 10 16l8 4-8 4c0 12-10 22-24 22-12 0-20-4-20-14z" fill="#ffd23f"/>
+        <path d="M44 24l11 4-11 4z" fill="#ff8a1f"/>
+        <path d="M18 40c4 6 14 6 18-2" fill="none"/>
+      </g>
+      <circle cx="43" cy="19" r="2.6" fill="var(--line)"/>
+    </symbol>
+  </svg>
+  <header class="top">
+    <a class="brand" href="#/"><svg class="logo"><use href="#duck"/></svg> iDuckPDF</a>
+    <span class="tag">100% private</span>
+    <button id="theme" class="theme" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+  </header>
+
+  <main>
+    <section id="home">
+      <div class="hero">
+        <div class="duck"><svg><use href="#duck"/></svg></div>
+        <h1>PDFs, <span>quacked</span> open.</h1>
+        <p>Free. No sign-up. Your files never leave your browser.</p>
+      </div>
+      <div id="grid" class="grid"></div>
+    </section>
+
+    <section id="tool" hidden>
+      <a href="#/" class="back">← All tools</a>
+      <h2 id="tool-title"></h2>
+      <p id="tool-desc" class="muted"></p>
+
+      <label id="drop" class="drop">
+        <input id="file" type="file" hidden>
+        <strong>Pick files</strong> or toss them here 🦆
+      </label>
+      <ul id="files" class="files"></ul>
+      <div id="opts" class="opts"></div>
+
+      <button id="run" class="btn" disabled>Process</button>
+      <p id="status" class="muted" role="status"></p>
+      <ul id="results" class="results"></ul>
+    </section>
+  </main>
+
+  <footer>Made with 🦆 energy · <a href="https://iduckpdf.com">iduckpdf.com</a></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
