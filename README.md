@@ -49,3 +49,8 @@ public/         robots.txt, manifest, _headers, icons, og.png, llms files (gener
 
 ## Adding a tool
 Add a `ToolDef` to a file in `src/tools/` (inputs, options, `run`). It appears in the sidebar, palette, home page, helper and search automatically.
+
+## Tool URLs and releases
+
+- Every tool lives at a keyword URL that contains "pdf" (`/merge-pdf`, `/compress-pdf`, ...). The map is `src/content/toolSlugs.ts`; add a slug when you add a tool, or `npm run meta` fails. Old `/tool/<id>` addresses are redirected (generated `public/_redirects`).
+- Work goes on a branch and a pull request. CI (typecheck, engine tests, build, SEO audit) runs on the pull request; merging to `main` is what deploys to Cloudflare Pages. If CI fails, fix it on the same branch.

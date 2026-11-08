@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useWidth } from '../lib/useWidth';
+import { HUB_PATH, toolPath } from '../content/toolSlugs';
 import { ds } from '../lib/responsive';
 import { useTheme } from '../lib/theme';
 import { READY, bestMatch, type ToolDef } from '../tools';
@@ -22,7 +23,7 @@ function respond(text: string): Omit<Msg, 'id' | 'from'> {
   if (/(api key|settings|dark mode|theme|my key)/.test(s)) return { text: 'Theme and AI keys live in Settings.', links: [{ label: 'Open Settings', to: '/settings' }] };
   const tool = bestMatch(text);
   if (tool) return { tool, text: tool.status === 'ready' ? `That sounds like “${tool.name}”.` : `That sounds like “${tool.name}”, which is on the roadmap but not built yet.` };
-  return { text: 'Hmm, I am not sure which tool that is. Try words like merge, split, compress, rotate, watermark or text. Or browse everything.', links: [{ label: 'Browse all tools', to: '/tools' }] };
+  return { text: 'Hmm, I am not sure which tool that is. Try words like merge, split, compress, rotate, watermark or text. Or browse everything.', links: [{ label: 'Browse all PDF tools', to: HUB_PATH }] };
 }
 
 export default function Helper() {
@@ -76,7 +77,7 @@ export default function Helper() {
                     <T v="h3">{m.tool.icon} {m.tool.name}</T>
                     <T v="small" muted>{m.tool.short}</T>
                     <View style={{ alignSelf: 'flex-start' }}>
-                      <Btn label={m.tool.status === 'ready' ? `Open ${m.tool.name}` : 'See details'} small to={`/tool/${m.tool.id}`} />
+                      <Btn label={m.tool.status === 'ready' ? `Open ${m.tool.name}` : 'See details'} small to={toolPath(m.tool.id)} />
                     </View>
                   </View>
                 ) : null}

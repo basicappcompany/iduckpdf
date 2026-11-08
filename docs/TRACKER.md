@@ -43,6 +43,7 @@ Last updated: 2026-11-09 · Status key: ✅ built and checked · 🟡 built, onl
 | Item | Status | Notes |
 |---|---|---|
 | Every page pre-rendered to real HTML (no JavaScript needed to read it) | ✅ | 67 HTML files; checked with JavaScript switched off |
+| Tool URLs: keyword-first and always contain "pdf" | ✅ | `/merge-pdf`, `/compress-pdf`, `/pdf-to-image`, `/password-protect-pdf` ... (map in `src/content/toolSlugs.ts`); hub is `/pdf-tools`. Old `/tool/<id>` and `/tools` 301-redirect via the generated `public/_redirects`. The build fails if a slug lacks "pdf", is duplicated or collides with a route, and the audit checks every redirect target exists |
 | Unique title, description, canonical per indexable page | ✅ | single source: `seoForPath()` in `src/lib/seoData.ts`; written into the HTML by `scripts/inject-seo.ts` |
 | Structured data | ✅ | WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, CollectionPage, AboutPage, Organization, WebSite + SearchAction |
 | Unique copy for all 32 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
@@ -54,6 +55,8 @@ Last updated: 2026-11-09 · Status key: ✅ built and checked · 🟡 built, onl
 | Automated audit | ✅ | `npm run audit` fails on missing titles, duplicates, bad canonicals, missing app bundle, sitemap mismatch |
 | Search Console | ✅ | verified, sitemap submitted, key pages requested |
 | Bing submission, backlinks, analytics | ⏳ | needs your accounts: TODO §8 |
+| Theme without a flash | ✅ | Colours are CSS variables set before first paint from the system setting or the saved choice, so dark-mode visitors never see the light pre-rendered page; checked with JavaScript off and with 5 combinations of system and saved theme |
+| Equal-size cards | ✅ | Tool, guide and info cards are equal-width grid columns; a short last row no longer stretches its cards |
 | Performance: PDF engine out of the first load | ✅ | Tool metadata is a small generated JSON. pdf-lib, JSZip, the tool code and the AI client are one lazy chunk (`all-*.js`, about 247 KB gzipped), fetched on the first mouse move, touch, key or scroll on a tool page (or after 8 s) and never on home or guides. First-load JS went from 572 KB to 338 KB gzipped. What is left is the framework: expo-router 444 KB, react-native-web 310 KB and react-dom 204 KB before compression |
 | Layout shift on phones (CLS) | ✅ | Pre-rendered pages used to show the desktop layout first and jump when the app started (CLS about 1.0 on live, measured 2026-11-09). Sidebar, header labels, heading sizes and page gutters now follow the screen width through CSS from the first paint (`src/lib/responsive.ts`, injected into every page head); CLS is 0 at 390, 700, 1000 and 1280 px on 8 pages. Keep the breakpoints in that file equal to the ones in `useWidth` users |
 | Accessibility (Lighthouse) | ✅ | 100 on home, a tool page and a guide: main landmark, heading order, accessible names that match visible text, contrast on the green pill |
@@ -112,7 +115,7 @@ Last updated: 2026-11-09 · Status key: ✅ built and checked · 🟡 built, onl
 ## How the checks were done
 - `npx tsx scripts/test-engine.ts`: 31 checks in Node over 22 tools plus error handling (all pass).
 - `npm run audit`: crawler-style audit of the built site (65 pages, 47 indexable). All checks pass.
-- `scripts/e2e-smoke.js` (headless Chromium via Playwright): 25 checks pass, including that home never downloads the PDF engine chunk and tool pages preload it. Crawler view with JavaScript off; hydration with no console errors; about 60 fps; in-app navigation without reload; title and canonical follow the page; `Ctrl+K` palette; a real two-file merge through the file chooser; saved dark theme after reload; phone-width drawer.
+- `scripts/e2e-smoke.js` (headless Chromium via Playwright): 28 checks pass, including that home never downloads the PDF engine chunk and tool pages preload it. Crawler view with JavaScript off; hydration with no console errors; about 60 fps; in-app navigation without reload; title and canonical follow the page; `Ctrl+K` palette; a real two-file merge through the file chooser; saved dark theme after reload; phone-width drawer.
 - Chrome (scripted) earlier: dropped generated files onto the drop zone and read the result for Photos to PDF, Scan to PDF, PDF to pictures, Copy text out, Make it smaller, Grayscale, Black out text, Spot the differences, Logo or image stamp; plus the helper, theme toggle, donate-off message and missing-key error. Those ran before the switch to static pages; the merge flow was re-run after it.
 - `npm run typecheck`: clean.
 - 2026-11-09 Lighthouse (mobile, throttled, local build with gzip): performance 79–83, accessibility 100, best practices 100, SEO 100, CLS 0; before the changes the live site scored 72–74 / 94–96 / 100 / 100. Numbers move a few points between runs.

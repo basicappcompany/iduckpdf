@@ -7,6 +7,7 @@ import { T } from './kit';
 import { READY } from '../tools';
 import { GUIDES } from '../content/guides';
 import { SITE } from '../config';
+import { toolPath } from '../content/toolSlugs';
 
 function FooterLink({ to, label }: { to: string; label: string }) {
   const { t } = useTheme();
@@ -34,11 +35,11 @@ export function SiteFooter() {
   return (
     <View accessibilityRole={'contentinfo' as any} style={{ borderTopWidth: 2, borderColor: t.line, marginTop: 36, paddingTop: 22, gap: 18 }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 22 }}>
-        {col('Popular tools', tools.map((x) => <FooterLink key={x.id} to={`/tool/${x.id}`} label={x.name} />))}
+        {col('Popular tools', tools.map((x) => <FooterLink key={x.id} to={toolPath(x.id)} label={x.name} />))}
         {col('Guides', GUIDES.slice(0, 6).map((g) => <FooterLink key={g.slug} to={`/guides/${g.slug}`} label={g.title.replace(/^How to /, 'How to ')} />))}
         {col('iDuckPDF', (
           <>
-            <FooterLink to="/tools" label="All tools" />
+            <FooterLink to="/pdf-tools" label="All PDF tools" />
             <FooterLink to="/guides" label="All guides" />
             <FooterLink to="/chat" label="Ask the helper" />
             <FooterLink to="/roadmap" label="Roadmap" />

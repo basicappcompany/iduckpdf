@@ -10,6 +10,7 @@ import { usePalette } from '../lib/palette';
 import { CATEGORIES, inCategory } from '../tools';
 import { Logo } from './Logo';
 import { Pill } from './kit';
+import { idForSlug, toolPath } from '../content/toolSlugs';
 
 function NavItem({ to, icon, label, active, small, pill }: { to: string; icon?: string; label: string; active?: boolean; small?: boolean; pill?: 'soon' }) {
   const { t } = useTheme();
@@ -58,7 +59,7 @@ export function Sidebar() {
   const { open } = usePalette();
   const nav = useNavPress();
   const path = usePathname();
-  const toolId = path.startsWith('/tool/') ? path.slice(6) : '';
+  const toolId = idForSlug(path.slice(1)) ?? '';
   const currentCat = CATEGORIES.find((c) => inCategory(c.id).some((x) => x.id === toolId))?.id;
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({ join: true });
   useEffect(() => {
@@ -83,13 +84,13 @@ export function Sidebar() {
 
         <NavItem to="/" icon="🏠" label="Home" active={path === '/'} />
         <NavItem to="/chat" icon="💬" label="Ask the helper" active={path === '/chat'} />
-        <NavItem to="/tools" icon="🧰" label="All tools" active={path === '/tools'} />
+        <NavItem to="/pdf-tools" icon="🧰" label="All PDF tools" active={path === '/pdf-tools'} />
 
         <Text style={{ color: t.muted, fontSize: 11, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 12, marginBottom: 2, paddingHorizontal: 10 }}>Tools</Text>
         {CATEGORIES.map((c) => (
           <Group key={c.id} id={c.id} name={c.name} icon={c.icon} open={!!openCats[c.id]} onToggle={() => setOpenCats((o) => ({ ...o, [c.id]: !o[c.id] }))}>
             {inCategory(c.id).map((tl) => (
-              <NavItem key={tl.id} to={`/tool/${tl.id}`} icon={tl.icon} label={tl.name} small active={toolId === tl.id} pill={tl.status === 'soon' ? 'soon' : undefined} />
+              <NavItem key={tl.id} to={toolPath(tl.id)} icon={tl.icon} label={tl.name} small active={toolId === tl.id} pill={tl.status === 'soon' ? 'soon' : undefined} />
             ))}
           </Group>
         ))}

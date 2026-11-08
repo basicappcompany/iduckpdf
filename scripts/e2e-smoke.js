@@ -17,18 +17,18 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   {
     const ctx = await browser.newContext({ javaScriptEnabled: false });
     const p = await ctx.newPage();
-    await p.goto(BASE + '/tool/merge');
+    await p.goto(BASE + '/merge-pdf');
     const title = await p.title();
     ok('no-JS: title is the Merge page title', /Merge PDF/.test(title), title);
     ok('no-JS: exactly one h1', (await p.locator('h1').count()) === 1, await p.locator('h1').first().innerText());
     ok('no-JS: meta description present', ((await p.locator('meta[name=description]').getAttribute('content')) || '').length > 60);
-    ok('no-JS: canonical is /tool/merge', (await p.locator('link[rel=canonical]').getAttribute('href')) === 'https://iduckpdf.com/tool/merge');
+    ok('no-JS: canonical is /merge-pdf', (await p.locator('link[rel=canonical]').getAttribute('href')) === 'https://iduckpdf.com/merge-pdf');
     ok('no-JS: FAQ answer text is in the HTML', (await p.content()).includes('as many as your device has memory for'.slice(0, 20)) || (await p.content()).includes('How many PDFs can I merge at once'));
     ok('no-JS: many real <a href> links', (await p.locator('a[href^="/"]').count()) > 20, String(await p.locator('a[href^="/"]').count()));
     const ld = await p.locator('script[type="application/ld+json"]').allTextContents();
     let parsed = true; try { ld.forEach((t) => JSON.parse(t)); } catch { parsed = false; }
     ok('no-JS: JSON-LD blocks parse', parsed && ld.length >= 4, `${ld.length} blocks`);
-    await p.goto(BASE + '/tool/unlock');
+    await p.goto(BASE + '/unlock-pdf');
     ok('no-JS: roadmap tool page is noindex', (await p.locator('meta[name=robots]').getAttribute('content')).includes('noindex'));
     await ctx.close();
   }
@@ -72,7 +72,7 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
     const isEngine = (u) => u.includes('/_expo/static/js/web/all-');
     ok('home does not download the PDF engine chunk', !seen.some(isEngine));
     seen.length = 0;
-    await probe.goto(BASE + '/tool/merge'); await probe.waitForTimeout(1500);
+    await probe.goto(BASE + '/merge-pdf'); await probe.waitForTimeout(1500);
     ok('tool page does not load the PDF engine before any interaction', !seen.some(isEngine));
     await probe.mouse.move(300, 300); await probe.waitForTimeout(3000);
     ok('tool page preloads the PDF engine chunk on first interaction', seen.some(isEngine));
@@ -84,12 +84,12 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
 
   // client-side navigation must not reload the document
   await page.evaluate(() => { window.__marker = 'alive'; });
-  await page.locator('a[href="/tool/split"]').first().click();
-  await page.waitForURL('**/tool/split');
+  await page.locator('a[href="/split-pdf"]').first().click();
+  await page.waitForURL('**/split-pdf');
   ok('sidebar link navigates in-app (no full reload)', (await page.evaluate(() => window.__marker)) === 'alive');
   await page.waitForFunction(() => /Split a PDF/.test(document.title), null, { timeout: 8000 }).catch(() => {});
   ok('tab title follows the page', /Split a PDF/.test(await page.title()), await page.title());
-  ok('canonical path follows the page', ((await page.locator('link[rel=canonical]').getAttribute('href')) || '').endsWith('/tool/split'));
+  ok('canonical path follows the page', ((await page.locator('link[rel=canonical]').getAttribute('href')) || '').endsWith('/split-pdf'));
 
   // palette
   await page.keyboard.press('Control+K');
@@ -98,11 +98,11 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   ok('Ctrl+K opens the palette', await pal.isVisible().catch(() => false));
   await pal.fill('watermark');
   await page.keyboard.press('Enter');
-  await page.waitForURL('**/tool/text-watermark').catch(() => {});
-  ok('palette search + Enter opens the tool', page.url().endsWith('/tool/text-watermark'), page.url());
+  await page.waitForURL('**/add-watermark-to-pdf').catch(() => {});
+  ok('palette search + Enter opens the tool', page.url().endsWith('/add-watermark-to-pdf'), page.url());
 
   // real merge through the UI with a native file chooser
-  await page.goto(BASE + '/tool/merge');
+  await page.goto(BASE + '/merge-pdf');
   const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select files/i }).first().click()]);
   await chooser.setFiles(['dist/_test/a.pdf', 'dist/_test/b.pdf']);
   await page.getByText('b.pdf').first().waitFor({ timeout: 5000 }).catch(() => {});
@@ -129,7 +129,7 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.waitForTimeout(500);
   ok('phone width shows the menu button', await page.getByRole('button', { name: /Open menu/i }).isVisible().catch(() => false));
   await page.getByRole('button', { name: /Open menu/i }).click().catch(() => {});
-  ok('menu button opens the drawer', (await page.locator('a[href="/tool/merge"]').count()) > 0 && await page.getByText('All tools').first().isVisible().catch(() => false));
+  ok('menu button opens the drawer', (await page.locator('a[href="/merge-pdf"]').count()) > 0 && await page.getByText('All PDF tools').first().isVisible().catch(() => false));
 
   await browser.close();
   const failed = results.filter((r) => !r.pass);

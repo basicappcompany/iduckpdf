@@ -3,6 +3,7 @@ import { Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from 'r
 import { useRouter } from 'expo-router';
 import { useTheme } from './theme';
 import { READY, searchTools } from '../tools';
+import { toolPath } from '../content/toolSlugs';
 
 type Item = { id: string; label: string; icon: string; hint: string; run: () => void; group: 'Tools' | 'Pages' | 'Actions' };
 
@@ -16,7 +17,7 @@ export const usePalette = () => {
 export const PAGES: { to: string; label: string; icon: string; kw: string }[] = [
   { to: '/', label: 'Home', icon: '🏠', kw: 'start main' },
   { to: '/chat', label: 'Ask the helper', icon: '💬', kw: 'chat assistant help which tool' },
-  { to: '/tools', label: 'All tools', icon: '🧰', kw: 'browse list everything' },
+  { to: '/pdf-tools', label: 'All PDF tools', icon: '🧰', kw: 'browse list everything' },
   { to: '/roadmap', label: 'Roadmap', icon: '🗺️', kw: 'coming soon planned upcoming' },
   { to: '/request', label: 'Request a feature', icon: '💡', kw: 'suggest idea wish' },
   { to: '/feedback', label: 'Send feedback', icon: '📮', kw: 'bug report problem contact' },
@@ -88,7 +89,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
       icon: tl.icon,
       hint: tl.status === 'ready' ? 'Tool' : 'Coming soon',
       group: 'Tools' as const,
-      run: go(`/tool/${tl.id}`),
+      run: go(toolPath(tl.id)),
     }));
     return [...tools, ...pages, ...actions].slice(0, 14);
   }, [q, go, onClose, toggle]);

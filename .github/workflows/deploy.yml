@@ -3,11 +3,13 @@
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main] # build, test and audit every pull request; only pushes to main deploy
   workflow_dispatch:
 
 concurrency:
-  group: deploy
-  cancel-in-progress: true
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }} # never cancel a production deploy half way
 
 jobs:
   deploy:
@@ -29,12 +31,12 @@ jobs:
       - run: npm run export:web
       - run: npm run audit # fails the build on SEO regressions (titles, canonicals, sitemap, app bundle)
       - name: Deploy to Cloudflare Pages
-        if: env.CLOUDFLARE_API_TOKEN != ''
+        if: env.CLOUDFLARE_API_TOKEN != '' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=iduckpdf --branch=main
       - name: Deploy skipped
-        if: env.CLOUDFLARE_API_TOKEN == ''
+        if: env.CLOUDFLARE_API_TOKEN == '' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: echo "::warning::CLOUDFLARE_API_TOKEN secret is not set, so the build passed but nothing was deployed. See docs/TODO.md section 3."
