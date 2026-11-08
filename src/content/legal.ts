@@ -1,7 +1,7 @@
 /**
  * Privacy policy and terms, written to match what the site actually does today
- * (no accounts, no analytics, no cookies, files processed in the browser, optional tips via Dodo Payments).
- * If any of that changes (analytics, a backend for Office conversions, accounts), update this file in the same change.
+ * (no accounts, no cookies, files processed in the browser, Cloudflare Web Analytics for cookie-free page statistics, optional tips via Dodo Payments).
+ * If any of that changes (another analytics service, a backend for Office conversions, accounts), update this file in the same change.
  */
 import { SITE } from '../config';
 
@@ -11,8 +11,8 @@ export type LegalDoc = { title: string; seoTitle: string; description: string; i
 export const PRIVACY: LegalDoc = {
   title: 'Privacy policy',
   seoTitle: 'Privacy Policy',
-  description: 'What iDuckPDF does with your files and data: PDFs stay in your browser for most tools, no accounts, no analytics, no cookies, and how AI tools and tips work.',
-  intro: 'Short version: you do not need an account, most tools never upload your PDF, we do not run analytics or ad trackers, and we do not set cookies. The details are below so you can check.',
+  description: 'How iDuckPDF handles your data: PDFs stay in your browser for most tools, no accounts or cookies, cookie-free page statistics, plus how AI tools and tips work.',
+  intro: 'Short version: you do not need an account, most tools never upload your PDF, we do not set cookies or use ad trackers, and the only analytics is cookie-free page statistics. The details are below so you can check.',
   sections: [
     {
       h: 'Who we are',
@@ -37,8 +37,15 @@ export const PRIVACY: LegalDoc = {
     {
       h: 'What our hosting sees',
       p: [
-        'The site is delivered by Cloudflare. Like any web host, Cloudflare processes technical request data (such as your IP address, the page requested, and browser type) to deliver pages, keep the service secure and prevent abuse. We do not run our own analytics, advertising or tracking scripts, and we do not combine this data with anything else. See Cloudflare’s privacy policy for how it handles request data.',
-        'The pages load all code and the PDF engine from iduckpdf.com itself, not from third-party content networks.',
+        'The site is delivered by Cloudflare. Like any web host, Cloudflare processes technical request data (such as your IP address, the page requested, and browser type) to deliver pages, keep the service secure and prevent abuse. We do not run advertising or tracking scripts, and we do not combine this data with anything else. See Cloudflare’s privacy policy for how it handles request data.',
+        'The pages load all code and the PDF engine from iduckpdf.com itself. The only third-party script is the analytics script described next.',
+      ],
+    },
+    {
+      h: 'Analytics',
+      p: [
+        'We use Cloudflare Web Analytics to count visits and see which pages are popular, where visitors come from (for example a search engine or another website), roughly which country they are in, what browser and device type they use, and how fast pages load. Cloudflare adds a small script from static.cloudflareinsights.com to the pages to do this.',
+        'According to Cloudflare, Web Analytics does not use cookies or local storage and does not fingerprint visitors or track them across websites. It only learns that a page was opened. It never sees your PDFs, what is in them, or which files you choose. We use the figures only to understand and improve the site. A content blocker in your browser stops the script, and the site works exactly the same without it.',
       ],
     },
     {
@@ -59,7 +66,7 @@ export const PRIVACY: LegalDoc = {
     },
     {
       h: 'Changes to this policy',
-      p: ['If we add anything that changes how data is handled, for example analytics or a server-based conversion tool, we will update this page and the “last updated” date before it goes live, and say clearly which tools are affected.'],
+      p: ['If we add anything that changes how data is handled, for example a different analytics service or a server-based conversion tool, we will update this page and the “last updated” date before it goes live, and say clearly which tools are affected.'],
     },
     {
       h: 'Contact',
