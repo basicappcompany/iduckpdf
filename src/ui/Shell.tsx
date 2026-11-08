@@ -3,7 +3,8 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { usePathname } from 'expo-router';
 import { useNavPress } from './nav';
 import { Anchor } from './Anchor';
-import { useWidth } from '../lib/useWidth';
+import { useWidthState } from '../lib/useWidth';
+import { ds } from '../lib/responsive';
 import { useTheme } from '../lib/theme';
 import { usePalette } from '../lib/palette';
 import { CATEGORIES, inCategory } from '../tools';
@@ -74,7 +75,7 @@ export function Sidebar() {
           </Pressable>
         </Anchor>
 
-        <Pressable onPress={open} accessibilityRole="button" accessibilityLabel="Search tools" style={((s: any) => [{ flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 8, backgroundColor: s.hovered ? t.soft : t.bg }, t.shadow(3)]) as any}>
+        <Pressable onPress={open} accessibilityRole="button" style={((s: any) => [{ flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 8, backgroundColor: s.hovered ? t.soft : t.bg }, t.shadow(3)]) as any}>
           <Text>🔍</Text>
           <Text style={{ flex: 1, color: t.muted }}>Search…</Text>
           <Text style={{ color: t.muted, fontSize: 11, fontWeight: '800', borderWidth: 1.5, borderColor: t.muted, borderRadius: 6, paddingHorizontal: 5 }}>Ctrl K</Text>
@@ -109,7 +110,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const { t, toggle } = useTheme();
   const { open } = usePalette();
   const nav = useNavPress();
-  const width = useWidth();
+  const { width, ready } = useWidthState();
   const wide = width >= 980;
   const [drawer, setDrawer] = useState(false);
   const path = usePathname();
@@ -117,37 +118,41 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <View style={{ flex: 1, flexDirection: 'row', backgroundColor: t.bg }}>
-      {wide ? <Sidebar /> : null}
+      {!ready || wide ? <View {...ds('sidebar')} style={{ height: '100%' }}><Sidebar /></View> : null}
       <View style={{ flex: 1, minWidth: 0 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 2, borderColor: t.line, backgroundColor: t.bg }}>
-          {!wide ? (
+          {!ready || !wide ? (
+            <View {...ds('narrow')}>
             <Pressable onPress={() => setDrawer(true)} accessibilityRole="button" accessibilityLabel="Open menu" style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
               <Text style={{ color: t.ink, fontWeight: '900', fontSize: 16 }}>☰</Text>
             </Pressable>
+            </View>
           ) : null}
-          {!wide ? (
+          {!ready || !wide ? (
+            <View {...ds('narrow')}>
             <Anchor to="/" label="iDuckPDF home">
               <Pressable accessibilityRole="link" onPress={nav('/')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Logo size={26} />
                 <Text style={{ color: t.ink, fontWeight: '900', fontSize: 18 }}>iDuckPDF</Text>
               </Pressable>
             </Anchor>
+            </View>
           ) : null}
           <View style={{ flex: 1 }} />
           <Pressable onPress={open} accessibilityRole="button" accessibilityLabel="Search" style={[{ flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
             <Text>🔍</Text>
-            {width > 560 ? <Text style={{ color: t.muted, fontWeight: '700' }}>Search · Ctrl K</Text> : null}
+            <Text {...ds('w560')} style={{ color: t.muted, fontWeight: '700' }}>Search · Ctrl K</Text>
           </Pressable>
           <Pressable onPress={toggle} accessibilityRole="button" accessibilityLabel="Switch light or dark mode" style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
             <Text style={{ fontSize: 16 }}>{t.dark ? '☀️' : '🌙'}</Text>
           </Pressable>
           <Anchor to="/donate" label="Support iDuckPDF">
             <Pressable accessibilityRole="link" onPress={nav('/donate')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.duck }, t.shadow(3)]}>
-              <Text style={{ color: t.duckInk, fontWeight: '900' }}>💛{width > 520 ? ' Support' : ''}</Text>
+              <Text style={{ color: t.duckInk, fontWeight: '900' }}>💛<Text {...ds('w520')}> Support</Text></Text>
             </Pressable>
           </Anchor>
         </View>
-        <View style={{ flex: 1 }}>{children}</View>
+        <View accessibilityRole={'main' as any} style={{ flex: 1 }}>{children}</View>
       </View>
 
       {!wide && drawer ? (

@@ -7,8 +7,13 @@ import { useWindowDimensions } from 'react-native';
  * mismatches; the real width is used from the second render on.
  */
 export function useWidth(): number {
+  return useWidthState().width;
+}
+
+/** Same as useWidth, plus whether the real width is known yet (false while pre-rendering and on the first client render). */
+export function useWidthState(): { width: number; ready: boolean } {
   const { width } = useWindowDimensions();
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
-  return ready ? width : 1200;
+  return { width: ready ? width : 1200, ready };
 }

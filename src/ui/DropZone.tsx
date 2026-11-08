@@ -41,12 +41,11 @@ export function DropZone({ label, hint, accept, multiple, camera, onFiles, compa
     >
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Choose ${kind} files`}
         onPress={async () => {
           const fs = await pickFiles({ accept, multiple, camera });
           if (fs.length) onFiles(fs);
         }}
-        style={{ alignItems: 'center', paddingVertical: compact ? 22 : 36, paddingHorizontal: 16, gap: 6 }}
+        style={{ width: '100%', alignItems: 'center', paddingVertical: compact ? 22 : 36, paddingHorizontal: 16, gap: 6 }}
       >
         <Text style={{ fontSize: compact ? 28 : 38 }}>{accept === 'image' ? '🖼️' : '📄'}</Text>
         <Text style={{ color: over ? t.duckInk : t.ink, fontWeight: '900', fontSize: 17, textAlign: 'center' }}>{over ? 'Drop it!' : label}</Text>

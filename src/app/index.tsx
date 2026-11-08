@@ -36,7 +36,6 @@ export default function Home() {
         <Pressable
           onPress={open}
           accessibilityRole="button"
-          accessibilityLabel="Search tools"
           style={((s: any) => [{ width: '100%', maxWidth: 620, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderColor: t.line, borderRadius: 16, paddingHorizontal: 18, paddingVertical: 15, backgroundColor: t.card, marginTop: 6 }, t.shadow(4), s.hovered ? { transform: [{ translateX: -2 }, { translateY: -2 }] } : null]) as any}
         >
           <Text style={{ fontSize: 18 }}>🔍</Text>
@@ -48,7 +47,7 @@ export default function Home() {
       <Card hot style={{ flexDirection: 'row', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
         <Text style={{ fontSize: 34 }}>💬</Text>
         <View style={{ flex: 1, minWidth: 200 }}>
-          <T v="h3" color={t.duckInk}>Not sure which tool you need?</T>
+          <T v="h3" level={2} color={t.duckInk}>Not sure which tool you need?</T>
           <T color={t.duckInk} style={{ opacity: 0.8 }}>Describe the job in plain words and the helper will point you to the right one.</T>
         </View>
         <Btn label="Ask the helper" variant="dark" to="/chat" />

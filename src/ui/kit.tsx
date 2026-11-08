@@ -3,12 +3,13 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StylePro
 import { useNavPress } from './nav';
 import { Anchor } from './Anchor';
 import { useWidth } from '../lib/useWidth';
+import { ds } from '../lib/responsive';
 import { useTheme } from '../lib/theme';
 
 /* ---------- text ---------- */
 type Variant = 'h1' | 'h2' | 'h3' | 'body' | 'small' | 'mono' | 'label';
 
-export function T({ v = 'body', muted, color, style, children, ...rest }: { v?: Variant; muted?: boolean; color?: string; style?: StyleProp<TextStyle>; children?: React.ReactNode } & Record<string, any>) {
+export function T({ v = 'body', level: levelOverride, muted, color, style, children, ...rest }: { v?: Variant; level?: 1 | 2 | 3 | 4; muted?: boolean; color?: string; style?: StyleProp<TextStyle>; children?: React.ReactNode } & Record<string, any>) {
   const { t } = useTheme();
   const width = useWidth();
   const big = width >= 760;
@@ -22,10 +23,10 @@ export function T({ v = 'body', muted, color, style, children, ...rest }: { v?: 
     label: { fontSize: 13.5, lineHeight: 18, fontWeight: '800' },
     mono: { fontSize: 13.5, lineHeight: 20, fontFamily: 'ui-monospace, Menlo, Consolas, monospace' },
   };
-  const level = v === 'h1' ? 1 : v === 'h2' ? 2 : v === 'h3' ? 3 : 0;
+  const level = levelOverride ?? (v === 'h1' ? 1 : v === 'h2' ? 2 : v === 'h3' ? 3 : 0); // level: keep the visual size but fix the heading order for screen readers
   const a11y = level ? ({ role: 'heading', 'aria-level': level } as any) : null;
   return (
-    <Text {...a11y} {...rest} style={[base, sizes[v], style]}>
+    <Text {...a11y} {...(v === 'h1' || v === 'h2' ? ds(v) : null)} {...rest} style={[base, sizes[v], style]}>
       {children}
     </Text>
   );
@@ -40,7 +41,7 @@ export function Card({ children, style, hot }: { children?: React.ReactNode; sty
 export function Banner({ children, tone = 'info', style }: { children: React.ReactNode; tone?: 'info' | 'warn' | 'error' | 'ok'; style?: StyleProp<ViewStyle> }) {
   const { t } = useTheme();
   const bg = tone === 'error' ? t.danger : tone === 'ok' ? t.ok : tone === 'warn' ? t.duck : t.soft;
-  const fg = tone === 'error' || tone === 'ok' ? '#fff' : tone === 'warn' ? t.duckInk : t.ink;
+  const fg = tone === 'error' ? '#fff' : tone === 'ok' ? '#0b2b1a' : tone === 'warn' ? t.duckInk : t.ink;
   return (
     <View style={[{ backgroundColor: bg, borderWidth: 2, borderColor: t.line, borderStyle: tone === 'info' ? 'dashed' : 'solid', borderRadius: 12, padding: 12 }, style]}>
       {typeof children === 'string' ? <T v="small" color={fg}>{children}</T> : children}
@@ -51,7 +52,7 @@ export function Banner({ children, tone = 'info', style }: { children: React.Rea
 export function Pill({ children, tone }: { children: React.ReactNode; tone?: 'ok' | 'muted' | 'duck' }) {
   const { t } = useTheme();
   const bg = tone === 'ok' ? t.ok : tone === 'duck' ? t.duck : 'transparent';
-  const fg = tone === 'ok' ? '#fff' : tone === 'duck' ? t.duckInk : t.muted;
+  const fg = tone === 'ok' ? '#0b2b1a' : tone === 'duck' ? t.duckInk : t.muted; // dark text on the green pill: white was 1.8:1
   return (
     <View style={{ borderWidth: 1.5, borderColor: tone ? bg : t.muted, backgroundColor: bg, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 1 }}>
       <Text style={{ color: fg, fontSize: 10.5, fontWeight: '800', letterSpacing: 0.4, textTransform: 'uppercase' }}>{children}</Text>
@@ -200,8 +201,10 @@ export function Toggle({ label, value, onChange }: { label: string; value: boole
 export function Screen({ children, narrow }: { children: React.ReactNode; narrow?: boolean }) {
   const width = useWidth();
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ alignItems: 'center', paddingHorizontal: width < 600 ? 16 : 28, paddingTop: 28, paddingBottom: 64 }} keyboardShouldPersistTaps="handled">
-      <View style={{ width: '100%', maxWidth: narrow ? 720 : 1040, gap: 18 }}>{children}</View>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ alignItems: 'center', paddingTop: 28, paddingBottom: 64 }} keyboardShouldPersistTaps="handled">
+      <View {...ds('pad')} style={{ width: '100%', alignItems: 'center', paddingHorizontal: width < 600 ? 16 : 28 }}>
+        <View style={{ width: '100%', maxWidth: narrow ? 720 : 1040, gap: 18 }}>{children}</View>
+      </View>
     </ScrollView>
   );
 }

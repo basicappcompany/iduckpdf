@@ -14,7 +14,6 @@ export function ToolCard({ tool, compact }: { tool: ToolDef; compact?: boolean }
       <Pressable
         onPress={nav(`/tool/${tool.id}`)}
         accessibilityRole="link"
-        accessibilityLabel={`${tool.name}: ${tool.short}`}
         style={((s: any) => [
           {
             flexGrow: 1,

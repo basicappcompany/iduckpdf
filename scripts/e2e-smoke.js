@@ -53,8 +53,10 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
     const isEngine = (u) => u.includes('/_expo/static/js/web/all-');
     ok('home does not download the PDF engine chunk', !seen.some(isEngine));
     seen.length = 0;
-    await probe.goto(BASE + '/tool/merge'); await probe.waitForTimeout(4500);
-    ok('tool page preloads the PDF engine chunk when idle', seen.some(isEngine));
+    await probe.goto(BASE + '/tool/merge'); await probe.waitForTimeout(1500);
+    ok('tool page does not load the PDF engine before any interaction', !seen.some(isEngine));
+    await probe.mouse.move(300, 300); await probe.waitForTimeout(3000);
+    ok('tool page preloads the PDF engine chunk on first interaction', seen.some(isEngine));
     await probe.close();
   }
   const frames = await page.evaluate(() => new Promise((res) => { let n = 0; const t0 = performance.now(); (function f() { n++; performance.now() - t0 < 1000 ? requestAnimationFrame(f) : res(n); })(); }));
@@ -82,7 +84,7 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
 
   // real merge through the UI with a native file chooser
   await page.goto(BASE + '/tool/merge');
-  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Choose PDF files/i }).first().click()]);
+  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select files/i }).first().click()]);
   await chooser.setFiles(['dist/_test/a.pdf', 'dist/_test/b.pdf']);
   await page.getByText('b.pdf').first().waitFor({ timeout: 5000 }).catch(() => {});
   ok('chosen files are listed', (await page.getByText('a.pdf').count()) > 0 && (await page.getByText('b.pdf').count()) > 0);

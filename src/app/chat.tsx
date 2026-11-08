@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useWidth } from '../lib/useWidth';
+import { ds } from '../lib/responsive';
 import { useTheme } from '../lib/theme';
 import { READY, bestMatch, type ToolDef } from '../tools';
 import { Btn, Chip, TextField, T } from '../ui/kit';
@@ -53,7 +54,7 @@ export default function Helper() {
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
       <Seo path="/chat" />
-      <View style={{ flex: 1, width: '100%', maxWidth: 780, paddingHorizontal: width < 600 ? 12 : 20 }}>
+      <View {...ds('chatpad')} style={{ flex: 1, width: '100%', maxWidth: 780, paddingHorizontal: width < 600 ? 12 : 20 }}>
         <View style={{ paddingTop: 16 }}>
           <T v="h1" style={{ fontSize: 26, lineHeight: 30, letterSpacing: -0.5 }}>Ask the PDF helper</T>
           <T v="small" muted>Describe your PDF job in plain words and get pointed to the right free tool.</T>

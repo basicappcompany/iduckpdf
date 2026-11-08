@@ -10,6 +10,7 @@ import { TOOL_SEO } from '../content/toolSeo';
 import { GUIDES, guideBySlug } from '../content/guides';
 import { HOME_FAQ } from '../content/homeFaq';
 import { PRIVACY, TERMS } from '../content/legal';
+import { RESPONSIVE_CSS } from './responsive';
 
 export type PageSeo = {
   title: string; // full <title>
@@ -225,7 +226,7 @@ function siteHeadHtml(): string {
     '<link rel="sitemap" type="application/xml" href="/sitemap.xml">',
     '<link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable site summary">',
     `<script type="application/ld+json">${JSON.stringify(orgLd)}</script>`,
-    '<style>html,body{background-color:#fffdf5}@media (prefers-color-scheme:dark){html,body{background-color:#121212}}</style>',
+    `<style>html,body{background-color:#fffdf5}@media (prefers-color-scheme:dark){html,body{background-color:#121212}}${RESPONSIVE_CSS}</style>`,
   ].join('');
 }
 

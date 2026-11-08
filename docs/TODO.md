@@ -76,5 +76,6 @@ No code can guarantee a ranking. These steps, which need your accounts, are what
 - [ ] **Analytics:** add cookie-free analytics (e.g. Cloudflare Web Analytics) to see search and AI referrals. Revisit the privacy wording if you add any.
 - [ ] **Keep content fresh:** edit `SITE.updated` in `src/config.ts` when copy changes (feeds the sitemap and "last updated" lines), add roughly one guide a month aimed at a real search query, and re-run `npm run audit` before every deploy.
 - [x] **Performance:** the PDF engine and tool code are now a lazy chunk, so first-load JavaScript dropped from 572 KB to 366 KB gzipped. What is left is the framework (about 294 KB gzipped, React Native for Web plus the router).
-- [ ] Run Lighthouse on the live site after deploying and note the scores here.
+- [x] Lighthouse run 2026-11-09 (see `TRACKER.md`). Re-run on the live site after each deploy: `npx lighthouse https://iduckpdf.com/ --only-categories=performance,accessibility,best-practices,seo`.
+- [ ] **Cloudflare Web Analytics is switched on** (a `static.cloudflareinsights.com/beacon.min.js` script loads on every page), which contradicts the privacy policy ("no analytics", "no third-party loading"). Either keep it and update `src/content/legal.ts` (and the About/home FAQ wording), or turn it off in Cloudflare (Workers & Pages → iduckpdf → Metrics → Web Analytics). Needs your decision.
 - [ ] *Later, carefully:* "alternative to X" comparison pages. They rank well, but only write claims about other products that you can back up.
