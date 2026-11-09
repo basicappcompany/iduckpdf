@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { CATEGORIES, TOOLS, inCategory, searchTools, type CategoryId } from '../tools';
+import { VISIBLE_CATEGORIES, TOOLS, inCategory, searchTools, type CategoryId } from '../tools';
 import { Chip, Hl, Screen, T, TextField, CardGrid } from '../ui/kit';
 import { ToolCard } from '../ui/ToolCard';
 import { Seo } from '../lib/seo';
@@ -12,7 +12,7 @@ export default function AllTools() {
   const [q, setQ] = useState(typeof params.q === 'string' ? params.q : '');
   const [cat, setCat] = useState<CategoryId | 'all'>('all');
   const found = useMemo(() => (q.trim() ? searchTools(q, 60) : TOOLS), [q]);
-  const cats = CATEGORIES.filter((c) => cat === 'all' || c.id === cat);
+  const cats = VISIBLE_CATEGORIES.filter((c) => cat === 'all' || c.id === cat);
 
   return (
     <Screen>
@@ -20,11 +20,11 @@ export default function AllTools() {
       <T v="h1">
         All <Hl>PDF tools</Hl>
       </T>
-      <T muted>{TOOLS.filter((t) => t.status === 'ready').length} ready to use, {TOOLS.filter((t) => t.status === 'soon').length} on the roadmap.</T>
+      <T muted>{TOOLS.filter((t) => t.status === 'soon').length ? `${TOOLS.filter((t) => t.status === 'ready').length} ready to use, ${TOOLS.filter((t) => t.status === 'soon').length} on the roadmap.` : `${TOOLS.length} tools, all ready to use.`}</T>
       <TextField value={q} onChange={setQ} placeholder="Filter by name or what you want to do…" />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         <Chip label="Everything" on={cat === 'all'} onPress={() => setCat('all')} small />
-        {CATEGORIES.map((c) => <Chip key={c.id} label={c.name} icon={c.icon} on={cat === c.id} onPress={() => setCat(c.id)} small />)}
+        {VISIBLE_CATEGORIES.map((c) => <Chip key={c.id} label={c.name} icon={c.icon} on={cat === c.id} onPress={() => setCat(c.id)} small />)}
       </View>
       {q.trim() ? (
         <CardGrid min={240} gap={14}>

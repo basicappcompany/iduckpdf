@@ -7,7 +7,7 @@ import { useWidthState } from '../lib/useWidth';
 import { ds } from '../lib/responsive';
 import { useTheme } from '../lib/theme';
 import { usePalette } from '../lib/palette';
-import { CATEGORIES, inCategory } from '../tools';
+import { CATEGORIES, VISIBLE_CATEGORIES, inCategory } from '../tools';
 import { Logo } from './Logo';
 import { Pill } from './kit';
 import { idForSlug, toolPath } from '../content/toolSlugs';
@@ -87,7 +87,7 @@ export function Sidebar() {
         <NavItem to="/pdf-tools" icon="🧰" label="All PDF tools" active={path === '/pdf-tools'} />
 
         <Text style={{ color: t.muted, fontSize: 11, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 12, marginBottom: 2, paddingHorizontal: 10 }}>Tools</Text>
-        {CATEGORIES.map((c) => (
+        {VISIBLE_CATEGORIES.map((c) => (
           <Group key={c.id} id={c.id} name={c.name} icon={c.icon} open={!!openCats[c.id]} onToggle={() => setOpenCats((o) => ({ ...o, [c.id]: !o[c.id] }))}>
             {inCategory(c.id).map((tl) => (
               <NavItem key={tl.id} to={toolPath(tl.id)} icon={tl.icon} label={tl.name} small active={toolId === tl.id} pill={tl.status === 'soon' ? 'soon' : undefined} />

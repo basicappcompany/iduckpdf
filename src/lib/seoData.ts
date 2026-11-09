@@ -179,7 +179,7 @@ export function seoForPath(raw: string): PageSeo {
     };
   }
   if (path === '/roadmap') {
-    return { title: full('Roadmap: Upcoming PDF Tools'), description: 'What iDuckPDF can do today and which tools are planned next, such as password protection, OCR and Office conversions.', path, noindex: false, type: 'website', jsonLd: [breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'Roadmap', path }])] };
+    return { title: full('Roadmap: What’s Next for iDuckPDF'), description: 'Every PDF tool announced for iDuckPDF is built. See what was added recently, what is on the ideas list, and suggest the next tool.', path, noindex: false, type: 'website', jsonLd: [breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'Roadmap', path }])] };
   }
   if (path === '/chat') {
     return { title: full('Ask the PDF Helper: Find the Right Tool'), description: 'Describe your PDF job in plain words and the iDuckPDF helper points you to the right free tool.', path, noindex: false, type: 'website', jsonLd: [breadcrumbLd([{ name: 'Home', path: '/' }, { name: 'Ask the helper', path }])] };

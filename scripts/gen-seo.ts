@@ -42,8 +42,10 @@ const facts = [
   `${SITE.name} is a free web app with ${READY.length} PDF tools. No sign-up, no watermark, no ads.`,
   'Most tools run entirely inside the user’s web browser, so the PDF is processed on their own device and not uploaded to our servers.',
   'Exceptions are the two AI tools (summarise, ask a question). They use an API key the user supplies and send the PDF’s text directly from the browser to the AI provider the user chose (OpenAI, Anthropic or Google).',
-  `${SOON.length} more tools are planned (password protection, OCR, signing, Office conversions). They are not built yet.`,
-  'Built with React Native (Expo); open-source libraries pdf-lib and pdf.js do the PDF work.',
+  SOON.length
+    ? `${SOON.length} more tools are planned and not built yet.`
+    : 'Every tool announced so far is built, including password protection, OCR, signing, form filling, and Word, Excel, PowerPoint and web page conversions. The Office conversions run in the browser with a simplified layout, so complex documents can look different.',
+  'Built with React Native (Expo); open-source libraries pdf-lib, pdf.js, JSZip and Tesseract.js do the PDF work.',
 ];
 const llms = `# ${SITE.name}
 
@@ -62,7 +64,7 @@ ${GUIDES.map((g) => `- [${g.title}](${abs('/guides/' + g.slug)}): ${g.descriptio
 - [About and privacy](${abs('/about')}): what happens to files and how the site is built
 - [Privacy policy](${abs('/privacy')}): what is and is not collected
 - [Terms of use](${abs('/terms')}): the plain terms for using the site
-- [Roadmap](${abs('/roadmap')}): planned tools and why they are not built yet
+- [Roadmap](${abs('/roadmap')}): recently added tools and what is next
 - [Full text of every tool and guide](${abs('/llms-full.txt')})
 `;
 writeFileSync(join(pub, 'llms.txt'), llms);

@@ -7,7 +7,7 @@ export const SITE = {
   tagline: 'PDFs, quacked open.',
   title: 'iDuckPDF: Free Online PDF Tools to Merge, Split, Compress and Edit',
   description:
-    'Free PDF tools that run in your browser: merge, split, compress, rotate, watermark, number pages, redact and more. No sign-up, no watermark, no ads.',
+    'Free PDF tools that run in your browser: merge, split, compress, sign, OCR, convert Word and Excel, protect and more. No sign-up, no watermark, no ads.',
   // TODO(docs/TODO.md): replace with the real inbox, or with a serverless endpoint.
   feedbackEmail: 'hello@iduckpdf.com',
   updated: '2026-11-09', // bump when content changes; used in sitemap, schema and "last updated" lines

@@ -42,7 +42,7 @@ export default function Donate() {
         Keep it <Hl>free</Hl>
       </T>
       <T muted style={{ fontSize: 17 }}>
-        iDuckPDF has no ads, no paywall and no account wall. A small tip pays for hosting and buys time to build the tools on the roadmap.
+        iDuckPDF has no ads, no paywall and no account wall. A small tip pays for hosting and buys time to keep improving the tools and building new ones.
       </T>
 
       {thanks ? (
