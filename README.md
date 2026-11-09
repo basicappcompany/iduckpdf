@@ -61,3 +61,4 @@ public/         robots.txt, manifest, _headers, _redirects (generated), icons, o
 - Every change goes on a branch and a pull request. CI must be green before merging; if it fails, fix it on the same branch. Merging to `main` deploys.
 - Old `/tool/<id>` and `/tools` addresses are redirected (generated `public/_redirects`).
 - Docs ride along with the change that needs them: update `docs/TRACKER.md`, `docs/TODO.md` and `docs/status.html` in the same pull request.
+- At the end of a work session run the `docs-sync` skill (`.claude/skills/docs-sync/SKILL.md`): it re-measures the figures and brings the status page, tracker, TODO and README in line in one pull request.
