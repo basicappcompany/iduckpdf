@@ -401,4 +401,32 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
       { q: 'Is my HTML uploaded?', a: 'No. It is converted inside your browser tab.' },
     ],
   },
+  'excel-to-pdf': {
+    title: 'Excel to PDF Converter (.xlsx, CSV), Free',
+    description: 'Convert an Excel workbook or CSV file to PDF in your browser: every sheet as a clean table with dates, percents and numbers formatted. Nothing is uploaded.',
+    answer: 'To convert Excel to PDF, add your .xlsx or CSV file and press Convert to PDF. Every sheet becomes a neatly laid-out table with the number, date and percent formats Excel shows. Wide sheets are scaled to fit, and the header row repeats on each page.',
+    steps: ['Add an Excel workbook (.xlsx) or a CSV file.', 'Choose which sheets, the page size and orientation, and whether the first row is a header.', 'Press Convert to PDF and download the result.'],
+    uses: ['Send a price list or report as a PDF', 'Print a long table with the header on every page', 'Turn a CSV export into something readable'],
+    faq: [
+      { q: 'Is my spreadsheet uploaded?', a: 'No. The workbook is read and converted inside your browser tab. Nothing is sent to a server.' },
+      { q: 'Will it look like my Excel formatting?', a: 'It shows every sheet as a clean table and keeps number, date and percent formats, but it does not reproduce colours, fonts, merged cells, charts or pictures. For a pixel-exact print, use Excel’s own Save as PDF.' },
+      { q: 'What about very wide sheets?', a: 'They are scaled down to fit the page. If that would make the text too small, the columns are split into groups printed one after another.' },
+      { q: 'Are formulas recalculated?', a: 'No. The PDF shows the values Excel saved with the file.' },
+      { q: 'Does it support .xls and .ods?', a: 'No, only .xlsx and CSV. Open older files in Excel and save as .xlsx first.' },
+    ],
+  },
+  'pdf-to-excel': {
+    title: 'PDF to Excel Converter: Extract Tables, Free',
+    description: 'Extract tables and text from a PDF into an Excel .xlsx workbook, in your browser. Columns are detected and numbers become real numbers. Not uploaded.',
+    answer: 'To convert a PDF to Excel, add the PDF and press Convert to Excel. The tool finds columns from where the text sits on each page and builds an .xlsx workbook, with numbers stored as real numbers. It works on PDFs with a text layer; scanned PDFs need OCR first.',
+    steps: ['Add a PDF that contains tables, such as a statement or an invoice.', 'Choose whether to find columns or keep one line per row, and one sheet per page or one sheet in total.', 'Press Convert to Excel and download the workbook, then check it against the PDF.'],
+    uses: ['Pull a bank or card statement into a spreadsheet', 'Extract line items from an invoice', 'Move a table from a report into Excel for analysis'],
+    faq: [
+      { q: 'Is my PDF uploaded?', a: 'No. The PDF is read and the workbook is built inside your browser tab.' },
+      { q: 'How does it find the columns?', a: 'It looks at where text sits on each page. Pieces of text that line up vertically form a column. This suits tables with clear spacing, but tables with no gap between columns cannot be split.' },
+      { q: 'Why is the result empty?', a: 'A scanned PDF is a picture with no text to read. Run it through Read scans (OCR) first, then convert the result.' },
+      { q: 'Are numbers real numbers?', a: 'Yes, by default. Plain numbers such as 1,234.50 or (45) become numeric cells. Codes like 007 and values with currency symbols stay as text so nothing is changed by mistake.' },
+      { q: 'Will merged cells and multi-page tables work?', a: 'Not perfectly. Merged cells and tables that run across pages may need tidying in Excel. Choose “Everything on one sheet” to keep a long table together.' },
+    ],
+  },
 };

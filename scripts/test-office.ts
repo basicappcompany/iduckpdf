@@ -10,6 +10,7 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { ALL_TOOLS } from '../src/tools/all';
 import type { PickedFile, ToolResult } from '../src/engine/types';
 import { ToolError } from '../src/engine/util';
+import { readXlsx } from '../src/engine/xlsx';
 
 (globalThis as any).DOMParser = XmlDOMParser;
 const warn = console.warn;
@@ -65,6 +66,18 @@ async function makeDocx(body: string, extra: Record<string, string> = {}): Promi
   z.file('[Content_Types].xml', '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>');
   z.file('word/document.xml', `<?xml version="1.0" encoding="UTF-8"?><w:document ${NS}><w:body>${body}</w:body></w:document>`);
   for (const [p, c] of Object.entries(extra)) z.file(p, c);
+  return z.generateAsync({ type: 'uint8array' });
+}
+
+/** A small .xlsx built by hand, so the tests do not depend on a spreadsheet library. */
+async function makeXlsx(sheets: { name: string; xml: string; state?: string }[], strings: string[] = []): Promise<Uint8Array> {
+  const z = new JSZip();
+  z.file('[Content_Types].xml', '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>');
+  z.file('xl/workbook.xml', '<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' + sheets.map((sh, i) => `<sheet name="${sh.name}" sheetId="${i + 1}" r:id="rId${i + 1}"${sh.state ? ` state="${sh.state}"` : ''}/>`).join('') + '</sheets></workbook>');
+  z.file('xl/_rels/workbook.xml.rels', '<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + sheets.map((_, i) => `<Relationship Id="rId${i + 1}" Type="x" Target="worksheets/sheet${i + 1}.xml"/>`).join('') + '</Relationships>');
+  z.file('xl/sharedStrings.xml', '<?xml version="1.0"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + strings.map((t) => `<si><t>${t}</t></si>`).join('') + '</sst>');
+  z.file('xl/styles.xml', '<?xml version="1.0"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.00"/></numFmts><cellXfs count="4"><xf numFmtId="0"/><xf numFmtId="14"/><xf numFmtId="10"/><xf numFmtId="164"/></cellXfs></styleSheet>');
+  sheets.forEach((sh, i) => z.file(`xl/worksheets/sheet${i + 1}.xml`, '<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + sh.xml + '</worksheet>'));
   return z.generateAsync({ type: 'uint8array' });
 }
 
@@ -142,6 +155,88 @@ async function makeDocx(body: string, extra: Record<string, string> = {}): Promi
   check('word: a file that is not a Word document is refused clearly', (await throws(() => run('word-to-pdf', { files: [pf('x.docx', new TextEncoder().encode('not a zip'))] }))) instanceof ToolError);
   const plainZip = await new JSZip().file('a.txt', 'hi').generateAsync({ type: 'uint8array' });
   check('word: a zip that is not a Word document is refused clearly', (await throws(() => run('word-to-pdf', { files: [pf('x.docx', plainZip)] }))) instanceof ToolError);
+
+  // ================= Excel to PDF =================
+  const strings = ['Item', 'Qty', 'Price', 'Date', 'Growth', 'Total', 'Apple', 'Pear', 'Hello notes'];
+  const sales = '<sheetData>' +
+    '<row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="C1" t="s"><v>2</v></c><c r="D1" t="s"><v>3</v></c><c r="E1" t="s"><v>4</v></c><c r="F1" t="s"><v>5</v></c></row>' +
+    '<row r="2"><c r="A2" t="s"><v>6</v></c><c r="B2"><v>3</v></c><c r="C2"><v>1.5</v></c><c r="D2" s="1"><v>45292</v></c><c r="E2" s="2"><v>0.125</v></c><c r="F2" s="3"><v>1234.5</v></c></row>' +
+    '<row r="3"><c r="A3" t="s"><v>7</v></c><c r="B3"><v>12</v></c><c r="C3"><v>0.3333333333333333</v></c><c r="D3" s="1"><v>45658</v></c><c r="E3" s="2"><v>-0.05</v></c><c r="F3" s="3"><v>99</v></c></row></sheetData>';
+  const notes = '<sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Inline note</t></is></c><c r="B1" t="b"><v>1</v></c></row></sheetData>';
+  const xlsx = await makeXlsx([{ name: 'Sales', xml: sales }, { name: 'Hidden', xml: notes, state: 'hidden' }, { name: 'Notes', xml: notes }], strings);
+  const read = await readXlsx(xlsx);
+  check('xlsx reader: numbers, dates, percent and thousands formats come out as Excel shows them', read[0].rows[1].map((c) => c.text).join('|') === 'Apple|3|1.5|2024-01-01|12.50%|1,234.50', read[0].rows[1].map((c) => c.text).join('|'));
+  check('xlsx reader: a long decimal is tidied and negatives keep their sign', read[0].rows[2][2].text === '0.3333333333' && read[0].rows[2][4].text === '-5.00%' && read[0].rows[2][3].text === '2025-01-01');
+  check('xlsx reader: hidden sheets are skipped and inline strings and booleans work', read.length === 2 && read[1].name === 'Notes' && read[1].rows[0][0].text === 'Inline note' && read[1].rows[0][1].text === 'TRUE');
+  r = await run('excel-to-pdf', { files: [pf('book.xlsx', xlsx)] });
+  pages = await pdfPages(r.files![0].bytes);
+  text = all(pages);
+  check('excel: every sheet is printed with its name, headers and formatted values', ['Sales', 'Item', 'Qty', 'Apple', 'Pear', '2024-01-01', '12.50%', '1,234.50', 'Notes', 'Inline note'].every((w) => text.includes(w)), text.slice(0, 100));
+  check('excel: a hidden sheet is not printed', !text.includes('Hidden'));
+  r = await run('excel-to-pdf', { files: [pf('book.xlsx', xlsx)] }, { sheets: 'first' });
+  check('excel: "first sheet only" leaves the others out', !all(await pdfPages(r.files![0].bytes)).includes('Inline note'));
+
+  // a long sheet: the header row repeats on every page
+  const longRows = '<sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Code</t></is></c><c r="B1" t="inlineStr"><is><t>Amount</t></is></c></row>' + Array.from({ length: 220 }, (_, i) => `<row r="${i + 2}"><c r="A${i + 2}" t="inlineStr"><is><t>ROW${i + 1}</t></is></c><c r="B${i + 2}"><v>${i + 1}</v></c></row>`).join('') + '</sheetData>';
+  r = await run('excel-to-pdf', { files: [pf('long.xlsx', await makeXlsx([{ name: 'Long', xml: longRows }]))] });
+  pages = await pdfPages(r.files![0].bytes);
+  check('excel: a 220-row sheet runs over several pages and keeps every row', pages.length >= 3 && Array.from({ length: 220 }, (_, i) => `ROW${i + 1} `).every((x) => all(pages).includes(x)), `${pages.length} pages`);
+  check('excel: the header row is repeated at the top of every page', pages.every((p) => p.text.includes('Code') && p.text.includes('Amount')));
+  r = await run('excel-to-pdf', { files: [pf('long.xlsx', await makeXlsx([{ name: 'Long', xml: longRows }]))] }, { header: false });
+  check('excel: with "first row is a header" off, the header is not repeated', (await pdfPages(r.files![0].bytes)).slice(1).every((p) => !p.text.includes('Code')));
+
+  // a very wide sheet is shrunk, then split into column groups, and nothing is lost
+  const wideCells = (row: number) => Array.from({ length: 36 }, (_, c) => { const col = c < 26 ? String.fromCharCode(65 + c) : 'A' + String.fromCharCode(65 + c - 26); return `<c r="${col}${row}" t="inlineStr"><is><t>${row === 1 ? 'Head' + c : 'Value number ' + c}</t></is></c>`; }).join('');
+  const wide = '<sheetData><row r="1">' + wideCells(1) + '</row><row r="2">' + wideCells(2) + '</row></sheetData>';
+  r = await run('excel-to-pdf', { files: [pf('wide.xlsx', await makeXlsx([{ name: 'Wide', xml: wide }]))] });
+  pages = await pdfPages(r.files![0].bytes);
+  check('excel: a very wide sheet keeps every column (landscape, shrunk or split into groups)', Array.from({ length: 36 }, (_, c) => 'Head' + c).every((h) => all(pages).includes(h)) && pages[0].width > pages[0].height, `${pages.length} pages, ${pages[0].width.toFixed(0)} wide`);
+
+  // CSV
+  const csv = 'Name;Score;Note\r\n"Smith, Jo";12,5;"said ""hi"""\r\nLee;7;plain\r\n';
+  r = await run('excel-to-pdf', { files: [pf('data.csv', new TextEncoder().encode(csv))] });
+  text = all(await pdfPages(r.files![0].bytes));
+  check('csv: a semicolon file with quotes and an embedded separator converts', ['Name', 'Smith, Jo', 'said "hi"', 'Lee', 'plain'].every((w) => text.includes(w)), text.slice(0, 80));
+  check('excel: something that is not an Excel file is refused with advice', (await throws(() => run('excel-to-pdf', { files: [pf('x.xlsx', new TextEncoder().encode('nope'))] }))) instanceof ToolError);
+
+  // ================= PDF to Excel =================
+  const tdoc = await PDFDocument.create();
+  const tf = await tdoc.embedFont(StandardFonts.Helvetica);
+  const tp = tdoc.addPage([595, 842]);
+  const put = (t: string, x: number, y: number, size = 11) => tp.drawText(t, { x, y, size, font: tf });
+  put('Statement for January', 50, 780, 16);
+  put('Item', 50, 740); put('Qty', 260, 740); put('Price', 360, 740); put('Note', 450, 740);
+  put('Apple', 50, 720); put('3', 268, 720); put('1,200.50', 345, 720); put('fresh', 450, 720);
+  put('Pear', 50, 700); put('12', 262, 700); put('(45.00)', 352, 700); put('007', 450, 700);
+  put('Plum', 50, 680); put('150', 255, 680); put('9.99', 362, 680); put('ok', 450, 680);
+  const t2 = tdoc.addPage([595, 842]);
+  t2.drawText('Second page text', { x: 50, y: 780, size: 12, font: tf });
+  const tbytes = await tdoc.save();
+  r = await run('pdf-to-excel', { files: [pf('stmt.pdf', tbytes, 'application/pdf')] });
+  let wbk = await readXlsx(r.files![0].bytes);
+  const rowText = (sheet: number, row: number) => wbk[sheet].rows[row].map((c) => c.text).join('|');
+  check('pdf to excel: one sheet per page', wbk.length === 2 && wbk[0].name === 'Page 1' && wbk[1].name === 'Page 2');
+  const flat = wbk[0].rows.map((rw) => rw.map((c) => c.text).join('|'));
+  check('pdf to excel: the heading line stays in the first column', flat[0].startsWith('Statement for January'), flat[0]);
+  check('pdf to excel: the table rows are split into the right columns', flat.some((l) => l === 'Item|Qty|Price|Note') && flat.some((l) => l === 'Apple|3|1200.5|fresh') && flat.some((l) => l === 'Plum|150|9.99|ok'), flat.join(' // '));
+  check('pdf to excel: (45.00) becomes -45 and the code 007 stays text', flat.some((l) => l === 'Pear|12|-45|007'), flat.join(' // '));
+  const numericCell = wbk[0].rows.flat().find((c) => c.text === '1200.5');
+  check('pdf to excel: numbers are stored as real numbers', !!numericCell && numericCell.num === true);
+  check('pdf to excel: the second page is on its own sheet', rowText(1, 0).startsWith('Second page text'));
+  r = await run('pdf-to-excel', { files: [pf('stmt.pdf', tbytes, 'application/pdf')] }, { numbers: false });
+  wbk = await readXlsx(r.files![0].bytes);
+  check('pdf to excel: with "numbers" off everything stays text', !wbk[0].rows.flat().some((c) => c.num));
+  r = await run('pdf-to-excel', { files: [pf('stmt.pdf', tbytes, 'application/pdf')] }, { sheets: 'one' });
+  wbk = await readXlsx(r.files![0].bytes);
+  check('pdf to excel: "everything on one sheet" gives a single sheet with both pages', wbk.length === 1 && wbk[0].rows.some((rw) => rw[0].text === 'Second page text') && wbk[0].rows.some((rw) => rw[0].text === 'Apple'));
+  r = await run('pdf-to-excel', { files: [pf('stmt.pdf', tbytes, 'application/pdf')] }, { mode: 'lines' });
+  wbk = await readXlsx(r.files![0].bytes);
+  check('pdf to excel: "one line per row" puts each line in column A', wbk[0].rows.some((rw) => rw[0].text.startsWith('Apple') && rw.length === 1));
+  const blank = await PDFDocument.create();
+  blank.addPage([300, 300]);
+  const blankBytes = await blank.save();
+  const scanErr = await throws(() => run('pdf-to-excel', { files: [pf('blank.pdf', blankBytes, 'application/pdf')] }));
+  check('pdf to excel: a PDF with no text layer points to OCR', scanErr instanceof ToolError && /Read scans \(OCR\)/.test((scanErr as Error).message));
 
   void PDFDocument; void StandardFonts;
   console.log(`\n${pass} passed, ${fail} failed.`);

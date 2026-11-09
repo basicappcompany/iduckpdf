@@ -2687,6 +2687,226 @@
   "status": "ready"
  },
  {
+  "id": "excel-to-pdf",
+  "name": "Excel to PDF",
+  "short": "Spreadsheets to tidy PDFs.",
+  "desc": "Convert an Excel workbook (.xlsx) or a CSV file into a PDF: every sheet becomes a neatly laid-out table, with dates, percentages and numbers formatted as Excel shows them. It runs in your browser, so nothing is uploaded.",
+  "category": "convert",
+  "icon": "📊",
+  "keywords": [
+   "excel",
+   "xlsx",
+   "csv",
+   "spreadsheet",
+   "excel to pdf",
+   "workbook",
+   "table",
+   "sheet"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "Excel workbook (.xlsx) or CSV file",
+    "accept": "any",
+    "hint": "Older .xls files: open them in Excel and save as .xlsx first."
+   }
+  ],
+  "options": [
+   {
+    "key": "sheets",
+    "type": "select",
+    "label": "Sheets",
+    "default": "all",
+    "options": [
+     {
+      "value": "all",
+      "label": "All sheets"
+     },
+     {
+      "value": "first",
+      "label": "First sheet only"
+     }
+    ]
+   },
+   {
+    "key": "orient",
+    "type": "select",
+    "label": "Page orientation",
+    "default": "auto",
+    "options": [
+     {
+      "value": "auto",
+      "label": "Automatic"
+     },
+     {
+      "value": "portrait",
+      "label": "Portrait"
+     },
+     {
+      "value": "landscape",
+      "label": "Landscape"
+     }
+    ]
+   },
+   {
+    "key": "size",
+    "type": "select",
+    "label": "Page size",
+    "default": "a4",
+    "options": [
+     {
+      "value": "a4",
+      "label": "A4"
+     },
+     {
+      "value": "letter",
+      "label": "US Letter"
+     },
+     {
+      "value": "a3",
+      "label": "A3"
+     },
+     {
+      "value": "legal",
+      "label": "US Legal"
+     }
+    ]
+   },
+   {
+    "key": "header",
+    "type": "toggle",
+    "label": "First row is a header",
+    "default": true,
+    "hint": "It is shaded and repeated at the top of every page."
+   },
+   {
+    "key": "grid",
+    "type": "toggle",
+    "label": "Draw cell borders",
+    "default": true
+   }
+  ],
+  "runLabel": "Convert to PDF",
+  "tips": [
+   "Wide sheets are shrunk to fit the page, and split into column groups if they are still too wide.",
+   "Values are shown as Excel last saved them. Formulas are not recalculated, and merged cells, colours, charts and pictures are not reproduced.",
+   "To print part of a sheet, copy it into a new workbook first."
+  ],
+  "faq": [
+   {
+    "q": "Is my spreadsheet uploaded?",
+    "a": "No. The workbook is read and converted inside your browser tab. Nothing is sent to a server."
+   },
+   {
+    "q": "Will it look like my Excel formatting?",
+    "a": "It shows every sheet as a clean table and keeps number, date and percent formats, but it does not reproduce colours, fonts, merged cells, charts or pictures. For a pixel-exact print, use Excel’s own Save as PDF."
+   },
+   {
+    "q": "What about very wide sheets?",
+    "a": "They are scaled down to fit. If that would make the text too small, the columns are split into groups printed one after another."
+   },
+   {
+    "q": "Does it support .xls and .ods?",
+    "a": "No, only .xlsx and CSV. Open older files in Excel and save as .xlsx first."
+   }
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "pdf-to-excel",
+  "name": "PDF to Excel",
+  "short": "Pull tables out into a spreadsheet.",
+  "desc": "Extract the tables and text of a PDF into an Excel workbook (.xlsx). Columns are found from where the text sits on the page, and numbers become real numbers. It works on PDFs with a text layer and runs in your browser, so the file is never uploaded.",
+  "category": "convert",
+  "icon": "📈",
+  "keywords": [
+   "table",
+   "excel",
+   "xlsx",
+   "extract table",
+   "pdf to excel",
+   "pdf to xlsx",
+   "bank statement",
+   "invoice",
+   "spreadsheet"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF with tables",
+    "accept": "pdf",
+    "hint": "Scanned PDFs have no text layer: run them through Read scans (OCR) first."
+   }
+  ],
+  "options": [
+   {
+    "key": "mode",
+    "type": "select",
+    "label": "Layout",
+    "default": "tables",
+    "options": [
+     {
+      "value": "tables",
+      "label": "Find the columns"
+     },
+     {
+      "value": "lines",
+      "label": "One line per row"
+     }
+    ],
+    "hint": "“Find the columns” works best on tables and statements."
+   },
+   {
+    "key": "sheets",
+    "type": "select",
+    "label": "Sheets",
+    "default": "perPage",
+    "options": [
+     {
+      "value": "perPage",
+      "label": "One sheet per page"
+     },
+     {
+      "value": "one",
+      "label": "Everything on one sheet"
+     }
+    ]
+   },
+   {
+    "key": "numbers",
+    "type": "toggle",
+    "label": "Turn numbers into numbers",
+    "default": true,
+    "hint": "So Excel can add them up. Codes with leading zeros and values with symbols stay as text."
+   }
+  ],
+  "runLabel": "Convert to Excel",
+  "tips": [
+   "Check the result against the PDF, especially tables with merged cells or tables that run across pages.",
+   "Works on PDFs with selectable text. For scans, use Read scans (OCR) first.",
+   "Statements and invoices usually convert well. Complex layouts may need tidying in Excel."
+  ],
+  "faq": [
+   {
+    "q": "Is my PDF uploaded?",
+    "a": "No. The PDF is read and the workbook is built inside your browser tab."
+   },
+   {
+    "q": "How does it find the columns?",
+    "a": "It looks at where text sits on each page. Pieces of text that line up vertically form a column. This suits tables with clear spacing; tables without any gaps between columns cannot be split."
+   },
+   {
+    "q": "Why is the result empty or strange?",
+    "a": "A scanned PDF has no text to read: use Read scans (OCR) first. Merged cells, tables that span pages and unusual layouts can also need tidying in Excel."
+   },
+   {
+    "q": "Are numbers real numbers?",
+    "a": "Yes, by default. Plain numbers like 1,234.50 or (45) become numeric cells. Codes such as 007 and values with currency symbols stay as text so nothing is changed by mistake."
+   }
+  ],
+  "status": "ready"
+ },
+ {
   "id": "pdf-to-word",
   "name": "PDF to Word",
   "short": "Get an editable .docx from a PDF.",
@@ -2700,42 +2920,6 @@
   ],
   "phase": 3,
   "reason": "Needs server-side layout analysis. Planned with a clear notice that files are sent to be converted.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
- },
- {
-  "id": "excel-to-pdf",
-  "name": "Excel to PDF",
-  "short": "Spreadsheets to tidy PDFs.",
-  "desc": "Convert .xlsx and .csv files into PDFs.",
-  "icon": "📊",
-  "keywords": [
-   "excel",
-   "xlsx",
-   "csv",
-   "spreadsheet"
-  ],
-  "phase": 3,
-  "reason": "Needs a spreadsheet layout engine, so it would run on a server.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
- },
- {
-  "id": "pdf-to-excel",
-  "name": "PDF to Excel",
-  "short": "Pull tables out into a spreadsheet.",
-  "desc": "Extract tables from a PDF into .xlsx.",
-  "icon": "📈",
-  "keywords": [
-   "table",
-   "excel",
-   "xlsx",
-   "extract table"
-  ],
-  "phase": 3,
-  "reason": "Table detection is hard to do reliably in the browser. Planned on a server.",
   "category": "soon",
   "inputs": [],
   "status": "soon"
