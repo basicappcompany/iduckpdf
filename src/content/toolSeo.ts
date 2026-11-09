@@ -375,4 +375,30 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
       { q: 'How long does it take?', a: 'A few seconds per page on a modern computer, longer on a phone. Keep the tab open while it works.' },
     ],
   },
+  'word-to-pdf': {
+    title: 'Word to PDF Converter (.docx), Free',
+    description: 'Convert a Word .docx document to PDF in your browser: headings, lists, tables, pictures and links. Nothing is uploaded. No sign-up.',
+    answer: 'To convert Word to PDF, add your .docx file and press Convert to PDF. The tool reads the document in your browser and builds a PDF with the same text, headings, lists, tables, pictures and links, using the document’s own page size. The layout is simplified, so check the result.',
+    steps: ['Add a Word document (.docx).', 'Keep the page size as in the document, or pick A4 or Letter.', 'Press Convert to PDF and download the result.'],
+    uses: ['Send a CV or report as a PDF without opening Word', 'Convert a contract that arrived as .docx', 'Turn meeting notes into a PDF you can share'],
+    faq: [
+      { q: 'Is my document uploaded?', a: 'No. The .docx is read and converted inside your browser tab. Nothing is sent to a server.' },
+      { q: 'Will it look exactly like Word?', a: 'Not always. It keeps the content and structure, but uses standard PDF fonts and its own line layout, and it does not reproduce headers, footers, text boxes, shapes or charts. Designed or complex documents can look different. For an exact copy, use Word’s own Save as PDF.' },
+      { q: 'What about non-English text?', a: 'Western European languages work. Other scripts (Greek, Cyrillic, Arabic, Hindi, Chinese, Japanese) cannot be drawn with the standard fonts and appear as question marks.' },
+      { q: 'Can it convert old .doc files?', a: 'No, only .docx. Open an older .doc in Word and save it as .docx first.' },
+    ],
+  },
+  'html-to-pdf': {
+    title: 'HTML to PDF: Convert a Web Page, Free',
+    description: 'Convert a saved web page or pasted HTML to a PDF in your browser: headings, lists, tables, links and embedded pictures. Nothing is uploaded.',
+    answer: 'To convert a web page to PDF, save the page from your browser (Ctrl+S, “Webpage, HTML only”) and add the file, or paste its HTML, then press Convert to PDF. You get a clean PDF of the text, headings, lists, tables and links. Style sheets and scripts are ignored.',
+    steps: ['Save the page with Ctrl+S and add the .html file, or paste the HTML into the box.', 'Choose the page size and text size.', 'Press Convert to PDF and download the result.'],
+    uses: ['Keep an article or documentation page as a PDF', 'Turn an HTML email or report into a PDF', 'Archive the text of a web page'],
+    faq: [
+      { q: 'Can I just enter the web address?', a: 'No. A browser tab cannot read other websites for privacy and security reasons. Save the page (Ctrl+S) or paste its HTML instead.' },
+      { q: 'Why does it not look like the website?', a: 'Style sheets and scripts are ignored. You get the content and structure in a clean layout, which suits articles and documentation. For an exact copy of a page, use your browser’s Print, then Save as PDF.' },
+      { q: 'Are pictures included?', a: 'Only pictures embedded in the HTML as data. Pictures linked from other files or websites are left out.' },
+      { q: 'Is my HTML uploaded?', a: 'No. It is converted inside your browser tab.' },
+    ],
+  },
 };

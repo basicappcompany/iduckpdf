@@ -38,9 +38,9 @@
 /tool/fill /fill-pdf-form 301
 /tool/ocr /ocr-pdf 301
 /tool/word-to-pdf /word-to-pdf 301
+/tool/html-to-pdf /html-to-pdf 301
 /tool/pdf-to-word /pdf-to-word 301
 /tool/excel-to-pdf /excel-to-pdf 301
 /tool/pdf-to-excel /pdf-to-excel 301
 /tool/pptx-to-pdf /powerpoint-to-pdf 301
-/tool/html-to-pdf /html-to-pdf 301
 /tool/* /pdf-tools 301
