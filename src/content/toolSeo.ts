@@ -160,7 +160,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     description: 'Place a PNG or JPG logo, stamp or signature image on PDF pages with size, position and transparency. Free.',
     answer: 'To add an image to a PDF, choose the PDF and the image, set its width as a percentage of the page, choose position and opacity, and press Place.',
     steps: ['Add the PDF and the image (PNG or JPG).', 'Set width, position and opacity.', 'Press Place now and download.'],
-    uses: ['Brand a document with a logo', 'Place a scanned signature', 'Add a “Paid” or “Approved” stamp image'],
+    uses: ['Brand a document with a logo', 'Place a scanned picture of a signature (or use Sign a PDF)', 'Add a “Paid” or “Approved” stamp image'],
     faq: [{ q: 'Does a transparent PNG stay transparent?', a: 'Yes. Transparent areas of a PNG let the page show through.' }],
   },
   'headers-footers': {
@@ -333,6 +333,32 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
       { q: 'The PDF opens, but I cannot print or copy. What do I do?', a: 'That is a permissions restriction rather than an open-password. Leave the password empty and the tool saves a copy without the restrictions.' },
       { q: 'Is my password sent to a server?', a: 'No. The file is decrypted inside your browser tab and neither the file nor the password leaves your device.' },
       { q: 'Are bookmarks and form fields kept?', a: 'Pages, text and images are kept. Bookmarks and form fields are not carried over to the unlocked copy.' },
+    ],
+  },
+  sign: {
+    title: 'Sign a PDF Online: Draw, Type or Upload, Free',
+    description: 'Add your signature to a PDF: draw it, type it or upload a picture, then drag it into place. Free, private, no sign-up, nothing is uploaded.',
+    answer: 'To sign a PDF, add the file, draw, type or upload your signature, drag it to the right spot on the page, and press Sign now. Your signature is placed as an image inside your browser, and you download the signed copy.',
+    steps: ['Add the PDF you want to sign.', 'Draw your signature with a finger or mouse, type it, or upload a picture of it.', 'Drag it into place and resize it, choose which pages it goes on, then press Sign now and download.'],
+    uses: ['Sign a contract or rental agreement without printing it', 'Initial every page of a document', 'Sign a form on your phone with your finger'],
+    faq: [
+      { q: 'Is this a legally binding signature?', a: 'It is a visual (electronic) signature, which many everyday documents accept. It is not a certificate-based digital signature. Check what the other party or your local rules require.' },
+      { q: 'Is my signature stored or uploaded?', a: 'No. It is drawn and placed inside your browser tab and is gone when you close it. Nothing is sent to a server.' },
+      { q: 'Can I sign in more than one place?', a: 'Yes. Download the signed copy and run it through the tool again to add another signature or your initials.' },
+      { q: 'Does it work on a phone?', a: 'Yes. You can draw with your finger, and drag or resize the signature by touch.' },
+    ],
+  },
+  fill: {
+    title: 'Fill in a PDF Form Online, Free',
+    description: 'Fill in the text boxes, check boxes, drop-downs and radio buttons of a PDF form and save the result. Free and private: nothing leaves your browser.',
+    answer: 'To fill in a PDF form, add the file, complete the fields the tool lists (text boxes, check boxes, drop-downs and radio buttons), choose whether to make the answers permanent, and press Fill form. You download a completed copy.',
+    steps: ['Add a PDF form that has fillable fields.', 'Complete the fields that appear below the file.', 'Optionally tick “Make the answers permanent”, press Fill form and download.'],
+    uses: ['Complete an application or registration form', 'Fill in a tax or HR form and send a flattened copy', 'Prepare many copies of a form with the same answers'],
+    faq: [
+      { q: 'Why does my PDF show no fields?', a: 'Many PDFs are just pictures of forms. Only PDFs created with interactive fields can be filled this way. For other PDFs, use Write on a PDF to place text anywhere.' },
+      { q: 'What does “make the answers permanent” do?', a: 'It flattens the form: your answers are merged into the page and the boxes disappear, so they cannot be edited again. Do this for the copy you send.' },
+      { q: 'Is my information uploaded?', a: 'No. The form is read and filled inside your browser tab and nothing is sent to a server.' },
+      { q: 'Can I add my signature afterwards?', a: 'Yes. Run the filled copy through the Sign a PDF tool.' },
     ],
   },
 };

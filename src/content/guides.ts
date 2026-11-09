@@ -218,6 +218,46 @@ export const GUIDES: Guide[] = [
       { q: 'Does it change the content?', a: 'Pages, text and images are kept as they are. Bookmarks and form fields are not carried over to the unlocked copy.' },
     ],
   },
+  {
+    slug: 'how-to-sign-a-pdf',
+    title: 'How to sign a PDF without printing it',
+    seoTitle: 'How to Sign a PDF Online Without Printing (Free)',
+    description: 'Draw, type or upload your signature, drag it into place and download the signed PDF. Works on a phone or computer, with nothing uploaded.',
+    tool: 'sign',
+    related: ['fill', 'image-watermark', 'lock'],
+    intro: 'To sign a PDF without printing it, open the Sign a PDF tool, add the document, draw or type your signature, drag it where it belongs and download the signed copy. It takes about a minute, works on phones, and nothing is uploaded.',
+    sections: [
+      { h: 'Sign a PDF in four steps', p: ['Open Sign a PDF and add your document. Make your signature: draw it with a finger or mouse, type your name in a handwriting style, or upload a photo of your signature on white paper.', 'Use Prev and Next to find the right page. Drag the signature to the signature line and pull the corner handle, or use the size slider, until it fits.', 'Choose whether it goes on this page only, every page (handy for initials), or just the first or last page. Press Sign now and download the result.'] },
+      { h: 'Getting a clean signature', p: ['A photo of a signature on plain white paper works best. Turn on “Remove the white background” so only the ink is placed on the document, not a white box around it. A thick felt-tip pen scans better than a thin ballpoint.'] },
+      { h: 'Is it a legal signature?', p: ['The tool places a visual electronic signature, which is accepted for many everyday documents. It is not a certificate-based digital signature that proves who signed and detects later changes. If a contract or authority requires one, ask what they accept.'] },
+      { h: 'Protect the signed copy', p: ['A signature image can be copied by anyone who has the file. Add a password with Add a password before you share a signed document widely, and keep the unsigned original.'] },
+    ],
+    faq: [
+      { q: 'Does my signature get uploaded?', a: 'No. It is created and placed inside your browser tab.' },
+      { q: 'Can I sign on my phone?', a: 'Yes. Draw with your finger and move or resize the signature by touch.' },
+      { q: 'Can I add text such as a date next to my signature?', a: 'Yes. Use Write on a PDF on the signed copy to place the date or a name.' },
+    ],
+  },
+  {
+    slug: 'how-to-fill-in-a-pdf-form',
+    title: 'How to fill in a PDF form online',
+    seoTitle: 'How to Fill In a PDF Form Online (Free, Private)',
+    description: 'Complete the text boxes, check boxes and drop-downs of a PDF form, save a copy, and make the answers permanent. Nothing leaves your browser.',
+    tool: 'fill',
+    related: ['sign', 'flatten', 'add-text'],
+    intro: 'To fill in a PDF form online, open Fill in a form, add the PDF, type into the fields it lists and download the completed copy. Everything is done in your browser, so your answers are not uploaded.',
+    sections: [
+      { h: 'Fill in a form in three steps', p: ['Open Fill in a form and add the PDF. The tool reads the form and lists every text box, check box, drop-down and radio button it finds.', 'Complete the fields. Existing answers are already filled in, so you can also correct a form someone started.', 'Press Fill form and download. Tick “Make the answers permanent” if you want to send a copy that cannot be edited.'] },
+      { h: 'If no fields appear', p: ['Many “forms” are just pictures of a form, with no interactive fields. The tool will say so. For those, use Write on a PDF to place text exactly where each answer belongs, then Sign a PDF for your signature.'] },
+      { h: 'Make the answers permanent', p: ['An unflattened form can still be edited by whoever receives it. Flattening merges your answers into the page and removes the boxes. Keep an unflattened copy for yourself in case you need to change an answer.'] },
+      { h: 'Special characters', p: ['Standard form fonts cover English and most European letters. If an answer contains characters the font cannot show, the tool tells you instead of producing a broken file.'] },
+    ],
+    faq: [
+      { q: 'Does it work for any PDF form?', a: 'It works for PDFs with interactive form fields, the most common kind. Pictures of forms need Write on a PDF instead.' },
+      { q: 'Are my answers sent anywhere?', a: 'No. Nothing leaves your browser tab.' },
+      { q: 'Can I fill several copies of the same form?', a: 'Yes. Fill and download one, then add the original again for the next copy.' },
+    ],
+  },
 ];
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug);

@@ -5,7 +5,7 @@
  * Test files are generated here with pdf-lib, so nothing needs to be checked in.
  */
 const { chromium } = require(process.env.PLAYWRIGHT_CORE || 'playwright-core');
-const { PDFDocument, StandardFonts } = require('pdf-lib');
+const { PDFDocument, StandardFonts, degrees, PDFName, PDFArray, PDFRawStream, decodePDFRawStream } = require('pdf-lib');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -44,6 +44,40 @@ async function download(page) {
   await dl.saveAs(out);
   return out;
 }
+/** Where the image on a page ended up, in the page's own coordinates: the four corners of the unit square under the page's CTM. */
+async function imageCorners(bytes, pageIndex) {
+  const doc = await PDFDocument.load(bytes);
+  const page = doc.getPage(pageIndex);
+  const c = page.node.Contents();
+  const streams = c instanceof PDFArray ? Array.from({ length: c.size() }, (_, i) => doc.context.lookup(c.get(i))) : [c];
+  const text = streams.map((x) => Buffer.from(decodePDFRawStream(x).decode()).toString('latin1')).join('\n');
+  const before = text.slice(0, text.lastIndexOf(' Do'));
+  const start = before.lastIndexOf('q');
+  const nums = [...before.slice(start).matchAll(/(-?[\d.]+(?:e-?\d+)?) (-?[\d.]+(?:e-?\d+)?) (-?[\d.]+(?:e-?\d+)?) (-?[\d.]+(?:e-?\d+)?) (-?[\d.]+(?:e-?\d+)?) (-?[\d.]+(?:e-?\d+)?) cm/g)].map((m) => m.slice(1, 7).map(Number));
+  let ctm = [1, 0, 0, 1, 0, 0];
+  const mul = (m, n) => [m[0] * n[0] + m[1] * n[2], m[0] * n[1] + m[1] * n[3], m[2] * n[0] + m[3] * n[2], m[2] * n[1] + m[3] * n[3], m[4] * n[0] + m[5] * n[2] + n[4], m[4] * n[1] + m[5] * n[3] + n[5]];
+  for (const m of nums) ctm = mul(m, ctm); // each new matrix is applied before the ones already in force
+  const pt = (u, v) => [ctm[0] * u + ctm[2] * v + ctm[4], ctm[1] * u + ctm[3] * v + ctm[5]];
+  return [pt(0, 0), pt(1, 0), pt(1, 1), pt(0, 1)];
+}
+/** Convert page coordinates to displayed coordinates (top-left origin) for a page rotation. */
+function displayed([px, py], r, W, H) {
+  if (r === 0) return [px, H - py];
+  if (r === 90) return [py, px];
+  if (r === 180) return [W - px, py];
+  return [H - py, W - px];
+}
+const drawSignature = async (page) => {
+  const pad = page.locator('canvas[aria-label^="Signature drawing area"]');
+  await pad.waitFor({ timeout: 8000 });
+  const b = await pad.boundingBox();
+  await page.mouse.move(b.x + b.width * 0.15, b.y + b.height * 0.6);
+  await page.mouse.down();
+  for (let i = 0; i <= 24; i++) await page.mouse.move(b.x + b.width * (0.15 + i * 0.03), b.y + b.height * (0.6 - 0.35 * Math.sin(i / 3)), { steps: 2 });
+  await page.mouse.up();
+  await page.getByAltText('Preview of your signature').waitFor({ timeout: 5000 });
+};
+
 const fillPasswords = (a, b) => async (page) => {
   const boxes = page.locator('input[type=password]');
   await boxes.nth(0).fill(a);
@@ -52,7 +86,7 @@ const fillPasswords = (a, b) => async (page) => {
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true });
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 1800 }, acceptDownloads: true });
   const page = await ctx.newPage();
   const problems = [];
   page.on('pageerror', (e) => problems.push('pageerror: ' + e.message.slice(0, 160)));
@@ -80,6 +114,115 @@ const fillPasswords = (a, b) => async (page) => {
   const unlockedPath = await download(page);
   const reopened = await PDFDocument.load(fs.readFileSync(unlockedPath)).catch(() => null);
   ok('unlock: the unlocked file opens without a password and has 3 pages', !!reopened && reopened.getPageCount() === 3);
+
+  // ---------- sign: draw, place, run, and check the signature landed where it was dragged ----------
+  for (const rot of [0, 90]) {
+    const d = await PDFDocument.create();
+    const font = await d.embedFont(StandardFonts.Helvetica);
+    const pg = d.addPage([400, 500]);
+    pg.drawText('Sign here please', { x: 40, y: 440, size: 22, font });
+    if (rot) pg.setRotation(degrees(rot));
+    const target = path.join(TMP, `sign-${rot}.pdf`);
+    fs.writeFileSync(target, await d.save());
+
+    await page.goto(BASE + '/sign-pdf');
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select file/i }).first().click()]);
+    await chooser.setFiles([target]);
+    await page.getByAltText(/^Page 1 of your PDF/).waitFor({ timeout: 15000 });
+    await drawSignature(page);
+    const overlay = page.locator('[aria-label^="Your signature. Drag"]');
+    await overlay.waitFor({ timeout: 5000 });
+    ok(`sign (page rotated ${rot}): the page preview and the signature overlay appear`, (await overlay.count()) === 1);
+
+    // drag the signature to the upper left area of the page
+    const pageBox = await page.getByAltText(/^Page 1 of your PDF/).boundingBox();
+    const ob = await overlay.boundingBox();
+    await page.mouse.move(ob.x + ob.width / 2, ob.y + ob.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(pageBox.x + pageBox.width * 0.3, pageBox.y + pageBox.height * 0.25, { steps: 8 });
+    await page.mouse.up();
+    const ob2 = await overlay.boundingBox();
+    const fx = (ob2.x - pageBox.x) / pageBox.width; // displayed top-left of the signature, as fractions of the displayed page
+    const fy = (ob2.y - pageBox.y) / pageBox.height;
+    const fw = ob2.width / pageBox.width;
+    ok(`sign (page rotated ${rot}): dragging moves the signature to the upper left`, fx < 0.4 && fy < 0.4 && fx >= 0 && fy >= 0, `x=${fx.toFixed(2)} y=${fy.toFixed(2)}`);
+
+    await page.getByRole('button', { name: /Sign now/i }).last().click();
+    ok(`sign (page rotated ${rot}): runs and finishes`, await done(page));
+    const out = fs.readFileSync(await download(page));
+    const cs = await imageCorners(out, 0);
+    const W = 400, H = 500;
+    const dc = cs.map((c) => displayed(c, rot, W, H));
+    const Wd = rot === 90 ? H : W, Hd = rot === 90 ? W : H;
+    const left = Math.min(...dc.map((c) => c[0])) / Wd, top = Math.min(...dc.map((c) => c[1])) / Hd, width = (Math.max(...dc.map((c) => c[0])) - Math.min(...dc.map((c) => c[0]))) / Wd;
+    ok(`sign (page rotated ${rot}): in the PDF the signature sits where it was dragged (within 1.5% of the page)`, Math.abs(left - fx) < 0.015 && Math.abs(top - fy) < 0.015 && Math.abs(width - fw) < 0.015, `want ${fx.toFixed(3)},${fy.toFixed(3)},${fw.toFixed(3)} got ${left.toFixed(3)},${top.toFixed(3)},${width.toFixed(3)}`);
+  }
+
+  // typed and uploaded signatures, and keyboard / slider resizing
+  {
+    await page.goto(BASE + '/sign-pdf');
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select file/i }).first().click()]);
+    await chooser.setFiles([src]);
+    await page.getByAltText(/^Page 1 of your PDF/).waitFor({ timeout: 15000 });
+    await page.getByRole('button', { name: 'Type', exact: true }).click();
+    await page.getByLabel('Your signature as text').fill('Jane Q. Public');
+    await page.getByAltText('Preview of your signature').waitFor({ timeout: 5000 });
+    ok('sign: a typed signature produces a preview', true);
+    const overlay = page.locator('[aria-label^="Your signature. Drag"]');
+    await overlay.waitFor({ timeout: 5000 });
+    const w0 = (await overlay.boundingBox()).width;
+    await overlay.focus();
+    for (let i = 0; i < 5; i++) await page.keyboard.press('+');
+    await page.waitForTimeout(150);
+    ok('sign: the + key makes the signature larger', (await overlay.boundingBox()).width > w0 + 5);
+    await page.getByRole('button', { name: 'Upload', exact: true }).click();
+    const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAYAAAD0In+KAAAAEklEQVR4nGNgYGD4z8DAwMAAAAAaAAIAmZ2bAAAAAElFTkSuQmCC', 'base64');
+    await page.locator('input[type=file][aria-label^="Choose a picture"]').setInputFiles({ name: 'sig.png', mimeType: 'image/png', buffer: png });
+    ok('sign: an uploaded picture produces a preview', await page.getByAltText('Preview of your signature').waitFor({ timeout: 5000 }).then(() => true).catch(() => false));
+    await page.getByRole('button', { name: /Sign now/i }).last().click();
+    ok('sign: refuses nothing when a signature exists (runs)', await done(page));
+    await page.goto(BASE + '/sign-pdf');
+    const [c2] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select file/i }).first().click()]);
+    await c2.setFiles([src]);
+    await page.getByRole('button', { name: /Sign now/i }).last().click();
+    ok('sign: running without a signature explains what to do', await errorText(page, /Create your signature first/));
+  }
+
+  // ---------- fill: a form with text, checkbox and dropdown ----------
+  {
+    const d = await PDFDocument.create();
+    const pg = d.addPage([400, 500]);
+    const form = d.getForm();
+    form.createTextField('fullname').addToPage(pg, { x: 30, y: 440, width: 220, height: 24 });
+    form.createCheckBox('subscribe').addToPage(pg, { x: 30, y: 400, width: 16, height: 16 });
+    const dd = form.createDropdown('country');
+    dd.addOptions(['India', 'Spain', 'Japan']);
+    dd.addToPage(pg, { x: 30, y: 360, width: 160, height: 24 });
+    const formPath = path.join(TMP, 'form.pdf');
+    fs.writeFileSync(formPath, await d.save());
+
+    await page.goto(BASE + '/fill-pdf-form');
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select file/i }).first().click()]);
+    await chooser.setFiles([formPath]);
+    ok('fill: the form fields are listed', await page.getByText('fullname').first().waitFor({ timeout: 15000 }).then(() => true).catch(() => false));
+    await page.locator('input').filter({ hasNot: page.locator('[type=file]') }).last().fill('Jane Doe').catch(() => {});
+    // the text box sits right under its label
+    const box = page.getByText('fullname', { exact: true }).first().locator('xpath=following::input[1]');
+    await box.fill('Jane Doe');
+    await page.getByText('subscribe', { exact: true }).first().click();
+    await page.getByText('Spain', { exact: true }).first().click();
+    await page.getByRole('button', { name: /Fill form/i }).last().click();
+    ok('fill: runs and finishes', await done(page));
+    const outPath = await download(page);
+    const back = await PDFDocument.load(fs.readFileSync(outPath));
+    const bf = back.getForm();
+    ok('fill: the downloaded PDF holds the typed text, the tick and the choice', bf.getTextField('fullname').getText() === 'Jane Doe' && bf.getCheckBox('subscribe').isChecked() && bf.getDropdown('country').getSelected()[0] === 'Spain');
+
+    await page.goto(BASE + '/fill-pdf-form');
+    const [c3] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select file/i }).first().click()]);
+    await c3.setFiles([src]);
+    ok('fill: a PDF without fields explains itself and offers Write on a PDF', await page.getByText(/no fillable fields/i).first().waitFor({ timeout: 10000 }).then(() => true).catch(() => false));
+  }
 
   // ---------- (more groups are added below as tools ship) ----------
 
