@@ -2237,6 +2237,151 @@
   "status": "ready"
  },
  {
+  "id": "sign",
+  "name": "Sign a PDF",
+  "short": "Draw, type or upload a signature and place it on the page.",
+  "desc": "Add your signature to a PDF. Draw it with your finger or mouse, type it, or upload a picture, then drag it into place and resize it. Everything happens in your browser tab, so the document and your signature never leave your device.",
+  "category": "markup",
+  "icon": "🖊️",
+  "keywords": [
+   "signature",
+   "sign",
+   "initial",
+   "esign",
+   "e-sign",
+   "autograph",
+   "sign document",
+   "handwritten"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF to sign",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "signature",
+    "type": "signature",
+    "label": "Your signature",
+    "hint": "Draw it, type it or upload a picture of it."
+   },
+   {
+    "key": "placement",
+    "type": "placement",
+    "label": "Place it on the page",
+    "signatureKey": "signature",
+    "hint": "Drag the signature where you want it. Drag the corner, or use the size slider, to resize it."
+   },
+   {
+    "key": "applyTo",
+    "type": "select",
+    "label": "Put it on",
+    "default": "this",
+    "options": [
+     {
+      "value": "this",
+      "label": "This page"
+     },
+     {
+      "value": "all",
+      "label": "Every page"
+     },
+     {
+      "value": "first",
+      "label": "First page"
+     },
+     {
+      "value": "last",
+      "label": "Last page"
+     }
+    ],
+    "hint": "Handy for initialling every page."
+   }
+  ],
+  "runLabel": "Sign now",
+  "tips": [
+   "Your signature is added as a picture. It is a visual signature, not a certified digital one.",
+   "To sign in more than one place, run the tool again on the signed copy."
+  ],
+  "faq": [
+   {
+    "q": "Is this a legally binding signature?",
+    "a": "It is a visual (electronic) signature, which many everyday documents accept. It is not a certificate-based digital signature. Check what the recipient or your local rules require."
+   },
+   {
+    "q": "Is my signature stored or uploaded?",
+    "a": "No. It is drawn and placed inside your browser tab and is gone when you close it. Nothing is sent to a server."
+   },
+   {
+    "q": "Can I sign more than once on a page?",
+    "a": "Yes. Download the signed copy and run it through the tool again to add another signature or initials."
+   }
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "fill",
+  "name": "Fill in a form",
+  "short": "Type into the fillable fields of a PDF form.",
+  "desc": "Fill in an interactive PDF form: text boxes, check boxes, drop-downs and radio buttons are listed for you to complete, then saved into a new PDF. Optionally make the answers permanent. Everything stays in your browser.",
+  "category": "markup",
+  "icon": "📋",
+  "keywords": [
+   "form",
+   "fillable",
+   "acroform",
+   "fields",
+   "fill form",
+   "fill out",
+   "complete form",
+   "checkbox",
+   "application"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF form",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "fields",
+    "type": "formfields",
+    "label": "Form fields"
+   },
+   {
+    "key": "flatten",
+    "type": "toggle",
+    "label": "Make the answers permanent",
+    "default": false,
+    "hint": "Turns the fields into ordinary page content so they can no longer be edited. Do this for the copy you send."
+   }
+  ],
+  "runLabel": "Fill form",
+  "tips": [
+   "Only forms with real fillable fields are listed. For a flat PDF with no fields, use “Write on a PDF” to place text anywhere.",
+   "Keep the unflattened copy if you may need to change an answer later."
+  ],
+  "faq": [
+   {
+    "q": "Why does my PDF show no fields?",
+    "a": "Many PDFs are just pictures of forms. Only PDFs created with interactive fields can be filled this way. For other PDFs, use “Write on a PDF”."
+   },
+   {
+    "q": "What does “make the answers permanent” do?",
+    "a": "It flattens the form: your answers are merged into the page and the boxes disappear. Flattened forms cannot be edited again."
+   },
+   {
+    "q": "Is my data uploaded?",
+    "a": "No. The form is read and filled inside your browser tab."
+   }
+  ],
+  "status": "ready"
+ },
+ {
   "id": "ocr",
   "name": "Read scans (OCR)",
   "short": "Make scanned pages searchable and copyable.",
@@ -2251,42 +2396,6 @@
   ],
   "phase": 2,
   "reason": "Needs an in-browser OCR engine and language packs, which are large downloads.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
- },
- {
-  "id": "sign",
-  "name": "Sign a PDF",
-  "short": "Draw or type a signature and place it.",
-  "desc": "Add your signature to a document and position it on the page.",
-  "icon": "🖊️",
-  "keywords": [
-   "signature",
-   "sign",
-   "initial",
-   "esign"
-  ],
-  "phase": 2,
-  "reason": "Needs a drawing pad and drag-to-place editor. For now, use “Logo or image stamp” with a picture of your signature.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
- },
- {
-  "id": "fill",
-  "name": "Fill in a form",
-  "short": "Type into fillable form fields.",
-  "desc": "Fill in the fields of an interactive PDF form.",
-  "icon": "📋",
-  "keywords": [
-   "form",
-   "fillable",
-   "acroform",
-   "fields"
-  ],
-  "phase": 2,
-  "reason": "Needs a field editor. For now, use “Write on a PDF” to place text.",
   "category": "soon",
   "inputs": [],
   "status": "soon"

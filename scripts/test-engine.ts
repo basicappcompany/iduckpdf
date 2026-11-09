@@ -2,7 +2,8 @@
  * Engine smoke tests: runs every tool that does not need a browser canvas against generated PDFs.
  * Run:  npx tsx scripts/test-engine.ts
  */
-import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { PDFDict, PDFDocument, PDFName, StandardFonts, degrees } from 'pdf-lib';
+import { corners, placeImage } from '../src/engine/placement';
 import { ALL_TOOLS } from '../src/tools/all';
 
 const READY = ALL_TOOLS.filter((t) => t.status === 'ready');
@@ -196,6 +197,90 @@ const pages = async (b: Uint8Array) => (await PDFDocument.load(b)).getPageCount(
     const rb = await restricted.save();
     ur = await run('unlock', { files: [pf('restricted.pdf', rb)] }, { password: '' });
     check('unlock: lifts restrictions on a PDF that opens without a password', !has(ur.files![0].bytes, '/Encrypt') && (await pages(ur.files![0].bytes)) === 1);
+  }
+
+  // ---- sign: geometry, then the tool ----
+  {
+    const crop = { x: 0, y: 0, width: 400, height: 600 };
+    const inside = (c: [number, number][], b = crop) => c.every(([x, y]) => x >= b.x - 0.01 && x <= b.x + b.width + 0.01 && y >= b.y - 0.01 && y <= b.y + b.height + 0.01);
+    // the image's displayed top-left corner is local corner (0, height); at x=y=0 it must land on the displayed top-left of the page
+    const expectTopLeft: Record<number, [number, number]> = { 0: [0, 600], 90: [0, 0], 180: [400, 0], 270: [400, 600] };
+    for (const r of [0, 90, 180, 270]) {
+      const p = placeImage(crop, r, { x: 0, y: 0, w: 0.25 }, 2);
+      const tl = corners(p)[3];
+      check(`placement: rotation ${r}, top-left lands on the displayed top-left corner`, Math.abs(tl[0] - expectTopLeft[r][0]) < 0.01 && Math.abs(tl[1] - expectTopLeft[r][1]) < 0.01, tl.map((v) => v.toFixed(1)).join(','));
+      const q = placeImage(crop, r, { x: 5, y: 5, w: 0.3 }, 2); // far off the page: must be pulled back inside
+      check(`placement: rotation ${r}, an off-page position is clamped inside the page`, inside(corners(q)));
+      const w = placeImage({ x: 50, y: 30, width: 400, height: 600 }, r, { x: 0.4, y: 0.4, w: 0.2 }, 3);
+      check(`placement: rotation ${r}, respects a crop box that does not start at 0,0`, inside(corners(w), { x: 50, y: 30, width: 400, height: 600 }));
+    }
+
+    const sharp = (await import('sharp')).default;
+    const png = await sharp({ create: { width: 200, height: 100, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 1 } } }).png().toBuffer();
+    const sigUrl = 'data:image/png;base64,' + png.toString('base64');
+    const two = await PDFDocument.create();
+    two.addPage([400, 600]);
+    const rotated = two.addPage([400, 600]);
+    rotated.setRotation(degrees(90));
+    const twoBytes = await two.save();
+    const images = (doc: PDFDocument, i: number) => {
+      const xo = doc.getPage(i).node.Resources()?.lookupMaybe(PDFName.of('XObject'), PDFDict);
+      return xo ? xo.keys().length : 0;
+    };
+    let sr = await run('sign', { files: [pf('two.pdf', twoBytes)] }, { signature: sigUrl, placement: { page: 2, x: 0.5, y: 0.8, w: 0.3 }, applyTo: 'this' });
+    let sd = await PDFDocument.load(sr.files![0].bytes);
+    check('sign: one page signed, the other left alone', images(sd, 1) === 1 && images(sd, 0) === 0);
+    sr = await run('sign', { files: [pf('two.pdf', twoBytes)] }, { signature: sigUrl, placement: { page: 1, x: 0.1, y: 0.1, w: 0.2 }, applyTo: 'all' });
+    sd = await PDFDocument.load(sr.files![0].bytes);
+    check('sign: "every page" signs both pages', images(sd, 0) === 1 && images(sd, 1) === 1);
+    sr = await run('sign', { files: [pf('two.pdf', twoBytes)] }, { signature: sigUrl, placement: { page: 1, x: 0.1, y: 0.1, w: 0.2 }, applyTo: 'last' });
+    sd = await PDFDocument.load(sr.files![0].bytes);
+    check('sign: "last page" signs only the last page', images(sd, 1) === 1 && images(sd, 0) === 0);
+    check('sign: page count is unchanged', sd.getPageCount() === 2);
+    try {
+      await run('sign', { files: [pf('two.pdf', twoBytes)] }, { signature: '', placement: { page: 1, x: 0, y: 0, w: 0.3 } });
+      check('sign: no signature is refused', false, 'did not throw');
+    } catch (e) {
+      check('sign: no signature is refused', e instanceof ToolError, e instanceof Error ? e.message.slice(0, 50) : '');
+    }
+  }
+
+  // ---- fill: a form with every field kind ----
+  {
+    const d = await PDFDocument.create();
+    const page = d.addPage([400, 600]);
+    const form = d.getForm();
+    form.createTextField('name').addToPage(page, { x: 20, y: 540, width: 200, height: 22 });
+    form.createCheckBox('agree').addToPage(page, { x: 20, y: 500, width: 16, height: 16 });
+    const dd = form.createDropdown('country');
+    dd.addOptions(['India', 'Spain', 'Japan']);
+    dd.addToPage(page, { x: 20, y: 460, width: 150, height: 22 });
+    const rg = form.createRadioGroup('plan');
+    rg.addOptionToPage('free', page, { x: 20, y: 420, width: 16, height: 16 });
+    rg.addOptionToPage('pro', page, { x: 60, y: 420, width: 16, height: 16 });
+    const formBytes = await d.save();
+    const { listFormFields } = await import('../src/tools/sign');
+    const fields = await listFormFields(formBytes);
+    check('fill: lists text, checkbox, dropdown and radio fields', fields.map((x) => x.kind).sort().join() === 'checkbox,dropdown,radio,text', fields.map((x) => x.kind).join());
+    check('fill: dropdown and radio options are listed', (fields.find((x) => x.name === 'country')?.options || []).length === 3 && (fields.find((x) => x.name === 'plan')?.options || []).join() === 'free,pro');
+    const fr = await run('fill', { files: [pf('form.pdf', formBytes)] }, { fields: { name: 'Jane Doe', agree: true, country: 'Spain', plan: 'pro' } });
+    const back = await PDFDocument.load(fr.files![0].bytes);
+    const bf = back.getForm();
+    check('fill: text, checkbox, dropdown and radio values are saved', bf.getTextField('name').getText() === 'Jane Doe' && bf.getCheckBox('agree').isChecked() && bf.getDropdown('country').getSelected()[0] === 'Spain' && bf.getRadioGroup('plan').getSelected() === 'pro');
+    const flat = await run('fill', { files: [pf('form.pdf', formBytes)] }, { fields: { name: 'Jane Doe' }, flatten: true });
+    check('fill: "make permanent" removes the fields', (await PDFDocument.load(flat.files![0].bytes)).getForm().getFields().length === 0);
+    try {
+      await run('fill', { files: [A] }, { fields: { x: 'y' } });
+      check('fill: a PDF with no fields is refused with advice', false, 'did not throw');
+    } catch (e) {
+      check('fill: a PDF with no fields is refused with advice', e instanceof ToolError && /no fillable fields/.test((e as Error).message));
+    }
+    try {
+      await run('fill', { files: [pf('form.pdf', formBytes)] }, { fields: { name: 'caf\u{1F600}' } });
+      check('fill: a character the font cannot show gets a clear message', false, 'did not throw');
+    } catch (e) {
+      check('fill: a character the font cannot show gets a clear message', e instanceof ToolError || /encode|WinAnsi/i.test(String(e)), e instanceof Error ? e.message.slice(0, 60) : '');
+    }
   }
 
   const browserOnly = ['images-to-pdf', 'scan-to-pdf', 'pdf-to-images', 'extract-text', 'compress (balanced/strong/tiny)', 'restyle', 'redact', 'compare', 'summarize', 'ask', 'text-watermark image variant'];

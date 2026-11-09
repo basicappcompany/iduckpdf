@@ -12,10 +12,19 @@ export type ShowIf = { key: string; eq?: unknown; ne?: unknown; off?: true };
 export const isShown = (c: ShowIf | undefined, o: Record<string, any>): boolean =>
   !c ? true : c.off ? !o[c.key] : 'eq' in c ? o[c.key] === c.eq : 'ne' in c ? o[c.key] !== c.ne : true;
 
+/** Where a signature sits on a page: top-left as a fraction of the displayed page, width as a fraction of the page width. */
+export type Placement = { page: number; x: number; y: number; w: number };
+
 export type Option =
   | { key: string; type: 'text' | 'textarea' | 'number' | 'password'; label: string; placeholder?: string; default?: string | number; hint?: string; showIf?: ShowIf }
   | { key: string; type: 'select'; label: string; options: { value: string; label: string }[]; default: string; hint?: string; showIf?: ShowIf }
-  | { key: string; type: 'toggle'; label: string; default: boolean; hint?: string; showIf?: ShowIf };
+  | { key: string; type: 'toggle'; label: string; default: boolean; hint?: string; showIf?: ShowIf }
+  /** Draw, type or upload a signature. The value is a PNG data URL with a transparent background (or '' before one exists). */
+  | { key: string; type: 'signature'; label: string; hint?: string; showIf?: ShowIf }
+  /** Page preview with a draggable, resizable image on it. The value is a Placement; the image comes from another option. */
+  | { key: string; type: 'placement'; label: string; hint?: string; signatureKey: string; showIf?: ShowIf }
+  /** The fillable fields of the chosen PDF, as inputs. The value maps field name to text, true/false or the chosen option. */
+  | { key: string; type: 'formfields'; label: string; hint?: string; showIf?: ShowIf };
 
 export type InputSlot = {
   key: string;

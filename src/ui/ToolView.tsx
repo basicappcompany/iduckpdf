@@ -14,6 +14,9 @@ import { TOOL_SEO } from '../content/toolSeo';
 import { SITE } from '../config';
 import { toolPath } from '../content/toolSlugs';
 import { DropZone } from './DropZone';
+import { SignaturePad } from './editors/SignaturePad';
+import { PlacementEditor } from './editors/PlacementEditor';
+import { FormFieldsEditor } from './editors/FormFieldsEditor';
 
 const GENERIC_FAQ = [
   { q: 'Where do my files go?', a: 'Most tools work entirely inside your browser tab, so the PDF is processed on your device and not uploaded to us. The AI tools are the exception: with your own key, the text of your PDF is sent to the AI provider you choose, and they say so before you start.' },
@@ -23,7 +26,10 @@ const GENERIC_FAQ = [
 function defaultsFor(tool: ToolDef): Record<string, any> {
   const o: Record<string, any> = {};
   (tool.options || []).forEach((x) => {
-    o[x.key] = x.type === 'toggle' ? x.default : x.type === 'select' ? x.default : x.default ?? '';
+    if (x.type === 'signature') o[x.key] = '';
+    else if (x.type === 'placement') o[x.key] = { page: 1, x: 0.55, y: 0.82, w: 0.3 };
+    else if (x.type === 'formfields') o[x.key] = {};
+    else o[x.key] = x.type === 'toggle' || x.type === 'select' ? x.default : x.default ?? '';
   });
   return o;
 }
@@ -60,7 +66,10 @@ function FileRow({ f, i, n, multiple, onMove, onRemove }: { f: PickedFile; i: nu
     </View>
   );
 }
-function OptionControl({ o, value, onChange }: { o: Option; value: any; onChange: (v: any) => void }) {
+function OptionControl({ o, value, onChange, file, opts }: { o: Option; value: any; onChange: (v: any) => void; file?: PickedFile; opts: Record<string, any> }) {
+  if (o.type === 'signature') return <SignaturePad label={o.label} hint={o.hint} value={String(value || '')} onChange={onChange} />;
+  if (o.type === 'placement') return <PlacementEditor label={o.label} hint={o.hint} file={file} signature={String(opts[o.signatureKey] || '')} value={value} onChange={onChange} />;
+  if (o.type === 'formfields') return <FormFieldsEditor label={o.label} file={file} value={value || {}} onChange={onChange} />;
   if (o.type === 'toggle') return <View style={{ gap: 4 }}><Toggle label={o.label} value={!!value} onChange={onChange} />{o.hint ? <T v="small" muted>{o.hint}</T> : null}</View>;
   if (o.type === 'select') return <Field label={o.label} hint={o.hint}><Choice options={o.options} value={String(value)} onChange={onChange} /></Field>;
   return (
@@ -242,7 +251,7 @@ export function ToolView({ tool }: { tool: ToolDef }) {
           {visibleOpts.length ? (
             <Card style={{ gap: 14 }}>
               {visibleOpts.map((o) => (
-                <OptionControl key={o.key} o={o} value={opts[o.key]} onChange={(v) => setOpts((p) => ({ ...p, [o.key]: v }))} />
+                <OptionControl key={o.key} o={o} value={opts[o.key]} opts={opts} file={files[tool.inputs[0]?.key]?.[0]} onChange={(v) => setOpts((p) => ({ ...p, [o.key]: v }))} />
               ))}
             </Card>
           ) : null}

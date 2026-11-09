@@ -34,9 +34,9 @@
 /tool/ask /chat-with-pdf 301
 /tool/lock /password-protect-pdf 301
 /tool/unlock /unlock-pdf 301
-/tool/ocr /ocr-pdf 301
 /tool/sign /sign-pdf 301
 /tool/fill /fill-pdf-form 301
+/tool/ocr /ocr-pdf 301
 /tool/word-to-pdf /word-to-pdf 301
 /tool/pdf-to-word /pdf-to-word 301
 /tool/excel-to-pdf /excel-to-pdf 301
