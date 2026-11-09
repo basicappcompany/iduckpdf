@@ -34,9 +34,9 @@ For the same picture as one visual page, with what is pending from the owner and
 | `pages.dev` kept out of search results | ✅ | `X-Robots-Tag: noindex` via `public/_headers` |
 | GoDaddy nameservers → Cloudflare, custom domain `iduckpdf.com` | ✅ | live over HTTPS, indexable, canonical correct |
 | `www` → apex 301 redirect, SSL Full (strict), Always Use HTTPS | ✅ | Cloudflare Redirect Rule; verified live 9 Nov |
-| CI on every pull request: typecheck, 143 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 28 site checks and 57 tool checks |
+| CI on every pull request: typecheck, 143 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 28 site checks and 57 tool checks; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
 | Automatic deploy on merge to `main` | ✅ | Cloudflare token stored as a GitHub secret; a pull request never deploys |
-| `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; replying from it is TODO §1 |
+| `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; a Gmail filter keeps it out of Spam (first test landed in Spam); fresh inbox test pending; replying from it is TODO §1 |
 | Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
 | Google Search Console | ✅ | verified Domain property, sitemap submitted; indexing requests for the new URLs retry after Google's daily quota resets |
 | Bing Webmaster Tools | ⏳ | one-click import from Search Console: TODO §8 |
