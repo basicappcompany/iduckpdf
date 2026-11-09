@@ -2910,36 +2910,110 @@
   "id": "pdf-to-word",
   "name": "PDF to Word",
   "short": "Get an editable .docx from a PDF.",
-  "desc": "Convert a PDF into an editable Word document.",
+  "desc": "Convert a PDF into an editable Word document (.docx): text in reading order, headings, lists and simple tables. It runs in your browser, so the PDF is never uploaded. It works on PDFs with a text layer, and the result is a clean starting point rather than a pixel copy.",
+  "category": "convert",
   "icon": "📝",
   "keywords": [
    "word",
    "docx",
    "editable",
-   "convert to word"
+   "convert to word",
+   "pdf to word",
+   "pdf to docx",
+   "edit pdf text"
   ],
-  "phase": 3,
-  "reason": "Needs server-side layout analysis. Planned with a clear notice that files are sent to be converted.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF with selectable text",
+    "accept": "pdf",
+    "hint": "Scanned PDFs have no text layer: run them through Read scans (OCR) first."
+   }
+  ],
+  "options": [
+   {
+    "key": "tables",
+    "type": "toggle",
+    "label": "Turn tables into Word tables",
+    "default": true,
+    "hint": "Rows of text lined up in columns become table rows."
+   }
+  ],
+  "runLabel": "Convert to Word",
+  "tips": [
+   "You get the text, headings, lists and simple tables. Pictures, exact fonts, colours and page layout are not carried over.",
+   "Pages become Word pages in the same order. Two-column pages are read column by column.",
+   "Check the result against the PDF, especially tables and anything near a page break."
+  ],
+  "faq": [
+   {
+    "q": "Is my PDF uploaded?",
+    "a": "No. The PDF is read and the Word file is built inside your browser tab."
+   },
+   {
+    "q": "Will the Word file look like the PDF?",
+    "a": "It keeps the content and structure, not the exact look. Fonts, colours, pictures and precise layout are not reproduced. It is a clean, editable starting point."
+   },
+   {
+    "q": "Why is my result empty?",
+    "a": "A scanned PDF is a picture of text. Run it through Read scans (OCR) first, then convert the searchable copy."
+   },
+   {
+    "q": "Does it keep pictures?",
+    "a": "No, only text and tables. Add pictures again in Word, or use PDF to pictures to save them."
+   }
+  ],
+  "status": "ready"
  },
  {
   "id": "pptx-to-pdf",
   "name": "PowerPoint to PDF",
   "short": "Slides to PDF.",
-  "desc": "Turn .pptx presentations into PDFs.",
+  "desc": "Turn a PowerPoint presentation (.pptx) into a PDF with one page per slide, at the slide’s own size: shapes, pictures, tables and text with their sizes, colours and bullets. It runs in your browser, so the file is never uploaded. Charts, SmartArt and effects are not reproduced.",
+  "category": "convert",
   "icon": "📽️",
   "keywords": [
    "powerpoint",
    "pptx",
    "slides",
-   "presentation"
+   "presentation",
+   "ppt",
+   "powerpoint to pdf",
+   "keynote",
+   "deck"
   ],
-  "phase": 3,
-  "reason": "Needs a presentation renderer, so it would run on a server.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PowerPoint presentation (.pptx)",
+    "accept": "any",
+    "hint": "Older .ppt files: open them in PowerPoint and save as .pptx first."
+   }
+  ],
+  "runLabel": "Convert to PDF",
+  "tips": [
+   "Shapes, pictures (PNG and JPEG), tables and text are drawn where they sit on the slide.",
+   "Charts, SmartArt, gradients, shadows, animations and speaker notes are not reproduced, and fonts become standard PDF fonts.",
+   "For an exact copy of a designed deck, use PowerPoint’s own Save as PDF."
+  ],
+  "faq": [
+   {
+    "q": "Is my presentation uploaded?",
+    "a": "No. The .pptx is read and converted inside your browser tab. Nothing is sent to a server."
+   },
+   {
+    "q": "Will it look exactly like PowerPoint?",
+    "a": "Not always. It reproduces the positions, colours, pictures, tables and text, but not charts, SmartArt, effects or custom fonts. Designed decks can look different. For a perfect copy, use PowerPoint’s own Save as PDF."
+   },
+   {
+    "q": "What about hidden slides and notes?",
+    "a": "Hidden slides are left out, as when you print from PowerPoint, and speaker notes are not included."
+   },
+   {
+    "q": "Does it support .ppt, .key and Google Slides?",
+    "a": "Only .pptx. Export Keynote or Google Slides as .pptx first, or open older .ppt files in PowerPoint and save as .pptx."
+   }
+  ],
+  "status": "ready"
  }
 ]

@@ -429,4 +429,31 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
       { q: 'Will merged cells and multi-page tables work?', a: 'Not perfectly. Merged cells and tables that run across pages may need tidying in Excel. Choose “Everything on one sheet” to keep a long table together.' },
     ],
   },
+  'pdf-to-word': {
+    title: 'PDF to Word Converter (.docx), Free',
+    description: 'Convert a PDF to an editable Word .docx in your browser: text in reading order, headings, lists and tables. Nothing is uploaded. No sign-up.',
+    answer: 'To convert a PDF to Word, add the PDF and press Convert to Word. The tool reads the text and its positions in your browser and builds a .docx with headings, paragraphs, lists and simple tables. It works on PDFs with selectable text and is a clean starting point rather than a pixel-perfect copy.',
+    steps: ['Add a PDF that has selectable text.', 'Choose whether to turn tables into Word tables.', 'Press Convert to Word, download the .docx and open it in Word.'],
+    uses: ['Edit the text of a report that only exists as a PDF', 'Reuse a table or a list from a PDF in a new document', 'Start a translation or rewrite from a PDF'],
+    faq: [
+      { q: 'Is my PDF uploaded?', a: 'No. The PDF is read and the Word file is built inside your browser tab.' },
+      { q: 'Will the Word file look like the PDF?', a: 'It keeps the content and structure, not the exact look. Fonts, colours, pictures and precise layout are not reproduced. It is a clean, editable starting point.' },
+      { q: 'Why is my result empty?', a: 'A scanned PDF is a picture of text with nothing to read. Run it through Read scans (OCR) first, then convert the searchable copy.' },
+      { q: 'Does it keep pictures?', a: 'No, only text and tables. Use PDF to pictures to save the images, then add them in Word.' },
+      { q: 'What about two-column pages?', a: 'Pages with a clear gap between two columns are read column by column, left first.' },
+    ],
+  },
+  'pptx-to-pdf': {
+    title: 'PowerPoint to PDF Converter (.pptx), Free',
+    description: 'Convert a PowerPoint .pptx to PDF in your browser: one page per slide with shapes, pictures, tables and text. Nothing is uploaded. No sign-up.',
+    answer: 'To convert PowerPoint to PDF, add your .pptx file and press Convert to PDF. Each slide becomes a page of the same size, with shapes, pictures, tables and text drawn where they sit. Charts, SmartArt and effects are not reproduced, so check the result.',
+    steps: ['Add a PowerPoint presentation (.pptx).', 'Press Convert to PDF.', 'Download the PDF and flip through it to check the slides.'],
+    uses: ['Send slides as a PDF that opens on any device', 'Share a deck without sending the editable file', 'Print slides or handouts from a PDF'],
+    faq: [
+      { q: 'Is my presentation uploaded?', a: 'No. The .pptx is read and converted inside your browser tab. Nothing is sent to a server.' },
+      { q: 'Will it look exactly like PowerPoint?', a: 'Not always. It reproduces positions, colours, pictures, tables and text, but not charts, SmartArt, effects, animations or custom fonts. Designed decks can look different. For a perfect copy, use PowerPoint’s own Save as PDF.' },
+      { q: 'What about hidden slides and notes?', a: 'Hidden slides are left out, as when you print from PowerPoint. Speaker notes are not included.' },
+      { q: 'Does it support .ppt, Keynote and Google Slides?', a: 'Only .pptx. Export Keynote or Google Slides as .pptx first, or open an older .ppt in PowerPoint and save it as .pptx.' },
+    ],
+  },
 };

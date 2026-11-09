@@ -343,3 +343,19 @@ export const rgbOf = (hex: string): Color | undefined => {
   const n = parseInt(m[1], 16);
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 };
+
+/**
+ * Draw blocks inside a box without paginating (used for slides and table cells that must stay where they are). `top` is the PDF y
+ * coordinate of the box's top edge. Returns the height the content needs, so callers can tell when it overflows.
+ */
+export async function drawBlocks(page: PDFPage, fonts: Fonts, blocks: Block[], x: number, top: number, width: number, height: number, anchor: 't' | 'ctr' | 'b' = 't'): Promise<number> {
+  const items = await layoutBlocks(blocks, Math.max(8, width), height, fonts);
+  const total = items.reduce((s, i) => s + i.h, 0);
+  let y = top - (anchor === 'ctr' ? Math.max(0, (height - total) / 2) : anchor === 'b' ? Math.max(0, height - total) : 0);
+  for (const it of items) {
+    if (it.newPage) continue;
+    it.draw(page, x, y);
+    y -= it.h;
+  }
+  return total;
+}

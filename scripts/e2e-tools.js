@@ -404,6 +404,56 @@ const fillPasswords = (a, b) => async (page) => {
     ok('pdf to excel: a PDF with no text points to OCR', await errorText(page, /Read scans \(OCR\)/));
   }
 
+  // ---------- PDF to Word and PowerPoint to PDF ----------
+  {
+    const JSZip3 = require('jszip');
+    const d = await PDFDocument.create();
+    const bf = await d.embedFont(StandardFonts.HelveticaBold);
+    const rf = await d.embedFont(StandardFonts.Helvetica);
+    const dp = d.addPage([595, 842]);
+    dp.drawText('Meeting Minutes', { x: 50, y: 780, size: 26, font: bf });
+    dp.drawText('The team agreed on the plan for next quarter and', { x: 50, y: 740, size: 11, font: rf });
+    dp.drawText('will review progress every Friday morning.', { x: 50, y: 726, size: 11, font: rf });
+    dp.drawText('Owner', { x: 50, y: 680, size: 11, font: rf }); dp.drawText('Task', { x: 250, y: 680, size: 11, font: rf });
+    dp.drawText('Anna', { x: 50, y: 662, size: 11, font: rf }); dp.drawText('Write the brief', { x: 250, y: 662, size: 11, font: rf });
+    dp.drawText('Raj', { x: 50, y: 644, size: 11, font: rf }); dp.drawText('Book the room', { x: 250, y: 644, size: 11, font: rf });
+    const minutes = path.join(TMP, 'minutes.pdf');
+    fs.writeFileSync(minutes, await d.save());
+    await useTool(page, '/pdf-to-word', [minutes], async () => {}, /Convert to Word/);
+    ok('pdf to word: a PDF converts in the browser', await done(page));
+    const docxOut = fs.readFileSync(await download(page));
+    const dzip = await JSZip3.loadAsync(docxOut);
+    const dxml = await dzip.file('word/document.xml').async('string');
+    ok('pdf to word: the .docx has a heading, the paragraph joined up, and a table', /Heading1/.test(dxml) && dxml.includes('Meeting Minutes') && dxml.includes('will review progress every Friday') && /<w:tbl>/.test(dxml) && dxml.includes('Write the brief'));
+    const docxPath = path.join(TMP, 'minutes.docx');
+    fs.writeFileSync(docxPath, docxOut);
+    await useTool(page, '/word-to-pdf', [docxPath], async () => {}, /Convert to PDF/);
+    ok('pdf to word: the result opens again as a Word document (round trip in the browser)', await done(page));
+
+    const NS = 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"';
+    const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    const rels = (items) => '<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + items.map(([id, ty, tg]) => '<Relationship Id="' + id + '" Type="' + REL + '/' + ty + '" Target="' + tg + '"/>').join('') + '</Relationships>';
+    const z = new JSZip3();
+    z.file('[Content_Types].xml', '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>');
+    z.file('ppt/presentation.xml', '<?xml version="1.0"?><p:presentation ' + NS + '><p:sldIdLst><p:sldId id="256" r:id="rId1"/></p:sldIdLst><p:sldSz cx="12192000" cy="6858000"/></p:presentation>');
+    z.file('ppt/_rels/presentation.xml.rels', rels([['rId1', 'slide', 'slides/slide1.xml'], ['rId2', 'theme', 'theme/theme1.xml']]));
+    z.file('ppt/theme/theme1.xml', '<?xml version="1.0"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:themeElements><a:clrScheme name="t"><a:dk1><a:srgbClr val="000000"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="1F3864"/></a:dk2><a:lt2><a:srgbClr val="EEEEEE"/></a:lt2><a:accent1><a:srgbClr val="ED7D31"/></a:accent1></a:clrScheme></a:themeElements></a:theme>');
+    z.file('ppt/slides/slide1.xml', '<?xml version="1.0"?><p:sld ' + NS + '><p:cSld><p:spTree><p:sp><p:nvSpPr><p:cNvPr id="2" name="T"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="800000" y="600000"/><a:ext cx="10000000" cy="1000000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr sz="4000" b="1"/><a:t>Launch Plan</a:t></a:r></a:p></p:txBody></p:sp><p:sp><p:nvSpPr><p:cNvPr id="3" name="B"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="800000" y="2000000"/><a:ext cx="4000000" cy="1200000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:schemeClr val="accent1"/></a:solidFill></p:spPr><p:txBody><a:bodyPr anchor="ctr"/><a:lstStyle/><a:p><a:r><a:rPr sz="2400"/><a:t>Phase one ships in May</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>');
+    const pptxPath = path.join(TMP, 'deck.pptx');
+    fs.writeFileSync(pptxPath, await z.generateAsync({ type: 'nodebuffer' }));
+    await useTool(page, '/powerpoint-to-pdf', [pptxPath], async () => {}, /Convert to PDF/);
+    ok('pptx: a .pptx converts in the browser', await done(page));
+    const slidePdf = await download(page);
+    const slidePages = await PDFDocument.load(fs.readFileSync(slidePdf));
+    const sp = slidePages.getPage(0).getSize();
+    ok('pptx: the PDF page is the slide size (16:9, 960 x 540 pt)', slidePages.getPageCount() === 1 && Math.abs(sp.width - 960) < 1 && Math.abs(sp.height - 540) < 1, sp.width + 'x' + sp.height);
+    const st = await textOf(page, slidePdf);
+    ok('pptx: the slide text is in the PDF', st.includes('Launch Plan') && st.includes('Phase one ships in May'));
+    fs.writeFileSync(path.join(TMP, 'bad.pptx'), 'not a zip');
+    await useTool(page, '/powerpoint-to-pdf', [path.join(TMP, 'bad.pptx')], async () => {}, /Convert to PDF/);
+    ok('pptx: a file that is not a PowerPoint file gets a clear message', await errorText(page, /does not look like a \.pptx/));
+  }
+
   // ---------- (more groups are added below as tools ship) ----------
 
   ok('no page errors during the tool tests', problems.length === 0, problems.slice(0, 2).join(' | '));

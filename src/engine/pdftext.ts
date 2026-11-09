@@ -146,3 +146,34 @@ export function toNumber(s: string): number | null {
   }
   return null;
 }
+
+/**
+ * Two-column pages: if a clear vertical gutter runs down the middle (no text crosses it, for most of the page), the pieces are
+ * returned as two groups, left column first, so the text is read column by column instead of line by line across both.
+ */
+export function splitColumns(pieces: Piece[], pageWidth: number): Piece[][] {
+  if (pieces.length < 40) return [pieces];
+  const lo = pageWidth * 0.3;
+  const hi = pageWidth * 0.7;
+  const step = 2;
+  const blocked: boolean[] = [];
+  for (let x = Math.floor(lo); x < hi; x += step) blocked.push(pieces.some((p) => p.x < x + step && p.x + p.w > x));
+  // find the widest empty stretch in the middle band
+  let best = { from: -1, len: 0 };
+  let from = -1;
+  blocked.forEach((b, i) => {
+    if (!b && from < 0) from = i;
+    if ((b || i === blocked.length - 1) && from >= 0) {
+      const len = (b ? i : i + 1) - from;
+      if (len > best.len) best = { from, len };
+      from = -1;
+    }
+  });
+  if (best.len * step < 12) return [pieces];
+  const gutter = lo + (best.from + best.len / 2) * step;
+  const left = pieces.filter((p) => p.x + p.w / 2 < gutter);
+  const right = pieces.filter((p) => p.x + p.w / 2 >= gutter);
+  // only a real two-column page has plenty of text on both sides
+  if (left.length < pieces.length * 0.25 || right.length < pieces.length * 0.25) return [pieces];
+  return [left, right];
+}
