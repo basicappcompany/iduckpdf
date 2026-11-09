@@ -369,7 +369,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     uses: ['Search and copy from a scanned contract or old report', 'Turn a photo of a page into editable text', 'Make a library of scans searchable on your computer'],
     faq: [
       { q: 'Is my scan uploaded?', a: 'No. The OCR engine runs inside your browser tab. The first time, your browser downloads the engine and the language data from this site, then everything happens on your device.' },
-      { q: 'Which languages are supported?', a: 'English, Spanish, French, German, Italian, Portuguese and Dutch. Other languages need larger fonts and are planned.' },
+      { q: 'Which languages are supported?', a: 'English, Spanish, French, German, Italian, Portuguese and Dutch. Other languages need larger fonts and are not supported yet.' },
       { q: 'Will the PDF look different afterwards?', a: 'No. The pages stay exactly as scanned. The recognised text sits underneath as an invisible layer, so you can search, select and copy it.' },
       { q: 'Why are some words wrong?', a: 'Handwriting, small print and skewed or low-resolution scans are hard to read. Rescan at 200 to 300 dpi, or correct the text file by hand. Always check important numbers.' },
       { q: 'How long does it take?', a: 'A few seconds per page on a modern computer, longer on a phone. Keep the tab open while it works.' },
