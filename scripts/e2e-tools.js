@@ -4,7 +4,8 @@
  *   PLAYWRIGHT_CORE=/path/to/playwright-core BASE_URL=http://localhost:8080 node scripts/e2e-tools.js
  * Test files are generated here with pdf-lib, so nothing needs to be checked in.
  */
-const { chromium } = require(process.env.PLAYWRIGHT_CORE || 'playwright-core');
+const pw = require(process.env.PLAYWRIGHT_CORE || 'playwright-core');
+const engine = pw[process.env.BROWSER || 'chromium']; // BROWSER=firefox or webkit runs the same checks in another engine
 const { PDFDocument, StandardFonts, degrees, PDFName, PDFArray, PDFRawStream, decodePDFRawStream } = require('pdf-lib');
 const fs = require('fs');
 const os = require('os');
@@ -91,6 +92,32 @@ async function textOf(page, pdfPath) {
   await done(page, 30000);
   return page.locator('body').innerText();
 }
+/** A small solid-colour PNG, written by hand (zlib + CRC), so no image library is needed. */
+function makePng(name, w, h, rgb) {
+  const zlib = require('zlib');
+  const crcTable = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
+  const crc = (buf) => { let c = 0xffffffff; for (const b of buf) c = crcTable[(c ^ b) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+  const chunk = (type, data) => { const len = Buffer.alloc(4); len.writeUInt32BE(data.length); const td = Buffer.concat([Buffer.from(type), data]); const c = Buffer.alloc(4); c.writeUInt32BE(crc(td)); return Buffer.concat([len, td, c]); };
+  const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4); ihdr[8] = 8; ihdr[9] = 2;
+  const row = Buffer.concat([Buffer.from([0]), Buffer.from(Array.from({ length: w }, (_, x) => rgb.map((v, i) => (x % 7 === 0 ? 255 - v : v))).flat())]);
+  const raw = Buffer.concat(Array.from({ length: h }, () => row));
+  const png = Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]);
+  const p = path.join(TMP, name);
+  fs.writeFileSync(p, png);
+  return p;
+}
+/** Pick one file per drop zone, in order, for tools that take two inputs (for example a PDF and a picture). */
+async function useTool2(page, url, files, fill = async () => {}, runName = /./) {
+  await page.goto(BASE + url);
+  for (let i = files.length - 1; i >= 0; i--) {
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select file/i }).nth(i).click()]);
+    await chooser.setFiles(files[i]);
+    await page.waitForTimeout(300);
+  }
+  await fill(page);
+  await page.getByRole('button', { name: runName }).last().click();
+}
+const imageCount = async (bytes, pageIndex) => (await pageContent(bytes, pageIndex)).match(/ Do/g)?.length || 0;
 const fillPasswords = (a, b) => async (page) => {
   const boxes = page.locator('input[type=password]');
   await boxes.nth(0).fill(a);
@@ -98,11 +125,12 @@ const fillPasswords = (a, b) => async (page) => {
 };
 
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await engine.launch({ headless: true });
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 1800 }, acceptDownloads: true });
   const page = await ctx.newPage();
   const problems = [];
   page.on('pageerror', (e) => problems.push('pageerror: ' + e.message.slice(0, 160)));
+  page.on('console', (m) => { if (/Content.Security.Policy|Refused to/i.test(m.text())) problems.push('CSP: ' + m.text().slice(0, 200)); });
 
   const src = await makePdf('plain.pdf', 3, 'Plain');
 
@@ -454,7 +482,91 @@ const fillPasswords = (a, b) => async (page) => {
     ok('pptx: a file that is not a PowerPoint file gets a clear message', await errorText(page, /does not look like a \.pptx/));
   }
 
+  // ---------- the older tools: pictures to PDF, scan, grayscale, redact, compare, logo stamp ----------
+  {
+    const red = makePng('red.png', 120, 80, [200, 30, 30]);
+    const blue = makePng('blue.png', 60, 90, [30, 40, 200]);
+
+    await useTool(page, '/image-to-pdf', [red, blue], async () => {}, /Make PDF/);
+    ok('photos to PDF: finishes', await done(page));
+    const photosBytes = fs.readFileSync(await download(page));
+    const photosDoc = await PDFDocument.load(photosBytes);
+    ok('photos to PDF: one page per picture, each with its picture', photosDoc.getPageCount() === 2 && (await imageCount(photosBytes, 0)) >= 1 && (await imageCount(photosBytes, 1)) >= 1);
+
+    await useTool(page, '/scan-to-pdf', [red], async () => {}, /Make PDF/);
+    ok('scan to PDF: finishes', await done(page));
+    const scanDoc = await PDFDocument.load(fs.readFileSync(await download(page)));
+    ok('scan to PDF: a one-page PDF', scanDoc.getPageCount() === 1);
+
+    const coloured = await (async () => {
+      const d = await PDFDocument.create();
+      const f = await d.embedFont(StandardFonts.Helvetica);
+      for (let i = 1; i <= 2; i++) {
+        const pg = d.addPage([400, 300]);
+        pg.drawRectangle({ x: 20, y: 150, width: 200, height: 100, color: require('pdf-lib').rgb(0.9, 0.1, 0.1) });
+        pg.drawText('Account SECRET-4412 confidential on page ' + i, { x: 30, y: 100, size: 14, font: f });
+      }
+      const p = path.join(TMP, 'coloured.pdf');
+      fs.writeFileSync(p, await d.save());
+      return p;
+    })();
+
+    await useTool(page, '/grayscale-pdf', [coloured], async () => {}, /Restyle now/);
+    ok('grayscale: finishes', await done(page, 60000));
+    const grayBytes = fs.readFileSync(await download(page));
+    const grayDoc = await PDFDocument.load(grayBytes);
+    ok('grayscale: both pages kept, each redrawn as a picture', grayDoc.getPageCount() === 2 && (await imageCount(grayBytes, 0)) >= 1);
+
+    await useTool(page, '/redact-pdf', [coloured], async () => {}, /Redact now/);
+    ok('redact: asking for nothing shows a clear message', await errorText(page, /at least one word/));
+
+    await useTool(page, '/redact-pdf', [coloured], async (p) => { await p.locator('textarea').first().fill('SECRET-4412'); }, /Redact now/);
+    ok('redact: finishes', await done(page, 60000));
+    const redactedPath = await download(page);
+    const redactedBytes = fs.readFileSync(redactedPath);
+    ok('redact: pages are pictures with no text left in the file', !Buffer.from(redactedBytes).toString('latin1').includes('SECRET') && (await imageCount(redactedBytes, 0)) >= 1);
+    const leftover = await textOf(page, redactedPath);
+    ok('redact: the site own text reader finds nothing of the hidden word', !/SECRET-4412/.test(leftover));
+
+    const v1 = await makePdf('v1.pdf', 2, 'Alpha');
+    const v2 = await (async () => {
+      const d = await PDFDocument.create();
+      const f = await d.embedFont(StandardFonts.Helvetica);
+      d.addPage([400, 500]).drawText('Alpha page 1', { x: 30, y: 440, size: 20, font: f });
+      d.addPage([400, 500]).drawText('Omega page 2 changed', { x: 30, y: 440, size: 20, font: f });
+      const p = path.join(TMP, 'v2.pdf');
+      fs.writeFileSync(p, await d.save());
+      return p;
+    })();
+    await useTool2(page, '/compare-pdf', [v1, v2], async () => {}, /Compare now/);
+    ok('compare: finishes', await done(page));
+    const cmp = await page.locator('body').innerText();
+    ok('compare: lists the removed and the added line on page 2 and leaves page 1 alone', /Page 2/.test(cmp) && /Alpha page 2/.test(cmp) && /Omega page 2 changed/.test(cmp) && !/=== Page 1 ===/.test(cmp));
+
+    await useTool2(page, '/add-logo-to-pdf', [src, red], async () => {}, /Place now/);
+    ok('logo stamp: finishes', await done(page));
+    const logoBytes = fs.readFileSync(await download(page));
+    const logoDoc = await PDFDocument.load(logoBytes);
+    const corners = (await imageCount(logoBytes, 0)) >= 1 ? await imageCorners(logoBytes, 0) : null;
+    const inside = !!corners && corners.every(([x, y]) => x >= -1 && x <= 401 && y >= -1 && y <= 501);
+    ok('logo stamp: 3 pages kept, the picture sits inside the first page', logoDoc.getPageCount() === 3 && inside);
+  }
+
   // ---------- (more groups are added below as tools ship) ----------
+
+  // the Content-Security-Policy is really in force: an injected inline script must be blocked (set by the server from _headers)
+  {
+    const before = problems.length;
+    await page.goto(BASE + '/');
+    const blocked = await page.evaluate(() => new Promise((resolve) => {
+      const el = document.createElement('script');
+      el.textContent = 'window.__cspRan = 1';
+      document.head.appendChild(el);
+      setTimeout(() => resolve(!window.__cspRan), 150);
+    }));
+    ok('CSP: an injected inline script is blocked', blocked);
+    problems.splice(before); // that violation was on purpose
+  }
 
   ok('no page errors during the tool tests', problems.length === 0, problems.slice(0, 2).join(' | '));
   await browser.close();

@@ -10,7 +10,7 @@
     "ios": "expo start --ios",
     "seo": "tsx scripts/gen-seo.ts",
     "icons": "node scripts/make-icons.js",
-    "export:web": "npm run clean && npm run meta && npm run seo && expo export --platform web && tsx scripts/inject-seo.ts",
+    "export:web": "npm run clean && npm run meta && npm run seo && expo export --platform web && tsx scripts/inject-seo.ts && tsx scripts/gen-csp.ts",
     "typecheck": "npm run meta && tsc --noEmit",
     "audit": "tsx scripts/audit-seo.ts",
     "test:engine": "tsx scripts/test-engine.ts && tsx scripts/test-office.ts",

@@ -1,10 +1,11 @@
 /**
  * Browser smoke test of the BUILT site (run `npm run export:web` first, serve dist/ with `npx serve dist -l 8080`).
  * Checks what crawlers see (JavaScript off) and what people get (hydration, navigation, palette, a real merge, dark mode, phone drawer).
- * Needs playwright-core and a Chromium (npx playwright-core install chromium). Set PLAYWRIGHT_CORE to use another install.
+ * Needs playwright-core and a browser (npx playwright-core install chromium; firefox and webkit work too with BROWSER=firefox). Set PLAYWRIGHT_CORE to use another install.
  * The merge test makes its own two small PDFs in a temporary folder.
  */
-const { chromium } = require(process.env.PLAYWRIGHT_CORE || 'playwright-core');
+const pw = require(process.env.PLAYWRIGHT_CORE || 'playwright-core');
+const engine = pw[process.env.BROWSER || 'chromium']; // BROWSER=firefox or webkit runs the same checks in another engine
 const { PDFDocument } = require('pdf-lib');
 const fs = require('fs');
 const os = require('os');
@@ -14,7 +15,7 @@ const results = [];
 const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.log(`${pass ? 'PASS' : 'FAIL'}  ${name}${extra ? '  (' + extra + ')' : ''}`); };
 
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await engine.launch({ headless: true });
 
   // ---- A. what a crawler sees: JavaScript OFF ----
   {

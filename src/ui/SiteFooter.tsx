@@ -40,7 +40,7 @@ export function SiteFooter() {
         {col('iDuckPDF', (
           <>
             <FooterLink to="/pdf-tools" label="All PDF tools" />
-            <FooterLink to="/guides" label="All guides" />
+            <FooterLink to="/guides/" label="All guides" />
             <FooterLink to="/chat" label="Ask the helper" />
             <FooterLink to="/roadmap" label="Roadmap" />
             <FooterLink to="/about" label="About" />

@@ -23,7 +23,8 @@ export type PageSeo = {
   jsonLd: object[];
 };
 
-const abs = (p: string) => (p.startsWith('http') ? p : SITE.url + p);
+// the guides index is served at /guides/ (the host redirects /guides to it), so that is its canonical address
+const abs = (p: string) => (p.startsWith('http') ? p : SITE.url + (p === '/guides' ? '/guides/' : p));
 const full = (t: string) => `${t} | ${SITE.name}`;
 
 const breadcrumbLd = (crumbs: { name: string; path: string }[]) => ({
