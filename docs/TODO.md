@@ -30,7 +30,7 @@ Code is done; it stays **off** until the steps below are complete.
 - [x] **`iduckpdf.com` is live** (2026-11-08). GoDaddy nameservers now point at Cloudflare (`bob.ns.cloudflare.com`, `deb.ns.cloudflare.com`), the apex and `www` are Pages custom domains, HTTPS works.
 - [ ] Add a Redirect Rule so `www.iduckpdf.com/*` 301-redirects to `https://iduckpdf.com/$1` (both serve the site today; canonical tags already point at the apex, so this is tidiness).
 - [ ] SSL/TLS → set to **Full**, and turn on "Always Use HTTPS" (Cloudflare dashboard).
-- [ ] **Turn on automatic deploys:** the GitHub Action (`.github/workflows/deploy.yml`) already builds, tests and audits on every push, and passes. It skips the deploy until you add one secret. Create a Cloudflare API token (profile → API Tokens → Create Custom Token → Account · Cloudflare Pages · Edit), then run `gh secret set CLOUDFLARE_API_TOKEN --repo basicappcompany/iduckpdf` and paste it. `CLOUDFLARE_ACCOUNT_ID` is already set.
+- [x] **Automatic deploys are on** (9 Nov): the Cloudflare API token is a GitHub secret. Every pull request builds, tests (143 Node checks), audits and runs the browser tests (28 site + 57 tool checks); merging to `main` deploys. Branch protection would add a hard gate, but GitHub only offers it on private repos with a paid plan or on a public repo.
 - [ ] Manual deploy any time: `npm run export:web`, then `npx wrangler pages deploy dist --project-name iduckpdf --branch main`.
 - [ ] **Lockfile caveat:** this machine's npm uses a private company registry, which writes its URLs into `package-lock.json` when you add packages. GitHub's runners can't reach it. If CI starts failing at `npm ci`, replace those URLs with `https://registry.npmjs.org/` (scoped packages use `.../@scope/name/-/name-x.y.z.tgz`).
 - `functions/` is deployed with the site (Pages Functions); pages are pre-rendered, so no rewrite rule is needed. Unknown URLs get `404.html` with a real 404 status. `public/_headers` sets caching and security headers.
@@ -43,17 +43,23 @@ Code is done; it stays **off** until the steps below are complete.
 - [x] Analytics decided 2026-11-09: keep Cloudflare Web Analytics (cookie-free, page views only). The privacy policy discloses it. Figures: Cloudflare dashboard → Analytics & Logs → Web Analytics → iduckpdf.
 
 ## 5. Still to verify
-The browser-only tools were run in Chrome and Chromium with generated files (see `TRACKER.md`). What is left:
-- [ ] Summarise with AI and Ask your PDF with a real key for each provider (OpenAI, Anthropic, Gemini). Only the missing-key path has been tried. Model names in `src/config.ts` → `AI_DEFAULTS` may need updating.
-- [ ] Re-run the remaining browser-only tools (Photos to PDF, Scan, Grayscale, Redact, Compare, Image stamp) once on the deployed site. PDF to pictures, Copy text, Compress, Watermark and Inspect were re-run after the bundle split.
-- [x] Visual pass in Chromium, light and dark, phone and desktop width (2026-11-09): nothing broken. Still to do: Safari and Firefox, ideally on a real iPhone.
-- [x] Download, “Keep going” chips, saving a key and the Roadmap page all work.
-- [ ] Mail links (`mailto:`) in a browser with a mail app configured.
-- [x] Large files: a 59 MB PDF merged and compressed fine in headless Chromium. Still worth a try on a phone.
+All 43 tools are covered by Node tests and by browser tests that also ran against the live site on 2026-11-09 (see `TRACKER.md`). What is left:
+- [ ] Summarise with AI and Ask your PDF with a real key for each provider (OpenAI, Anthropic, Gemini). Only the missing-key path has been tried. Model names in `src/config.ts` → `AI_DEFAULTS` may need updating. *You add a key in Settings; I cannot enter keys.*
+- [ ] Re-run the older browser-only tools once on the live site: Photos to PDF, Scan to PDF, Grayscale, Black out text, Spot the differences, Logo or image stamp. (PDF to pictures, Copy text, Make it smaller, Watermark and Inspect were re-run after the bundle split, and every new tool is covered by `scripts/e2e-tools.js`.) *I can do this.*
+- [ ] Firefox and Safari (WebKit): run both suites with Playwright's Firefox and WebKit builds. *I can do this after a browser download of a few hundred MB.*
+- [ ] A real iPhone and a real Android phone: open the site, merge two PDFs, sign one with your finger, toggle dark mode. *You.*
+- [ ] Mail links (`mailto:`) in a browser with a mail app configured. *You, 2 minutes.*
+- [ ] Very large files on a phone (a 59 MB PDF merged and compressed fine in headless Chromium).
+- [x] Visual passes in Chromium (light and dark, phone and desktop): site, signing screen, and the converted Word, HTML, Excel and PowerPoint output.
+- [x] Download, "Keep going" chips, saving a key and the Roadmap page all work.
 
 ## 6. Roadmap tools (see `TRACKER.md` for status)
-- [ ] Phase 2: Add a password, Remove a password, OCR, Sign a PDF, Fill in a form.
-- [ ] Phase 3 (server needed, only if you want a backend; copy must say files leave the device): Word↔PDF, Excel↔PDF, PowerPoint→PDF, Web page→PDF.
+Done 2026-11-09: **every announced tool is built.** Nothing is queued.
+- [x] Add a password, Remove a password (AES-256, `@cantoo/pdf-lib`, lazy chunk)
+- [x] Sign a PDF (draw / type / upload, drag on a page preview), Fill in a form
+- [x] Read scans (OCR) with Tesseract.js, self-hosted; English, Spanish, French, German, Italian, Portuguese, Dutch
+- [x] Word to PDF, PDF to Word, Excel to PDF, PDF to Excel, PowerPoint to PDF, Web page to PDF: all in the browser, no server, so the "files stay on your device" promise holds. Their limits are stated on each tool page (see §9).
+Ideas, not promises: more OCR languages (non-Latin scripts need larger fonts), closer Office conversions, mobile apps (§7).
 
 ## 7. Mobile apps (future scope)
 - [ ] Apple Developer account ($99/yr) and Google Play account ($25 once), only needed when publishing.
@@ -63,12 +69,12 @@ The browser-only tools were run in Chrome and Chromium with generated files (see
 - [ ] Set up EAS Build and store listings.
 
 ## 8. SEO & GEO: what is done, and what only you can do
-Done in code (see `TRACKER.md`): every page pre-rendered to real HTML, unique titles/descriptions/canonicals, structured data (WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, Organization, WebSite), sitemap, `robots.txt` that welcomes search and AI crawlers, `llms.txt` / `llms-full.txt`, Open Graph card, manifest, icons, crawlable links, 9 guides.
+Done in code (see `TRACKER.md`): every page pre-rendered to real HTML, unique titles/descriptions/canonicals, structured data (WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, Organization, WebSite), sitemap, `robots.txt` that welcomes search and AI crawlers, `llms.txt` / `llms-full.txt`, Open Graph card, manifest, icons, crawlable links, 20 guides.
 
 No code can guarantee a ranking. These steps, which need your accounts, are what actually move it:
 - [ ] **Deploy on the real domain** and confirm `SITE.url` in `src/config.ts` matches the final address exactly (apex `https://iduckpdf.com` vs `www`). Redirect the other one to it and force HTTPS.
 - [x] **Google Search Console** (done 2026-11-08): `iduckpdf.com` is a verified Domain property (DNS TXT record in Cloudflare; **do not delete it** or verification is lost). Sitemap submitted; indexing was requested for `/`, `/tools`, `/guides`, `/tool/merge`, `/tool/compress` (those old tool addresses now 301 to the new keyword URLs). Check back in a few days: the sitemap status may read "Couldn't fetch" at first and should turn to Success; the Pages report will show indexed vs. not-yet-indexed pages. Google limits manual indexing requests to about 10 a day, so request the rest gradually (or just let the sitemap do it).
-- [ ] **After the keyword-URL deploy:** in Search Console, resubmit `sitemap.xml` and request indexing for `/pdf-tools`, `/merge-pdf`, `/compress-pdf`, `/split-pdf` and `/pdf-to-image`. Google follows the 301s on its own within days to weeks; the sitemap now lists only the new URLs.
+- [ ] **Request indexing for the new URLs** in Search Console (`/pdf-tools`, `/merge-pdf`, `/compress-pdf`, `/split-pdf`, `/pdf-to-image`, and the newest tools such as `/ocr-pdf`, `/sign-pdf`, `/pdf-to-word`). Google answered "Quota exceeded" on 2026-11-09 (about 10 manual requests a day), so retry tomorrow. The sitemap already lists all 71 URLs, and Google follows the 301s from the old addresses on its own. *I can do this through Chrome once the quota resets.*
 - [ ] **Bing Webmaster Tools** (next, 5 minutes): sign in at bing.com/webmasters, choose **Import from Google Search Console**, and approve. It copies the verified site and the sitemap. This matters most for AI visibility: Bing feeds ChatGPT search, Copilot and others.
 - [ ] *Optional:* IndexNow (instant pings to Bing and others when pages change) once the site is live.
 - [ ] **Names and trust (E-E-A-T):** put a real maker name or organisation and a real contact address on the About page, then add `sameAs` links (GitHub, X/LinkedIn, Product Hunt) to the Organization data in `src/lib/seoData.ts`. Add the privacy policy and terms pages (§4).
@@ -76,7 +82,13 @@ No code can guarantee a ranking. These steps, which need your accounts, are what
 - [ ] **AI visibility:** AI assistants cite pages that search engines index and that other sites mention. After a few weeks, test real questions ("best free PDF merger that does not upload files", "how to redact a PDF properly") in ChatGPT, Gemini, Perplexity and Copilot, note whether iDuckPDF appears, and write a new guide for gaps.
 - [x] **Analytics:** Cloudflare Web Analytics is on (cookie-free). Check it for search and AI referrals. If you ever add or change an analytics service, update `src/content/legal.ts` in the same change.
 - [ ] **Keep content fresh:** edit `SITE.updated` in `src/config.ts` when copy changes (feeds the sitemap and "last updated" lines), add roughly one guide a month aimed at a real search query, and re-run `npm run audit` before every deploy.
-- [x] **Performance:** the PDF engine and tool code are now a lazy chunk, so first-load JavaScript dropped from 572 KB to 366 KB gzipped. What is left is the framework (about 294 KB gzipped, React Native for Web plus the router).
+- [x] **Performance:** first-load JavaScript went from 572 KB to about 333 KB gzipped (the PDF engine, password, OCR and Office code are lazy chunks; the SEO text is not bundled). Live mobile Lighthouse on 2026-11-09: performance 93 (home), 94 (tool page), 93 (guide); accessibility, best practices and SEO 100; layout shift 0. What is left is the framework (about 294 KB gzipped: React Native for Web plus the router).
 - [x] Lighthouse run 2026-11-09 (see `TRACKER.md`). Re-run on the live site after each deploy: `npx lighthouse https://iduckpdf.com/ --only-categories=performance,accessibility,best-practices,seo`.
 - [x] **Cloudflare Web Analytics beacon** (a `static.cloudflareinsights.com` script that Cloudflare injects at its edge): you chose to keep it, so the privacy policy now has an "Analytics" section and no longer claims "no analytics" or "no third-party loading".
 - [ ] *Later, carefully:* "alternative to X" comparison pages. They rank well, but only write claims about other products that you can back up.
+
+## 9. Things to know about the newer tools
+- **Office conversions are best-effort and run in the browser.** Word to PDF keeps text, headings, lists, tables, pictures, links and the page setup, but not headers, footers, text boxes, shapes or charts. Excel to PDF shows the saved values with their number/date/percent formats, not formulas, colours or merged cells. PowerPoint to PDF reproduces positions, shapes, pictures, tables and text, but draws charts and SmartArt as plain boxes and ignores effects. PDF to Word and PDF to Excel read text layers only and detect structure from where text sits. Standard PDF fonts cannot draw non-Latin scripts, which become "?". If you ever want exact conversions, that needs a server (and a changed privacy promise); it is deliberately not built.
+- **OCR assets are vendored.** `scripts/copy-vendor.js` copies the Tesseract.js script, worker, WebAssembly core (about 22 MB across variants) and seven language files (1 to 3 MB each) from `node_modules` into `public/vendor/tesseract` on every `npm install` (git-ignored, served with long cache headers). They are downloaded only when someone uses OCR. To add a language, install its `@tesseract.js-data/<lang>` package, list it in `copy-vendor.js` and `src/engine/ocr.ts`; scripts that need glyphs outside the standard PDF fonts also need a font embedded in `src/tools/ocr.ts`.
+- **Signatures are images, not certificate-based digital signatures.** The tool page says so.
+- **`package-lock.json` must keep public registry URLs.** After adding a package on this machine, replace the private registry URL with `https://registry.npmjs.org/` (see §3), or CI cannot install.

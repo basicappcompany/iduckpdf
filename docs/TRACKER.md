@@ -2,125 +2,131 @@
 
 Last updated: 2026-11-09 · Status key: ✅ built and checked · 🟡 built, only partly checked · ⏳ stubbed / waiting · 🗺️ planned
 
-**Totals:** 32 tools built (30 checked end to end, 2 AI tools checked only up to the missing-key message) · 11 on the roadmap · 43 tools in all · 9 guides · 67 pages built (49 indexable, 18 noindex).
+**Totals:** 43 tools built (41 checked end to end, 2 AI tools checked only up to the missing-key message) · 0 on the roadmap: every announced tool is built · 20 guides · 78 pages built (71 indexable, 7 noindex) · 143 Node tests and 85 browser checks, all run in CI.
+
+For the same picture as one visual page, with what is pending from the owner and what Claude can do alone, open `docs/status.html`.
 
 ## App features
 | Feature | Status | Notes |
 |---|---|---|
 | Expo (React Native + web) project, statically pre-rendered web build | ✅ | `npm run export:web` builds, injects SEO tags, hydrates cleanly in Chromium |
-| Home page with search bar, popular tools, categories | ✅ | renders; tool cards navigate |
-| Sidebar (categories, community links) + mobile drawer | ✅ | menu button and drawer checked at phone width |
+| Home page with search bar, popular tools, categories, "New and next" | ✅ | renders; tool cards navigate |
+| Sidebar (categories, community links) + mobile drawer | ✅ | empty categories are hidden |
 | `Ctrl K` / `/` command palette (tools, pages, theme) | ✅ | opens, filters, Enter navigates |
 | Ask the helper (keyword chat, no AI) | ✅ | matches tools, answers privacy question |
-| Light / dark / system theme | ✅ | toggle flips in place |
+| Light / dark / system theme | ✅ | colours are CSS variables set before first paint: no flash, checked on the live site |
 | Generic tool screen: drop zone, reorder, options, progress, results, ZIP, copy text | ✅ | drag-drop, run and Download tested |
+| Signature pad, page placement editor, form-field editor | ✅ | draw/type/upload, drag and resize on a page preview, rotated pages; position verified against the downloaded PDF |
 | Chain tools (send a result into the next tool) | ✅ | chip opens the next tool with the file already loaded |
 | Recently used tools | 🟡 | |
-| Feedback page (email) | ⏳ | `mailto:` with placeholder inbox, see TODO §1 |
-| Feature request page (email) | ⏳ | same |
-| Roadmap page | ✅ | renders; roadmap tool pages render and are noindex |
+| Feedback page and feature request page (email) | ⏳ | `mailto:` to `hello@iduckpdf.com` (live inbox); opening a real mail app untested |
+| Roadmap page | ✅ | "Recently added" and an ideas list: nothing is queued |
 | Settings (theme, own AI key) | 🟡 | saving a key stores it and it survives reload; no provider call tried |
-| Donate page + Dodo checkout function | ⏳ | page works and shows a friendly “not open yet” message; function written but **off** until keys exist, see TODO §2 |
-| About page (honest privacy wording) | ✅ | renders |
-| Privacy policy + terms of use pages | ✅ | `/privacy` and `/terms`: indexable, in the sitemap, footer, About and Donate. Copy lives in `src/content/legal.ts` and matches what the site does today. Operator (Basic App Company) shown on both pages, About, footer and Organization data; contact is `hello@iduckpdf.com` via Cloudflare Email Routing (receive only), TODO §1/§4 |
+| Donate page + Dodo checkout function | ⏳ | page shows a friendly "not open yet" message; function written but **off** until keys exist, see TODO §2 |
+| About page, privacy policy, terms of use | ✅ | operator named (Basic App Company); analytics and OCR download disclosed |
 | Android / iOS apps | 🗺️ | future scope; native stubs in place, TODO §7 |
 
 ## Deployment
 | Item | Status | Notes |
 |---|---|---|
-| GitHub repository | ✅ | `basicappcompany/iduckpdf` (private), `main` |
-| Cloudflare Pages deployment | ✅ | checked live: pages, headers, sitemap, 404, donate function (503 while off) |
-| `pages.dev` kept out of search results | ✅ | `X-Robots-Tag: noindex` via `public/_headers`; confirmed absent on the real domain |
-| GoDaddy nameservers → Cloudflare | ✅ | changed 2026-11-08, delegation confirmed in public DNS |
-| Custom domain `iduckpdf.com` + `www` | ✅ | live over HTTPS, indexable, canonical correct |
+| GitHub repository | ✅ | `basicappcompany/iduckpdf` (private), `main`; every change goes through a pull request |
+| Cloudflare Pages deployment | ✅ | live: pages, headers, sitemap, redirects, 404, donate function (503 while off) |
+| `pages.dev` kept out of search results | ✅ | `X-Robots-Tag: noindex` via `public/_headers` |
+| GoDaddy nameservers → Cloudflare, custom domain `iduckpdf.com` | ✅ | live over HTTPS, indexable, canonical correct |
 | `www` → apex redirect, SSL "Full" | ⏳ | TODO §3 |
-| CI: typecheck, engine tests, build, SEO audit on every push | ✅ | green on GitHub Actions (Node 24) |
-| CI: automatic deploy to Pages | ⏳ | needs one secret, `CLOUDFLARE_API_TOKEN`: TODO §3 |
-| Google Search Console | ✅ | verified Domain property, sitemap submitted, indexing requested for 5 key pages |
+| CI on every pull request: typecheck, 143 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 28 site checks and 57 tool checks |
+| Automatic deploy on merge to `main` | ✅ | Cloudflare token stored as a GitHub secret; a pull request never deploys |
+| `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; replying from it is TODO §1 |
+| Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
+| Google Search Console | ✅ | verified Domain property, sitemap submitted; indexing requests for the new URLs retry after Google's daily quota resets |
 | Bing Webmaster Tools | ⏳ | one-click import from Search Console: TODO §8 |
 
 ## SEO & GEO (search engines and AI assistants)
 | Item | Status | Notes |
 |---|---|---|
-| Every page pre-rendered to real HTML (no JavaScript needed to read it) | ✅ | 67 HTML files; checked with JavaScript switched off |
-| Tool URLs: keyword-first and always contain "pdf" | ✅ | `/merge-pdf`, `/compress-pdf`, `/pdf-to-image`, `/password-protect-pdf` ... (map in `src/content/toolSlugs.ts`); hub is `/pdf-tools`. Old `/tool/<id>` and `/tools` 301-redirect via the generated `public/_redirects`. The build fails if a slug lacks "pdf", is duplicated or collides with a route, and the audit checks every redirect target exists |
-| Unique title, description, canonical per indexable page | ✅ | single source: `seoForPath()` in `src/lib/seoData.ts`; written into the HTML by `scripts/inject-seo.ts` |
-| Structured data | ✅ | WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, CollectionPage, AboutPage, Organization, WebSite + SearchAction |
-| Unique copy for all 32 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
-| 9 how-to guides + index | ✅ | `src/content/guides.ts` |
-| Crawlable links (real `<a href>`), one `<h1>` per page, visible FAQ answers | ✅ | audited |
-| `sitemap.xml` (47 URLs), `robots.txt` (search + AI crawlers welcome), `llms.txt`, `llms-full.txt` | ✅ | generated from the tool/guide registries by `scripts/gen-seo.ts` |
+| Every page pre-rendered to real HTML (no JavaScript needed to read it) | ✅ | 78 HTML files; checked with JavaScript switched off |
+| Tool URLs that contain "pdf" | ✅ | `/merge-pdf`, `/ocr-pdf`, `/pdf-to-word` ... (map in `src/content/toolSlugs.ts`); hub is `/pdf-tools`; old `/tool/<id>` and `/tools` 301 via the generated `public/_redirects`; the build fails if a slug lacks "pdf", is duplicated or collides with a route |
+| Unique title, description, canonical per indexable page | ✅ | single source: `seoForPath()` in `src/lib/seoData.ts`, written into the HTML by `scripts/inject-seo.ts`; the app uses `seo-pages.json` (written by the build) when someone navigates inside it |
+| Structured data | ✅ | WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, CollectionPage, AboutPage, Organization (parent organisation, email), WebSite + SearchAction |
+| Unique copy for all 43 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
+| 20 how-to guides + index | ✅ | `src/content/guides.ts` (11 added on 9 Nov for the new tools) |
+| Crawlable links, one `<h1>` per page, visible FAQ answers | ✅ | audited |
+| `sitemap.xml` (71 URLs), `robots.txt` (search + AI crawlers welcome), `llms.txt`, `llms-full.txt` | ✅ | generated from the tool/guide registries by `scripts/gen-seo.ts` |
 | Roadmap pages, forms and 404 kept out of the index | ✅ | `noindex,follow`; real 404 status via `404.html` |
-| Open Graph / Twitter card, icons, web manifest, security + cache headers | ✅ | duck icon set and 1200x630 card generated by `scripts/make-icons.js` |
-| Automated audit | ✅ | `npm run audit` fails on missing titles, duplicates, bad canonicals, missing app bundle, sitemap mismatch |
-| Search Console | ✅ | verified, sitemap submitted, key pages requested |
-| Analytics | ✅ | Cloudflare Web Analytics (cookie-free page views), disclosed in the privacy policy |
-| Bing submission, backlinks | ⏳ | needs your accounts: TODO §8 |
-| Theme without a flash | ✅ | Colours are CSS variables set before first paint from the system setting or the saved choice, so dark-mode visitors never see the light pre-rendered page; checked with JavaScript off and with 5 combinations of system and saved theme |
-| Equal-size cards | ✅ | Tool, guide and info cards are equal-width grid columns; a short last row no longer stretches its cards |
-| Performance: PDF engine out of the first load | ✅ | Tool metadata is a small generated JSON. pdf-lib, JSZip, the tool code and the AI client are one lazy chunk (`all-*.js`, about 247 KB gzipped), fetched on the first mouse move, touch, key or scroll on a tool page (or after 8 s) and never on home or guides. First-load JS went from 572 KB to 338 KB gzipped. What is left is the framework: expo-router 444 KB, react-native-web 310 KB and react-dom 204 KB before compression |
-| Layout shift on phones (CLS) | ✅ | Pre-rendered pages used to show the desktop layout first and jump when the app started (CLS about 1.0 on live, measured 2026-11-09). Sidebar, header labels, heading sizes and page gutters now follow the screen width through CSS from the first paint (`src/lib/responsive.ts`, injected into every page head); CLS is 0 at 390, 700, 1000 and 1280 px on 8 pages. Keep the breakpoints in that file equal to the ones in `useWidth` users |
-| Accessibility (Lighthouse) | ✅ | 100 on home, a tool page and a guide: main landmark, heading order, accessible names that match visible text, contrast on the green pill |
+| Open Graph / Twitter card, icons, web manifest, security + cache headers | ✅ | `scripts/make-icons.js` |
+| Automated audit | ✅ | `npm run audit`: titles, duplicates, canonicals, app bundle, sitemap, "pdf" in tool URLs, redirect targets, `seo-pages.json` |
+| Bing submission, backlinks, public repo, maker links | ⏳ | need your accounts: TODO §8 |
 
-## Tools built (32)
-| Category | Tool | Status |
+## Quality
+| Item | Status | Notes |
 |---|---|---|
-| Join & cut | Merge PDFs | ✅ |
-| Join & cut | Weave two PDFs | ✅ |
-| Join & cut | Split a PDF | ✅ |
-| Join & cut | Pull out pages | ✅ |
-| Join & cut | Delete pages | ✅ |
-| Arrange & repair | Reorder pages | ✅ |
-| Arrange & repair | Flip page order | ✅ |
-| Arrange & repair | Rotate pages | ✅ |
-| Arrange & repair | Add blank pages | ✅ |
-| Arrange & repair | Change page size | ✅ |
-| Arrange & repair | Trim margins | ✅ |
-| Arrange & repair | Print several per sheet | ✅ |
-| Arrange & repair | Repair a PDF | ✅ |
-| Stamp & annotate | Number the pages | ✅ |
-| Stamp & annotate | Text watermark | ✅ |
-| Stamp & annotate | Logo or image stamp | ✅ |
-| Stamp & annotate | Headers & footers | ✅ |
-| Stamp & annotate | Write on a PDF | ✅ |
-| Make & extract | Photos to PDF | ✅ |
-| Make & extract | Scan to PDF | ✅ |
-| Make & extract | Text or Markdown to PDF | ✅ |
-| Make & extract | PDF to pictures | ✅ |
-| Make & extract | Copy text out | ✅ |
-| Shrink & restyle | Make it smaller | ✅ (falls back to the gentle result when picture mode would be bigger) |
-| Shrink & restyle | Grayscale & dark mode | ✅ |
-| Privacy & cleanup | Inspect a PDF | ✅ |
-| Privacy & cleanup | Clean & edit properties | ✅ |
-| Privacy & cleanup | Flatten forms | ✅ |
-| Privacy & cleanup | Black out text | ✅ |
-| Compare & ask | Spot the differences | ✅ |
-| Compare & ask | Summarise with AI (own key) | 🟡 key-missing path only; no provider call tried |
-| Compare & ask | Ask your PDF (own key) | 🟡 same |
+| Lighthouse, mobile, throttled, **live** (2026-11-09) | ✅ | performance 93 (home), 94 (tool page), 93 (guide); accessibility, best practices and SEO 100; layout shift 0 |
+| First-load JavaScript | ✅ | about 333 KB gzipped (framework 294 KB + shared 39 KB). The PDF engine (about 276 KB gz) loads on the first interaction on a tool page; password, OCR and the Office converters add their own lazy chunks |
+| Layout shift on phones | ✅ | width-dependent layout is CSS from the first paint, so pre-rendered pages do not jump |
+| Accessibility | ✅ | main landmark, heading order, names that match visible text, contrast |
 
-## Roadmap (11)
-| Tool | Phase | Blocker |
-|---|---|---|
-| Add a password | 2 | needs an encrypting PDF engine (WebAssembly) |
-| Remove a password | 2 | needs a decrypting engine |
-| Read scans (OCR) | 2 | in-browser OCR engine + language packs |
-| Sign a PDF | 2 | drawing pad + drag-to-place editor |
-| Fill in a form | 2 | form field editor |
-| Word to PDF | 3 | needs a document engine / server |
-| PDF to Word | 3 | needs a server |
-| Excel to PDF | 3 | needs a server |
-| PDF to Excel | 3 | needs a server |
-| PowerPoint to PDF | 3 | needs a server |
-| Web page to PDF | 3 | needs a full browser engine / server |
+## Tools built (43)
+Join & cut 5 · Arrange & repair 8 · Stamp & annotate 7 · Make & extract 12 · Shrink & restyle 2 · Privacy & cleanup 6 · Compare & ask 3. This table is the registry; `docs/status.html` has a searchable, generated copy.
+
+| Category | Tool | URL | Status |
+|---|---|---|---|
+| Join & cut | Merge PDFs | `/merge-pdf` | ✅ |
+| Join & cut | Weave two PDFs | `/interleave-pdf` | ✅ |
+| Join & cut | Split a PDF | `/split-pdf` | ✅ |
+| Join & cut | Pull out pages | `/extract-pdf-pages` | ✅ |
+| Join & cut | Delete pages | `/remove-pdf-pages` | ✅ |
+| Arrange & repair | Reorder pages | `/reorder-pdf-pages` | ✅ |
+| Arrange & repair | Flip page order | `/reverse-pdf-pages` | ✅ |
+| Arrange & repair | Rotate pages | `/rotate-pdf` | ✅ |
+| Arrange & repair | Add blank pages | `/add-blank-page-to-pdf` | ✅ |
+| Arrange & repair | Change page size | `/resize-pdf` | ✅ |
+| Arrange & repair | Trim margins | `/crop-pdf` | ✅ |
+| Arrange & repair | Print several per sheet | `/multiple-pages-per-sheet-pdf` | ✅ |
+| Arrange & repair | Repair a PDF | `/repair-pdf` | ✅ |
+| Stamp & annotate | Number the pages | `/add-page-numbers-to-pdf` | ✅ |
+| Stamp & annotate | Text watermark | `/add-watermark-to-pdf` | ✅ |
+| Stamp & annotate | Logo or image stamp | `/add-logo-to-pdf` | ✅ |
+| Stamp & annotate | Headers & footers | `/add-header-and-footer-to-pdf` | ✅ |
+| Stamp & annotate | Write on a PDF | `/add-text-to-pdf` | ✅ |
+| Make & extract | Photos to PDF | `/image-to-pdf` | ✅ |
+| Make & extract | Scan to PDF | `/scan-to-pdf` | ✅ |
+| Make & extract | Text or Markdown to PDF | `/text-to-pdf` | ✅ |
+| Make & extract | PDF to pictures | `/pdf-to-image` | ✅ |
+| Make & extract | Copy text out | `/pdf-to-text` | ✅ |
+| Shrink & restyle | Make it smaller | `/compress-pdf` | ✅ (falls back to the gentle result when picture mode would be bigger) |
+| Shrink & restyle | Grayscale & dark mode | `/grayscale-pdf` | ✅ |
+| Privacy & cleanup | Inspect a PDF | `/inspect-pdf` | ✅ |
+| Privacy & cleanup | Clean & edit properties | `/edit-pdf-metadata` | ✅ |
+| Privacy & cleanup | Flatten forms | `/flatten-pdf` | ✅ |
+| Privacy & cleanup | Black out text | `/redact-pdf` | ✅ |
+| Compare & ask | Spot the differences | `/compare-pdf` | ✅ |
+| Compare & ask | Summarise with AI | `/summarize-pdf` | 🟡 key-missing path only; no provider call tried |
+| Compare & ask | Ask your PDF | `/chat-with-pdf` | 🟡 key-missing path only; no provider call tried |
+| Privacy & cleanup | Add a password | `/password-protect-pdf` | ✅ new 9 Nov, Node and browser tests |
+| Privacy & cleanup | Remove a password | `/unlock-pdf` | ✅ new 9 Nov, Node and browser tests |
+| Stamp & annotate | Sign a PDF | `/sign-pdf` | ✅ new 9 Nov, Node and browser tests |
+| Stamp & annotate | Fill in a form | `/fill-pdf-form` | ✅ new 9 Nov, Node and browser tests |
+| Make & extract | Read scans (OCR) | `/ocr-pdf` | ✅ new 9 Nov, Node and browser tests |
+| Make & extract | Word to PDF | `/word-to-pdf` | ✅ new 9 Nov, Node and browser tests |
+| Make & extract | Web page to PDF | `/html-to-pdf` | ✅ new 9 Nov, Node and browser tests |
+| Make & extract | Excel to PDF | `/excel-to-pdf` | ✅ new 9 Nov, Node and browser tests |
+| Make & extract | PDF to Excel | `/pdf-to-excel` | ✅ new 9 Nov, Node and browser tests |
+| Make & extract | PDF to Word | `/pdf-to-word` | ✅ new 9 Nov, Node and browser tests |
+| Make & extract | PowerPoint to PDF | `/powerpoint-to-pdf` | ✅ new 9 Nov, Node and browser tests |
+
+Known limits (stated on each tool page): the Office conversions run in the browser, so layout is simplified: Word to PDF does not reproduce headers, footers, text boxes or charts; Excel to PDF shows values, not formulas, colours or merged cells; PowerPoint to PDF draws charts and SmartArt as plain boxes; PDF to Word and PDF to Excel read text layers only (scans need OCR first) and detect structure heuristically; standard PDF fonts mean non-Latin scripts become "?"; OCR covers English, Spanish, French, German, Italian, Portuguese and Dutch.
+
+## Roadmap
+Nothing is queued: every announced tool is built. Ideas on the list (not promises): more OCR languages (needs larger fonts), closer Word/Excel/PowerPoint conversions, Android and iPhone apps.
 
 ## How the checks were done
-- `npx tsx scripts/test-engine.ts`: 31 checks in Node over 22 tools plus error handling (all pass).
-- `npm run audit`: crawler-style audit of the built site (65 pages, 47 indexable). All checks pass.
-- `scripts/e2e-smoke.js` (headless Chromium via Playwright): 28 checks pass, including that home never downloads the PDF engine chunk and tool pages preload it. Crawler view with JavaScript off; hydration with no console errors; about 60 fps; in-app navigation without reload; title and canonical follow the page; `Ctrl+K` palette; a real two-file merge through the file chooser; saved dark theme after reload; phone-width drawer.
-- Chrome (scripted) earlier: dropped generated files onto the drop zone and read the result for Photos to PDF, Scan to PDF, PDF to pictures, Copy text out, Make it smaller, Grayscale, Black out text, Spot the differences, Logo or image stamp; plus the helper, theme toggle, donate-off message and missing-key error. Those ran before the switch to static pages; the merge flow was re-run after it.
-- `npm run typecheck`: clean.
-- 2026-11-09 Lighthouse (mobile, throttled, local build with gzip): performance 79–83, accessibility 100, best practices 100, SEO 100, CLS 0; before the changes the live site scored 72–74 / 94–96 / 100 / 100. Numbers move a few points between runs.
-- 2026-11-09 visual pass (Chromium): 13 pages x light/dark x desktop (1280) / phone (390): no horizontal overflow, no console errors, layout looked right. Also checked by script: Download saves a PDF that opens (6 pages), a "Keep going" chip opens the next tool with the file carried over (the upload box is now centred and clickable all over; before, only its small centre block was), saving an AI key stores it locally and survives reload, Roadmap and roadmap tool pages render, and PDF to pictures, Copy text, Make it smaller, Text watermark and Inspect all finish on the built site after the bundle split. Large files: merging about 125 MB of PDFs finished in under a second, Make it smaller on a 59 MB PDF in a few seconds.
-- **Not checked:** Safari and Firefox, real AI provider calls, and a mail app actually opening from the `mailto:` links (the message is built and the Copy fallback works).
-- Bugs found and fixed along the way: bundling crash from `tslib`; styling crash from `Link asChild`; compress returning a bigger file for text-only PDFs; a custom `+html.tsx` that silently removed the app bundle from every page (the audit now catches that); stale tab titles; chat page missing its `<h1>`.
-- Tooling quirk: the browser automation tool's Chrome sometimes stops producing animation frames, which makes pages look frozen. That is the automation session, not the site. Playwright is the reliable check.
+- `npm run test:engine`: 143 checks in Node: 73 on the PDF engine, signing geometry and every non-canvas tool, 70 on the Office and web conversions (Word, HTML, Excel, PowerPoint, PDF to Word, PDF to Excel) using hand-built files read back with pdf.js.
+- `npm run audit`: crawler-style audit of the built site (78 pages, 71 indexable). All checks pass.
+- `scripts/e2e-smoke.js` (headless Chromium via Playwright): 28 checks: crawler view with JavaScript off, hydration, no layout shift or theme flash, the PDF engine loads only after interaction, navigation, palette, a real merge, saved theme, phone drawer.
+- `scripts/e2e-tools.js`: 57 checks in a real browser: password protect and unlock, draw/type/upload a signature and drag it (position read back from the downloaded PDF, normal and rotated page), fill a form, OCR of a scan and of a picture (searchable PDF re-read by the site's own text tool, rotated page), and every conversion with the downloads opened and checked.
+- Both browser suites also ran against the live site on 2026-11-09: 57/57 and 28/28. Every one of the 43 tool URLs answers 200 and is in the sitemap; the old URLs redirect.
+- `npm run typecheck`: clean. All of the above run on every pull request in CI.
+- Visual passes in Chromium (light and dark, phone and desktop): signing screen, converted Word, HTML, Excel and PowerPoint output rendered and looked at.
+- **Not checked:** Safari and Firefox, a real phone, real AI provider calls, and a mail app actually opening from the `mailto:` links.
+- Bugs found and fixed on the way (most recent first): plain PowerPoint text boxes inheriting body bullets; decrypted PDFs keeping a stale encryption entry; drawing pad ink invisible in dark mode; layout shift and theme flash on pre-rendered pages; stretched last-row cards; a custom `+html.tsx` that removed the app bundle.
+- Tooling quirk: the browser automation tool's Chrome sometimes stops producing animation frames. Playwright is the reliable check.

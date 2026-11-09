@@ -2488,7 +2488,7 @@
    },
    {
     "q": "Which languages work?",
-    "a": "English, Spanish, French, German, Italian, Portuguese and Dutch. Other languages need larger fonts and are planned."
+    "a": "English, Spanish, French, German, Italian, Portuguese and Dutch. Other languages need larger fonts and are not supported yet."
    },
    {
     "q": "Will the PDF look different?",

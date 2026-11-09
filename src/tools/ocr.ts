@@ -68,7 +68,7 @@ export const ocrTools: ToolDef[] = [
     tips: ['Scan at 200 to 300 dpi, straight and in good light. Blurry or crooked pages read poorly.', 'Check important numbers and names against the original: no OCR is perfect.', 'It can take several seconds per page. Keep the tab open while it works.'],
     faq: [
       { q: 'Is my scan uploaded?', a: 'No. The OCR engine runs inside your browser tab. The first time, your browser downloads the engine and the language data from this site, then everything happens on your device.' },
-      { q: 'Which languages work?', a: 'English, Spanish, French, German, Italian, Portuguese and Dutch. Other languages need larger fonts and are planned.' },
+      { q: 'Which languages work?', a: 'English, Spanish, French, German, Italian, Portuguese and Dutch. Other languages need larger fonts and are not supported yet.' },
       { q: 'Will the PDF look different?', a: 'No. The pages stay exactly as scanned. The recognised text is added underneath as an invisible layer, so you can search and copy it.' },
       { q: 'Why are some words wrong?', a: 'Handwriting, small print, skewed or low-resolution scans are hard to read. Rescan at a higher resolution, or correct the text file by hand.' },
     ],
