@@ -182,6 +182,7 @@ const fillPasswords = (a, b) => async (page) => {
     await page.mouse.down();
     await page.mouse.move(pageBox.x + pageBox.width * 0.3, pageBox.y + pageBox.height * 0.25, { steps: 8 });
     await page.mouse.up();
+    await page.waitForTimeout(400); // WebKit finishes the last pointer events a moment later
     const ob2 = await overlay.boundingBox();
     const fx = (ob2.x - pageBox.x) / pageBox.width; // displayed top-left of the signature, as fractions of the displayed page
     const fy = (ob2.y - pageBox.y) / pageBox.height;
@@ -356,7 +357,8 @@ const fillPasswords = (a, b) => async (page) => {
 
   // ---------- Web page to PDF and Word to PDF (real DOM parser in the browser) ----------
   {
-    await page.goto(BASE + '/html-to-pdf');
+    await page.goto(BASE + '/html-to-pdf', { waitUntil: 'networkidle' }); // WebKit hydrates later: fill only after, or hydration clears the box
+    await page.waitForTimeout(800);
     await page.locator('textarea').first().fill('<html><body><h1>Main Title</h1><p>Hello <b>bold</b> world with <a href="https://example.com">a link</a>.</p><ul><li>Alpha</li><li>Beta</li></ul><table><tr><th>Name</th><th>Qty</th></tr><tr><td>Apple</td><td>3</td></tr></table></body></html>');
     await page.getByRole('button', { name: /Convert to PDF/i }).last().click();
     ok('html: pasted HTML converts', await done(page));

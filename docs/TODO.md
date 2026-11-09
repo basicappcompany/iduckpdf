@@ -46,7 +46,7 @@ Code is done; it stays **off** until the steps below are complete.
 All 43 tools are covered by Node tests and by browser tests that also ran against the live site on 2026-11-09 (see `TRACKER.md`). What is left:
 - [ ] Summarise with AI and Ask your PDF with a real key for each provider (OpenAI, Anthropic, Gemini). Only the missing-key path has been tried. Model names in `src/config.ts` → `AI_DEFAULTS` may need updating. *You add a key in Settings; I cannot enter keys.*
 - [ ] Re-run the older browser-only tools once on the live site: Photos to PDF, Scan to PDF, Grayscale, Black out text, Spot the differences, Logo or image stamp. (PDF to pictures, Copy text, Make it smaller, Watermark and Inspect were re-run after the bundle split, and every new tool is covered by `scripts/e2e-tools.js`.) *I can do this.*
-- [ ] Firefox and Safari (WebKit): run both suites with Playwright's Firefox and WebKit builds. *I can do this after a browser download of a few hundred MB.*
+- [x] Firefox and Safari (WebKit): both suites pass in Playwright's Firefox and WebKit builds (`BROWSER=firefox` / `webkit`).
 - [ ] A real iPhone and a real Android phone: open the site, merge two PDFs, sign one with your finger, toggle dark mode. *You.*
 - [ ] Mail links (`mailto:`) in a browser with a mail app configured. *You, 2 minutes.*
 - [ ] Very large files on a phone (a 59 MB PDF merged and compressed fine in headless Chromium).
