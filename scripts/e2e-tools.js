@@ -85,6 +85,12 @@ const drawSignature = async (page) => {
   await page.getByAltText('Preview of your signature').waitFor({ timeout: 5000 });
 };
 
+/** Text of a PDF as the site's own "Copy text out" tool reads it. */
+async function textOf(page, pdfPath) {
+  await useTool(page, '/pdf-to-text', [pdfPath], async () => {}, /./);
+  await done(page, 30000);
+  return page.locator('body').innerText();
+}
 const fillPasswords = (a, b) => async (page) => {
   const boxes = page.locator('input[type=password]');
   await boxes.nth(0).fill(a);
@@ -318,6 +324,39 @@ const fillPasswords = (a, b) => async (page) => {
     await page.waitForTimeout(400);
     await page.getByRole('button', { name: /Read the text/i }).last().click();
     ok('ocr: a PDF together with a picture is refused clearly', await errorText(page, /either one PDF or some pictures/));
+  }
+
+  // ---------- Web page to PDF and Word to PDF (real DOM parser in the browser) ----------
+  {
+    await page.goto(BASE + '/html-to-pdf');
+    await page.locator('textarea').first().fill('<html><body><h1>Main Title</h1><p>Hello <b>bold</b> world with <a href="https://example.com">a link</a>.</p><ul><li>Alpha</li><li>Beta</li></ul><table><tr><th>Name</th><th>Qty</th></tr><tr><td>Apple</td><td>3</td></tr></table></body></html>');
+    await page.getByRole('button', { name: /Convert to PDF/i }).last().click();
+    ok('html: pasted HTML converts', await done(page));
+    const htmlPdf = await download(page);
+    const ht = await textOf(page, htmlPdf);
+    ok('html: the PDF has the headline, paragraph, list and table text', ['Main Title', 'bold', 'Alpha', 'Beta', 'Apple'].every((w) => ht.includes(w)));
+
+    await page.goto(BASE + '/html-to-pdf');
+    await page.getByRole('button', { name: /Convert to PDF/i }).last().click();
+    ok('html: nothing to convert gives a clear message', await errorText(page, /Add a saved web page/));
+
+    const JSZip = require('jszip');
+    const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+    const z = new JSZip();
+    z.file('[Content_Types].xml', '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>');
+    z.file('word/document.xml', '<?xml version="1.0" encoding="UTF-8"?><w:document ' + NS + '><w:body><w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>Quarterly Report</w:t></w:r></w:p><w:p><w:r><w:t>Revenue grew steadily across all regions this quarter.</w:t></w:r></w:p><w:tbl><w:tblGrid><w:gridCol w:w="3000"/><w:gridCol w:w="3000"/></w:tblGrid><w:tr><w:tc><w:p><w:r><w:t>Region</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>Growth</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>');
+    z.file('word/styles.xml', '<?xml version="1.0"?><w:styles ' + NS + '><w:style w:type="paragraph" w:styleId="Heading1"><w:rPr><w:b/><w:sz w:val="40"/></w:rPr></w:style></w:styles>');
+    const docxPath = path.join(TMP, 'report.docx');
+    fs.writeFileSync(docxPath, await z.generateAsync({ type: 'nodebuffer' }));
+    await useTool(page, '/word-to-pdf', [docxPath], async () => {}, /Convert to PDF/);
+    ok('word: a .docx converts in the browser', await done(page));
+    const wordPdf = await download(page);
+    const wt = await textOf(page, wordPdf);
+    ok('word: the PDF has the heading, paragraph and table text', ['Quarterly Report', 'Revenue grew steadily', 'Region', 'Growth'].every((w) => wt.includes(w)));
+
+    fs.writeFileSync(path.join(TMP, 'notword.docx'), 'this is not a zip file');
+    await useTool(page, '/word-to-pdf', [path.join(TMP, 'notword.docx')], async () => {}, /Convert to PDF/);
+    ok('word: a file that is not a Word document gets a clear message', await errorText(page, /does not look like a \.docx/));
   }
 
   // ---------- (more groups are added below as tools ship) ----------

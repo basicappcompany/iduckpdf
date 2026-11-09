@@ -13,7 +13,7 @@
     "export:web": "npm run clean && npm run meta && npm run seo && expo export --platform web && tsx scripts/inject-seo.ts",
     "typecheck": "npm run meta && tsc --noEmit",
     "audit": "tsx scripts/audit-seo.ts",
-    "test:engine": "tsx scripts/test-engine.ts",
+    "test:engine": "tsx scripts/test-engine.ts && tsx scripts/test-office.ts",
     "e2e": "node scripts/e2e-smoke.js",
     "postinstall": "node scripts/copy-vendor.js",
     "meta": "tsx scripts/gen-tool-meta.ts && tsx scripts/gen-status.ts",
@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
+    "@xmldom/xmldom": "^0.9.12",
     "sharp": "^0.35.5",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3"

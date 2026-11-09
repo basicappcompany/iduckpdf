@@ -278,6 +278,46 @@ export const GUIDES: Guide[] = [
       { q: 'What if some pages already have text?', a: 'By default those pages are left alone and only the scanned pages are read.' },
     ],
   },
+  {
+    slug: 'how-to-convert-word-to-pdf',
+    title: 'How to convert a Word document to PDF',
+    seoTitle: 'How to Convert Word to PDF Without Word (Free, Private)',
+    description: 'Turn a .docx file into a PDF in your browser, with headings, lists, tables and links kept, and nothing uploaded. What it can and cannot reproduce.',
+    tool: 'word-to-pdf',
+    related: ['compress', 'lock', 'merge'],
+    intro: 'To convert Word to PDF, open the Word to PDF tool, add your .docx file and download the PDF. The conversion runs in your browser, so the document is not uploaded. It keeps text, headings, lists, tables, pictures and links, with a simplified layout.',
+    sections: [
+      { h: 'Convert a document in three steps', p: ['Open Word to PDF and add your .docx file. Leave the page size as “As in the document”, or choose A4 or Letter.', 'Press Convert to PDF. A few seconds later you can download the result.', 'Open the PDF and scroll through it before you send it, especially tables and anything near a page break.'] },
+      { h: 'What is kept and what is not', p: ['Kept: paragraphs and their alignment and spacing, headings, bold, italic, underline, colours, bullet and numbered lists, tables, pictures, hyperlinks, page breaks, and the page size and margins.', 'Not reproduced: headers and footers, text boxes, shapes and charts, comments, and embedded fonts. Fonts become standard PDF fonts, so line breaks can differ slightly from Word.'] },
+      { h: 'When to use Word itself', p: ['For a designed document, a form with exact positioning, or text in a non-Latin script, use Word’s File, Save as PDF, which has the original fonts and layout engine.'] },
+      { h: 'Reduce the size or add a password afterwards', p: ['Run the PDF through Make it smaller if it needs to fit an upload limit, or Add a password before you email it.'] },
+    ],
+    faq: [
+      { q: 'Does it work on a phone?', a: 'Yes. It runs in any modern browser.' },
+      { q: 'Does it support .doc and .odt?', a: 'Only .docx. Open other formats in a word processor and save as .docx first.' },
+      { q: 'Is the document uploaded?', a: 'No. Everything happens in your browser tab.' },
+    ],
+  },
+  {
+    slug: 'how-to-save-a-web-page-as-a-pdf',
+    title: 'How to save a web page as a PDF',
+    seoTitle: 'How to Save a Web Page as a PDF (Clean Text Layout)',
+    description: 'Save a web page as a clean, readable PDF: save the HTML or paste it, and convert in your browser. Plus when to use the browser’s Print instead.',
+    tool: 'html-to-pdf',
+    related: ['compress', 'merge', 'page-numbers'],
+    intro: 'To save a web page as a PDF with this tool, save the page from your browser (Ctrl+S) and add the .html file, or paste its HTML, then convert. You get the text, headings, lists, tables and links in a clean layout, without the site’s design.',
+    sections: [
+      { h: 'Convert a page in three steps', p: ['In your browser open the page and press Ctrl+S (Cmd+S on a Mac). Choose “Webpage, HTML only” and save the file.', 'Open Web page to PDF and add the saved .html file. You can also paste the page’s HTML into the box.', 'Pick the page size and text size, press Convert to PDF and download the result.'] },
+      { h: 'Why not just enter the address?', p: ['A web page cannot read other websites from inside a browser tab, for good privacy and security reasons. Saving the page yourself also means the tool only ever sees what you chose to give it.'] },
+      { h: 'What you get', p: ['The content in reading order: headings, paragraphs, lists, tables, links and pictures embedded in the page. Style sheets and scripts are ignored, so the PDF will not look like the website. That suits articles, documentation and receipts.'] },
+      { h: 'When to use your browser’s Print instead', p: ['If you need the page to look exactly as it does on screen, use your browser’s Print command and choose Save as PDF. It uses the browser’s own layout engine, which this tool does not have.'] },
+    ],
+    faq: [
+      { q: 'Are the pictures included?', a: 'Only pictures embedded in the HTML. Linked pictures are left out.' },
+      { q: 'Can it follow links or convert a whole site?', a: 'No. It converts one page at a time, from a file or pasted HTML.' },
+      { q: 'Is my page uploaded?', a: 'No. The conversion happens in your browser tab.' },
+    ],
+  },
 ];
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug);
