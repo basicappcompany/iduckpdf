@@ -3,7 +3,8 @@ import { Pressable, Text, View } from 'react-native';
 import { useTheme } from '../lib/theme';
 import { usePalette } from '../lib/palette';
 import { KEYS, getJSON } from '../lib/storage';
-import { CATEGORIES, READY, SOON, byId, inCategory } from '../tools';
+import { VISIBLE_CATEGORIES, READY, SOON, byId, inCategory } from '../tools';
+import { NEW_TOOL_IDS } from '../content/changelog';
 import { Btn, Card, Chip, Hl, Screen, T, CardGrid } from '../ui/kit';
 import { Logo } from '../ui/Logo';
 import { ToolCard } from '../ui/ToolCard';
@@ -32,7 +33,7 @@ export default function Home() {
           PDFs, <Hl>quacked</Hl> open.
         </T>
         <T muted style={{ textAlign: 'center', maxWidth: 560, fontSize: 17 }}>
-          {READY.length} free tools to join, cut, mark up, shrink and tidy your PDFs. No sign-up, no watermark, and most of it runs right in your browser tab.
+          {READY.length} free tools to join, cut, sign, convert, protect and tidy your PDFs. No sign-up, no watermark, and most of it runs right in your browser tab.
         </T>
         <Pressable
           onPress={open}
@@ -70,7 +71,7 @@ export default function Home() {
         </CardGrid>
       </View>
 
-      {CATEGORIES.filter((c) => c.id !== 'soon').map((c) => (
+      {VISIBLE_CATEGORIES.filter((c) => c.id !== 'soon').map((c) => (
         <View key={c.id} style={{ gap: 12 }}>
           <View style={{ gap: 2 }}>
             <T v="h2">{c.icon} {c.name}</T>
@@ -83,13 +84,13 @@ export default function Home() {
       ))}
 
       <View style={{ gap: 12 }}>
-        <T v="h2">🛠️ On the roadmap</T>
-        <T muted>{SOON.length} more tools are planned. Tell us which ones you need first.</T>
+        <T v="h2">✨ New and next</T>
+        <T muted>{SOON.length ? `${SOON.length} more tools are planned. Tell us which ones you need first.` : 'Recently added, all running in your browser. Tell us what to build next.'}</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {SOON.map((tl) => <Chip key={tl.id} label={tl.name} icon={tl.icon} to={toolPath(tl.id)} />)}
+          {[...NEW_TOOL_IDS.map((id) => byId(id)).filter(Boolean), ...SOON].map((tl) => <Chip key={tl!.id} label={tl!.name} icon={tl!.icon} to={toolPath(tl!.id)} />)}
         </View>
         <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-          <Btn label="See the roadmap" variant="ghost" small to="/roadmap" />
+          <Btn label="See what’s next" variant="ghost" small to="/roadmap" />
           <Btn label="Request a feature" icon="💡" small to="/request" />
         </View>
       </View>

@@ -30,7 +30,7 @@ export default function Request() {
       <T v="h1">
         Got an <Hl>idea</Hl>?
       </T>
-      <T muted>Pick something from the roadmap to push it up the list, or describe a brand new tool or improvement.</T>
+      <T muted>{SOON.length ? 'Pick something from the roadmap to push it up the list, or describe a brand new tool or improvement.' : 'Every tool we announced is built. Describe a new tool or an improvement you would like, with a real example if you can.'}</T>
       <Card style={{ gap: 16 }}>
         <Field label="What do you want?">
           <Choice

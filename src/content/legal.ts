@@ -23,6 +23,7 @@ export const PRIVACY: LegalDoc = {
       p: [
         'For almost every tool, your PDF is opened and rewritten inside your browser tab by JavaScript running on your own device. The file is not sent to our servers, and closing the tab discards it.',
         'The exceptions are the AI tools, “Summarise with AI” and “Ask your PDF”. They only work if you add your own API key. When you run one, the text of the PDF you chose is sent straight from your browser to the AI provider you picked (OpenAI, Anthropic or Google). That provider handles it under its own terms and privacy policy. We do not receive that text. Each AI tool tells you this before you start.',
+        'The other tools, including signing, form filling, passwords, OCR and the Word, Excel, PowerPoint and web page conversions, also run entirely in your browser. For OCR, your browser downloads the recognition engine and the language data from this site the first time you use it, then reads the scan on your device.',
         'Because the work happens on your device, your browser, its extensions and any cloud-synced folders are outside our control. For highly sensitive documents, use a device you trust.',
       ],
     },
@@ -118,7 +119,7 @@ export const TERMS: LegalDoc = {
     },
     {
       h: 'Open-source components',
-      p: [`${SITE.name} is built with open-source libraries, including pdf-lib, pdf.js and JSZip, each under its own licence. The ${SITE.name} name, logo and original content belong to ${SITE.operator}.`],
+      p: [`${SITE.name} is built with open-source libraries, including pdf-lib, @cantoo/pdf-lib, pdf.js, JSZip and Tesseract.js, each under its own licence. The ${SITE.name} name, logo and original content belong to ${SITE.operator}.`],
     },
     {
       h: 'Changes',

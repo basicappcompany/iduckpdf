@@ -74,10 +74,10 @@ export type ToolDef = {
 export const CATEGORIES: { id: CategoryId; name: string; blurb: string; icon: string }[] = [
   { id: 'join', name: 'Join & cut', blurb: 'Merge files, split them, pull pages out.', icon: '✂️' },
   { id: 'arrange', name: 'Arrange & repair', blurb: 'Reorder, rotate, resize, crop and fix pages.', icon: '🗂️' },
-  { id: 'markup', name: 'Stamp & annotate', blurb: 'Page numbers, watermarks, headers and text.', icon: '🖋️' },
-  { id: 'convert', name: 'Make & extract', blurb: 'PDFs to and from images, text and Markdown.', icon: '🔁' },
+  { id: 'markup', name: 'Stamp & annotate', blurb: 'Page numbers, watermarks, headers, text, signatures and forms.', icon: '🖋️' },
+  { id: 'convert', name: 'Make & extract', blurb: 'PDFs to and from images, text, Word, Excel, PowerPoint and web pages, plus OCR.', icon: '🔁' },
   { id: 'shrink', name: 'Shrink & restyle', blurb: 'Smaller files, grayscale, dark mode.', icon: '🪶' },
-  { id: 'privacy', name: 'Privacy & cleanup', blurb: 'Inspect, strip metadata, flatten, redact.', icon: '🧼' },
+  { id: 'privacy', name: 'Privacy & cleanup', blurb: 'Passwords, inspect, strip metadata, flatten, redact.', icon: '🧼' },
   { id: 'insight', name: 'Compare & ask', blurb: 'Diff two PDFs, or ask questions with your own AI key.', icon: '🔎' },
   { id: 'soon', name: 'On the roadmap', blurb: 'Planned tools that need more engine work.', icon: '🛠️' },
 ];

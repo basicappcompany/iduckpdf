@@ -16,7 +16,7 @@ export default function About() {
         About <Hl>iDuckPDF</Hl>
       </T>
       <T muted style={{ fontSize: 17 }}>
-        iDuckPDF is a toolbox for everyday PDF chores: joining, cutting, tidying, marking up, shrinking and cleaning. It is free, has no ads, and does not ask you to sign up.
+        iDuckPDF is a toolbox for everyday PDF chores: joining, cutting, tidying, signing, filling in forms, converting to and from Office files, reading scans, protecting, marking up, shrinking and cleaning. It is free, has no ads, and does not ask you to sign up.
       </T>
 
       <Card style={{ gap: 8 }}>
@@ -46,9 +46,9 @@ export default function About() {
       <Card style={{ gap: 8 }}>
         <T v="h2">How it is built</T>
         <T>
-          One React Native codebase (Expo) powers the website today. The same code is the starting point for Android and iPhone apps later. PDF editing uses open-source libraries (pdf-lib and pdf.js).
+          One React Native codebase (Expo) powers the website today. The same code is the starting point for Android and iPhone apps later. PDF work uses open-source libraries: pdf-lib, pdf.js, JSZip and Tesseract.js (for OCR).
         </T>
-        <T muted v="small">{READY.length} tools are live and {SOON.length} are on the roadmap.</T>
+        <T muted v="small">{SOON.length ? `${READY.length} tools are live and ${SOON.length} are on the roadmap.` : `${READY.length} tools are live, and every tool we announced is built.`}</T>
       </Card>
 
       <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
