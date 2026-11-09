@@ -223,7 +223,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     answer: 'To extract text from a PDF, add the file and press Extract. The tool reads the PDF’s text layer and gives you the words to copy or download as a .txt file. Scanned PDFs have no text layer.',
     steps: ['Add your PDF.', 'Optionally limit the pages and choose whether to mark page starts.', 'Press Extract now, then copy or download the text.'],
     uses: ['Quote a passage without retyping', 'Feed a document to other tools', 'Check whether a PDF is text or just a scan'],
-    faq: [{ q: 'Why did I get no text?', a: 'Your PDF is probably a scan, which is a picture of text. It needs OCR, which is on our roadmap.' }],
+    faq: [{ q: 'Why did I get no text?', a: 'Your PDF is probably a scan, which is a picture of text. Run it through Read scans (OCR) first, then copy the text.' }],
   },
   compress: {
     title: 'Compress a PDF to a Smaller Size',
@@ -306,7 +306,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     uses: ['Find a clause in a long contract', 'Ask what a report concludes', 'Locate a figure in a paper'],
     faq: [
       { q: 'How accurate are the answers?', a: 'They come from the document text, with page references. Like any AI answer, double-check anything important against the page.' },
-      { q: 'Does it work on scanned PDFs?', a: 'Not yet. Scans have no text layer, and OCR is on the roadmap.' },
+      { q: 'Does it work on scanned PDFs?', a: 'Not directly. Scans have no text layer. Run them through Read scans (OCR) first, then ask your questions of the searchable copy.' },
     ],
   },
   lock: {
@@ -359,6 +359,20 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
       { q: 'What does “make the answers permanent” do?', a: 'It flattens the form: your answers are merged into the page and the boxes disappear, so they cannot be edited again. Do this for the copy you send.' },
       { q: 'Is my information uploaded?', a: 'No. The form is read and filled inside your browser tab and nothing is sent to a server.' },
       { q: 'Can I add my signature afterwards?', a: 'Yes. Run the filled copy through the Sign a PDF tool.' },
+    ],
+  },
+  ocr: {
+    title: 'OCR a PDF: Make Scans Searchable, Free',
+    description: 'Turn a scanned PDF or photos of pages into a searchable PDF or plain text with OCR. Runs in your browser, so the scan is never uploaded.',
+    answer: 'To OCR a scanned PDF, add the file, choose the language of the text and press Read the text. The tool recognises the words in your browser and gives you a PDF that looks identical but is searchable and copyable, and/or a plain text file.',
+    steps: ['Add a scanned PDF, or photos of pages (JPG, PNG, WebP).', 'Choose the language of the document and what you want back: a searchable PDF, a text file, or both.', 'Press Read the text, wait while each page is read, then download.'],
+    uses: ['Search and copy from a scanned contract or old report', 'Turn a photo of a page into editable text', 'Make a library of scans searchable on your computer'],
+    faq: [
+      { q: 'Is my scan uploaded?', a: 'No. The OCR engine runs inside your browser tab. The first time, your browser downloads the engine and the language data from this site, then everything happens on your device.' },
+      { q: 'Which languages are supported?', a: 'English, Spanish, French, German, Italian, Portuguese and Dutch. Other languages need larger fonts and are planned.' },
+      { q: 'Will the PDF look different afterwards?', a: 'No. The pages stay exactly as scanned. The recognised text sits underneath as an invisible layer, so you can search, select and copy it.' },
+      { q: 'Why are some words wrong?', a: 'Handwriting, small print and skewed or low-resolution scans are hard to read. Rescan at 200 to 300 dpi, or correct the text file by hand. Always check important numbers.' },
+      { q: 'How long does it take?', a: 'A few seconds per page on a modern computer, longer on a phone. Keep the tab open while it works.' },
     ],
   },
 };

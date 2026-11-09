@@ -40,3 +40,20 @@ export function corners(p: Placed): [number, number][] {
   const s = Math.sin(a);
   return [[0, 0], [p.width, 0], [p.width, p.height], [0, p.height]].map(([u, v]) => [p.x + u * c - v * s, p.y + u * s + v * c]);
 }
+
+/**
+ * A point on the displayed page (origin at the top-left, in points) to page coordinates, plus the counter-clockwise angle that
+ * upright text or images need there. The same mapping placeImage uses, for single points.
+ */
+export function displayedToPage(crop: Box, rotation: number, dx: number, dy: number): { x: number; y: number; angle: number } {
+  const r = (((Math.round(rotation / 90) * 90) % 360) + 360) % 360;
+  const W = crop.width;
+  const H = crop.height;
+  let px: number;
+  let py: number;
+  if (r === 0) { px = dx; py = H - dy; }
+  else if (r === 90) { px = dy; py = dx; }
+  else if (r === 180) { px = W - dx; py = dy; }
+  else { px = W - dy; py = H - dx; }
+  return { x: crop.x + px, y: crop.y + py, angle: r };
+}

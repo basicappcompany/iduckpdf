@@ -2385,20 +2385,121 @@
   "id": "ocr",
   "name": "Read scans (OCR)",
   "short": "Make scanned pages searchable and copyable.",
-  "desc": "Recognise text in scanned PDFs and photos.",
+  "desc": "Recognise the text in a scanned PDF or in photos of pages. You get a PDF that looks exactly the same but can be searched, selected and copied, and/or the plain text. The reading happens in your browser, so the scan never leaves your device.",
+  "category": "convert",
   "icon": "👁️",
   "keywords": [
    "ocr",
    "scan",
    "recognise",
+   "recognize",
    "searchable",
-   "image to text"
+   "image to text",
+   "scanned",
+   "text from image",
+   "photo to text",
+   "make searchable"
   ],
-  "phase": 2,
-  "reason": "Needs an in-browser OCR engine and language packs, which are large downloads.",
-  "category": "soon",
-  "inputs": [],
-  "status": "soon"
+  "inputs": [
+   {
+    "key": "files",
+    "label": "Scanned PDF, or photos of pages",
+    "accept": "any",
+    "multiple": true,
+    "hint": "One PDF, or one or more pictures (JPG, PNG, WebP)."
+   }
+  ],
+  "options": [
+   {
+    "key": "lang",
+    "type": "select",
+    "label": "Language of the text",
+    "default": "eng",
+    "options": [
+     {
+      "value": "eng",
+      "label": "English"
+     },
+     {
+      "value": "spa",
+      "label": "Español"
+     },
+     {
+      "value": "fra",
+      "label": "Français"
+     },
+     {
+      "value": "deu",
+      "label": "Deutsch"
+     },
+     {
+      "value": "ita",
+      "label": "Italiano"
+     },
+     {
+      "value": "por",
+      "label": "Português"
+     },
+     {
+      "value": "nld",
+      "label": "Nederlands"
+     }
+    ],
+    "hint": "Pick the language the document is written in. The first run downloads about 3 MB for it."
+   },
+   {
+    "key": "output",
+    "type": "select",
+    "label": "What do you want?",
+    "default": "pdf",
+    "options": [
+     {
+      "value": "pdf",
+      "label": "Searchable PDF"
+     },
+     {
+      "value": "text",
+      "label": "Text file"
+     },
+     {
+      "value": "both",
+      "label": "Both"
+     }
+    ]
+   },
+   {
+    "key": "skipText",
+    "type": "toggle",
+    "label": "Skip pages that already have text",
+    "default": true,
+    "hint": "Pages that are already searchable are left as they are. Turn off to read every page."
+   }
+  ],
+  "runLabel": "Read the text",
+  "tips": [
+   "Scan at 200 to 300 dpi, straight and in good light. Blurry or crooked pages read poorly.",
+   "Check important numbers and names against the original: no OCR is perfect.",
+   "It can take several seconds per page. Keep the tab open while it works."
+  ],
+  "faq": [
+   {
+    "q": "Is my scan uploaded?",
+    "a": "No. The OCR engine runs inside your browser tab. The first time, your browser downloads the engine and the language data from this site, then everything happens on your device."
+   },
+   {
+    "q": "Which languages work?",
+    "a": "English, Spanish, French, German, Italian, Portuguese and Dutch. Other languages need larger fonts and are planned."
+   },
+   {
+    "q": "Will the PDF look different?",
+    "a": "No. The pages stay exactly as scanned. The recognised text is added underneath as an invisible layer, so you can search and copy it."
+   },
+   {
+    "q": "Why are some words wrong?",
+    "a": "Handwriting, small print, skewed or low-resolution scans are hard to read. Rescan at a higher resolution, or correct the text file by hand."
+   }
+  ],
+  "status": "ready"
  },
  {
   "id": "word-to-pdf",

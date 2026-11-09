@@ -1,18 +1,44 @@
-// Copies the pdf.js browser build into public/vendor so the site serves it itself
-// (no third-party CDN at runtime). Runs automatically after `npm install`.
+// Copies browser builds that the site serves itself into public/vendor (no third-party CDN at runtime):
+//   - pdf.js (reading and rendering pages)
+//   - Tesseract.js (OCR): the script, its worker, the WebAssembly core and the language data
+// Runs automatically after `npm install` (public/vendor is not committed).
 const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const src = path.join(root, 'node_modules', 'pdfjs-dist', 'build');
+const nm = path.join(root, 'node_modules');
 const dest = path.join(root, 'public', 'vendor');
+const copy = (from, to) => {
+  fs.mkdirSync(path.dirname(to), { recursive: true });
+  fs.copyFileSync(from, to);
+};
 
 try {
-  fs.mkdirSync(dest, { recursive: true });
-  for (const f of ['pdf.min.js', 'pdf.worker.min.js']) {
-    fs.copyFileSync(path.join(src, f), path.join(dest, f));
-  }
+  const pdfjs = path.join(nm, 'pdfjs-dist', 'build');
+  for (const f of ['pdf.min.js', 'pdf.worker.min.js']) copy(path.join(pdfjs, f), path.join(dest, f));
   console.log('[copy-vendor] pdf.js copied to public/vendor');
 } catch (e) {
-  console.warn('[copy-vendor] skipped:', e.message);
+  console.warn('[copy-vendor] pdf.js skipped:', e.message);
+}
+
+try {
+  const t = path.join(dest, 'tesseract');
+  const tj = path.join(nm, 'tesseract.js', 'dist');
+  for (const f of ['tesseract.min.js', 'worker.min.js']) copy(path.join(tj, f), path.join(t, f));
+  // the WebAssembly core: the engine picks the variant that suits the device (plain, SIMD, relaxed SIMD) at run time
+  const core = path.join(nm, 'tesseract.js-core');
+  for (const f of fs.readdirSync(core).filter((n) => /^tesseract-core.*\.wasm\.js$/.test(n))) copy(path.join(core, f), path.join(t, 'core', f));
+  // language data: Latin-script languages that the standard PDF fonts can write into a text layer
+  const langs = ['eng', 'spa', 'fra', 'deu', 'ita', 'por', 'nld'];
+  let n = 0;
+  for (const l of langs) {
+    const f = path.join(nm, '@tesseract.js-data', l, '4.0.0_best_int', `${l}.traineddata.gz`);
+    if (fs.existsSync(f)) {
+      copy(f, path.join(t, 'lang', `${l}.traineddata.gz`));
+      n++;
+    }
+  }
+  console.log(`[copy-vendor] Tesseract OCR copied to public/vendor/tesseract (${n} languages)`);
+} catch (e) {
+  console.warn('[copy-vendor] OCR skipped:', e.message);
 }
