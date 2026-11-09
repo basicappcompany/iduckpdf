@@ -131,6 +131,7 @@ Nothing is queued: every announced tool is built. Ideas on the list (not promise
 - Visual passes in Chromium (light and dark, phone and desktop): signing screen, converted Word, HTML, Excel and PowerPoint output rendered and looked at.
 - Live-site health check: `node scripts/health-check.js` (every sitemap URL answers 200 and is its own canonical, redirects, www and http, headers, robots/llms/sitemap, real 404).
 - Found by it on 2026-11-09 and fixed: the guides index was in the sitemap and its canonical as `/guides`, but the host redirects that to `/guides/`; it is now `/guides/` everywhere.
-- **Not checked:** Safari and Firefox (the suites can run in both with `BROWSER=firefox` / `webkit`, once the browsers are downloaded), a real phone, real AI provider calls, and a mail app actually opening from the `mailto:` links.
+- **Firefox and WebKit:** both browser suites (28 + 72) pass in Firefox and in WebKit as well as Chromium (`BROWSER=firefox` / `webkit`).
+- **Not checked:** a real Safari on a Mac or iPhone (WebKit is the same engine, but not the same build), a real phone, real AI provider calls, and a mail app actually opening from the `mailto:` links.
 - Bugs found and fixed on the way (most recent first): plain PowerPoint text boxes inheriting body bullets; decrypted PDFs keeping a stale encryption entry; drawing pad ink invisible in dark mode; layout shift and theme flash on pre-rendered pages; stretched last-row cards; a custom `+html.tsx` that removed the app bundle.
 - Tooling quirk: the browser automation tool's Chrome sometimes stops producing animation frames. Playwright is the reliable check.
