@@ -5,7 +5,7 @@ import { useNavPress } from './nav';
 import { Anchor } from './Anchor';
 import { T } from './kit';
 import { READY } from '../tools';
-import { GUIDES } from '../content/guides';
+import { GUIDE_INDEX as GUIDES } from '../content/guideIndex';
 import { SITE } from '../config';
 import { toolPath } from '../content/toolSlugs';
 

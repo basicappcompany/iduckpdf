@@ -13,7 +13,7 @@ import { HOME_FAQ } from '../content/homeFaq';
 import { SiteFooter } from '../ui/SiteFooter';
 import { LinkCard } from '../ui/LinkCard';
 import { toolPath } from '../content/toolSlugs';
-import { GUIDES } from '../content/guides';
+import { GUIDE_INDEX as GUIDES } from '../content/guideIndex';
 import { SITE } from '../config';
 
 const POPULAR = ['merge', 'split', 'compress', 'images-to-pdf', 'page-numbers', 'text-watermark', 'pdf-to-images', 'inspect'];

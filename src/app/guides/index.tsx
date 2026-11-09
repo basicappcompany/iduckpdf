@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { GUIDES } from '../../content/guides';
+import { GUIDE_INDEX as GUIDES } from '../../content/guideIndex';
 import { byId } from '../../tools';
 import { Hl, Screen, T, CardGrid } from '../../ui/kit';
 import { LinkCard } from '../../ui/LinkCard';
