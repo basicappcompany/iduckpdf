@@ -107,6 +107,15 @@ if (urls.length !== indexable) fail('sitemap', `${urls.length} URLs in the sitem
   }
 }
 
+{
+  const sp = join(dist, 'seo-pages.json');
+  if (!existsSync(sp)) fail('seo-pages.json', 'missing: in-app navigation would not update the page title');
+  else {
+    const map = JSON.parse(readFileSync(sp, 'utf8')) as Record<string, { title: string; description: string }>;
+    for (const u of urls) if (!map[u === '/' ? '/' : u]) fail('seo-pages.json', `${u} is not listed`);
+  }
+}
+
 for (const f of ['robots.txt', 'llms.txt', 'llms-full.txt', 'manifest.webmanifest', 'og.png', 'favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png']) {
   if (!existsSync(join(dist, f))) fail('assets', `${f} missing from dist`);
 }

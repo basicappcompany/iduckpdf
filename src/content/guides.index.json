@@ -1,0 +1,122 @@
+[
+ {
+  "slug": "how-to-merge-pdf-files",
+  "title": "How to merge PDF files into one",
+  "description": "Step-by-step: combine several PDFs into a single document, in the right order, without installing anything.",
+  "tool": "merge"
+ },
+ {
+  "slug": "how-to-make-a-pdf-smaller",
+  "title": "How to make a PDF smaller for email",
+  "description": "Why PDFs get big, what actually shrinks them, and how to hit an email or upload size limit.",
+  "tool": "compress"
+ },
+ {
+  "slug": "how-to-remove-pages-from-a-pdf",
+  "title": "How to remove pages from a PDF",
+  "description": "Delete blank, duplicate or sensitive pages from a PDF and keep everything else, in a few clicks.",
+  "tool": "remove-pages"
+ },
+ {
+  "slug": "how-to-split-a-pdf",
+  "title": "How to split a PDF into separate files",
+  "description": "Cut a PDF by page ranges, every N pages, or one file per page, and download everything as a ZIP.",
+  "tool": "split"
+ },
+ {
+  "slug": "how-to-add-page-numbers-to-a-pdf",
+  "title": "How to add page numbers to a PDF",
+  "description": "Number PDF pages at the bottom or top, start from any number, and skip the cover page.",
+  "tool": "page-numbers"
+ },
+ {
+  "slug": "how-to-redact-a-pdf-properly",
+  "title": "How to redact a PDF properly",
+  "description": "Why drawing a black box is not redaction, and how to hide text in a PDF so it cannot be copied out.",
+  "tool": "redact"
+ },
+ {
+  "slug": "how-to-turn-photos-into-a-pdf",
+  "title": "How to turn photos into a PDF",
+  "description": "Combine photos, screenshots and scans into one PDF on any device, with the pages in the order you want.",
+  "tool": "images-to-pdf"
+ },
+ {
+  "slug": "how-to-remove-metadata-from-a-pdf",
+  "title": "How to remove metadata from a PDF",
+  "description": "See what a PDF reveals about you and strip the author, software and hidden metadata before you share it.",
+  "tool": "properties"
+ },
+ {
+  "slug": "are-online-pdf-tools-safe",
+  "title": "Are online PDF tools safe? What to check",
+  "description": "How to tell whether a PDF tool uploads your files, what questions to ask, and how to check for yourself.",
+  "tool": "inspect"
+ },
+ {
+  "slug": "how-to-password-protect-a-pdf",
+  "title": "How to password protect a PDF",
+  "description": "Put a password on a PDF in under a minute, choose whether people can print or copy it, and keep the file private: all in your browser.",
+  "tool": "lock"
+ },
+ {
+  "slug": "how-to-remove-a-password-from-a-pdf",
+  "title": "How to remove a password from a PDF",
+  "description": "Unlock a PDF you have the password for so it opens without one, and lift print or copy restrictions. Free, in your browser, nothing uploaded.",
+  "tool": "unlock"
+ },
+ {
+  "slug": "how-to-sign-a-pdf",
+  "title": "How to sign a PDF without printing it",
+  "description": "Draw, type or upload your signature, drag it into place and download the signed PDF. Works on a phone or computer, with nothing uploaded.",
+  "tool": "sign"
+ },
+ {
+  "slug": "how-to-fill-in-a-pdf-form",
+  "title": "How to fill in a PDF form online",
+  "description": "Complete the text boxes, check boxes and drop-downs of a PDF form, save a copy, and make the answers permanent. Nothing leaves your browser.",
+  "tool": "fill"
+ },
+ {
+  "slug": "how-to-ocr-a-scanned-pdf",
+  "title": "How to make a scanned PDF searchable (OCR)",
+  "description": "Turn a scanned PDF or photos of pages into text you can search and copy, using OCR in your browser. Nothing is uploaded.",
+  "tool": "ocr"
+ },
+ {
+  "slug": "how-to-convert-word-to-pdf",
+  "title": "How to convert a Word document to PDF",
+  "description": "Turn a .docx file into a PDF in your browser, with headings, lists, tables and links kept, and nothing uploaded. What it can and cannot reproduce.",
+  "tool": "word-to-pdf"
+ },
+ {
+  "slug": "how-to-save-a-web-page-as-a-pdf",
+  "title": "How to save a web page as a PDF",
+  "description": "Save a web page as a clean, readable PDF: save the HTML or paste it, and convert in your browser. Plus when to use the browser’s Print instead.",
+  "tool": "html-to-pdf"
+ },
+ {
+  "slug": "how-to-convert-excel-to-pdf",
+  "title": "How to convert an Excel file to PDF",
+  "description": "Turn an Excel workbook or CSV into a tidy PDF in your browser, with every sheet as a table and the header repeated on each page. Nothing is uploaded.",
+  "tool": "excel-to-pdf"
+ },
+ {
+  "slug": "how-to-extract-tables-from-a-pdf-to-excel",
+  "title": "How to extract tables from a PDF into Excel",
+  "description": "Turn the tables in a PDF, such as statements and invoices, into an Excel workbook with real numbers. Runs in your browser; nothing is uploaded.",
+  "tool": "pdf-to-excel"
+ },
+ {
+  "slug": "how-to-convert-pdf-to-word",
+  "title": "How to convert a PDF to an editable Word document",
+  "description": "Turn a PDF into an editable Word document in your browser, with headings, lists and tables kept. Nothing is uploaded. What to expect and how to fix a scan.",
+  "tool": "pdf-to-word"
+ },
+ {
+  "slug": "how-to-convert-powerpoint-to-pdf",
+  "title": "How to convert a PowerPoint presentation to PDF",
+  "description": "Turn a .pptx presentation into a PDF with one page per slide, in your browser. What is reproduced, what is not, and when to use PowerPoint instead.",
+  "tool": "pptx-to-pdf"
+ }
+]

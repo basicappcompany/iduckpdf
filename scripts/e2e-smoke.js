@@ -1,11 +1,14 @@
 /**
  * Browser smoke test of the BUILT site (run `npm run export:web` first, serve dist/ with `npx serve dist -l 8080`).
  * Checks what crawlers see (JavaScript off) and what people get (hydration, navigation, palette, a real merge, dark mode, phone drawer).
- * Playwright is not a project dependency yet. Point PLAYWRIGHT_CORE at any playwright-core install, e.g.
- *   PLAYWRIGHT_CORE=/path/to/node_modules/playwright-core node scripts/e2e-smoke.js
- * The merge test needs two small PDFs at dist/_test/a.pdf and dist/_test/b.pdf (create them, then delete them again).
+ * Needs playwright-core and a Chromium (npx playwright-core install chromium). Set PLAYWRIGHT_CORE to use another install.
+ * The merge test makes its own two small PDFs in a temporary folder.
  */
 const { chromium } = require(process.env.PLAYWRIGHT_CORE || 'playwright-core');
+const { PDFDocument } = require('pdf-lib');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const BASE = process.env.BASE_URL || 'http://localhost:8080';
 const results = [];
 const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.log(`${pass ? 'PASS' : 'FAIL'}  ${name}${extra ? '  (' + extra + ')' : ''}`); };
@@ -104,7 +107,16 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   // real merge through the UI with a native file chooser
   await page.goto(BASE + '/merge-pdf');
   const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select files/i }).first().click()]);
-  await chooser.setFiles(['dist/_test/a.pdf', 'dist/_test/b.pdf']);
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'duck-smoke-'));
+  const pdfPaths = [];
+  for (const name of ['a.pdf', 'b.pdf']) {
+    const d = await PDFDocument.create();
+    for (let i = 0; i < 3; i++) d.addPage([300, 400]);
+    const p = path.join(tmp, name);
+    fs.writeFileSync(p, await d.save());
+    pdfPaths.push(p);
+  }
+  await chooser.setFiles(pdfPaths);
   await page.getByText('b.pdf').first().waitFor({ timeout: 5000 }).catch(() => {});
   ok('chosen files are listed', (await page.getByText('a.pdf').count()) > 0 && (await page.getByText('b.pdf').count()) > 0);
   await page.getByRole('button', { name: /Merge now/i }).click();

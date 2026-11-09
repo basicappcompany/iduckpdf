@@ -6,6 +6,7 @@
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { ALL_TOOLS } from '../src/tools/all';
+import { GUIDES } from '../src/content/guides';
 import { RESERVED_ROOT_PATHS, TOOL_SLUGS } from '../src/content/toolSlugs';
 
 // Every tool URL must contain "pdf", be unique, and not collide with another route.
@@ -39,3 +40,8 @@ if (bad) {
 const out = JSON.stringify(meta, null, 1) + '\n';
 writeFileSync(join(__dirname, '..', 'src', 'tools', 'meta.generated.json'), out);
 console.log(`[gen-tool-meta] ${meta.length} tools, ${(out.length / 1024).toFixed(1)} KB`);
+
+// A small index of the guides (no text) so the footer, home page and guides list do not import every guide in full.
+const guideIndex = GUIDES.map((x) => ({ slug: x.slug, title: x.title, description: x.description, tool: x.tool }));
+writeFileSync(join(__dirname, '..', 'src', 'content', 'guides.index.json'), JSON.stringify(guideIndex, null, 1) + '\n');
+console.log(`[gen-tool-meta] ${guideIndex.length} guides indexed`);

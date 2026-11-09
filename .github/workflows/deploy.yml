@@ -30,6 +30,14 @@ jobs:
       - run: npm run test:engine
       - run: npm run export:web
       - run: npm run audit # fails the build on SEO regressions (titles, canonicals, sitemap, app bundle)
+      - name: Install Chromium for the browser tests
+        run: npx playwright-core install --with-deps chromium
+      - name: Browser tests (site checks and every tool, in a real browser)
+        run: |
+          node scripts/serve-dist.js dist 8080 &
+          sleep 3
+          node scripts/e2e-smoke.js
+          node scripts/e2e-tools.js || node scripts/e2e-tools.js # the tools run OCR and downloads: allow one retry for a slow runner
       - name: Deploy to Cloudflare Pages
         if: env.CLOUDFLARE_API_TOKEN != '' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3

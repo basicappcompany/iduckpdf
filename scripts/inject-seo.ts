@@ -19,6 +19,7 @@ function walk(dir: string): string[] {
 
 let done = 0;
 let hidden = 0;
+const pages: Record<string, { title: string; description: string }> = {};
 const problems: string[] = [];
 
 for (const file of walk(dist)) {
@@ -37,10 +38,15 @@ for (const file of walk(dist)) {
     continue;
   }
   html = html.replace('</head>', headHtml(d) + '</head>');
+  if (!d.noindex) pages[d.path] = { title: d.title, description: d.description };
   writeFileSync(file, html);
   done++;
   if (d.noindex) hidden++;
 }
+
+// Title and description of every indexable page, fetched by the app when someone navigates inside it, so the SEO text is not
+// bundled into the JavaScript of every page.
+writeFileSync(join(dist, 'seo-pages.json'), JSON.stringify(pages));
 
 // Hosts (Cloudflare Pages, Netlify) serve /404.html with a real 404 status for unknown URLs.
 if (existsSync(join(dist, '+not-found.html'))) copyFileSync(join(dist, '+not-found.html'), join(dist, '404.html'));
