@@ -358,6 +358,46 @@ export const GUIDES: Guide[] = [
       { q: 'Is my PDF uploaded?', a: 'No. Everything happens in your browser tab.' },
     ],
   },
+  {
+    slug: 'how-to-convert-pdf-to-word',
+    title: 'How to convert a PDF to an editable Word document',
+    seoTitle: 'How to Convert a PDF to Word (Editable .docx, Free)',
+    description: 'Turn a PDF into an editable Word document in your browser, with headings, lists and tables kept. Nothing is uploaded. What to expect and how to fix a scan.',
+    tool: 'pdf-to-word',
+    related: ['ocr', 'extract-text', 'word-to-pdf'],
+    intro: 'To convert a PDF to Word, open the PDF to Word tool, add the file and download the .docx. It rebuilds the text in reading order with headings, lists and simple tables, in your browser, so the PDF is not uploaded. It is a clean starting point to edit, not a pixel copy.',
+    sections: [
+      { h: 'Convert a PDF in three steps', p: ['Open PDF to Word and add a PDF with selectable text. If you can highlight words in the PDF, it has a text layer.', 'Leave “Turn tables into Word tables” on if the PDF has tables.', 'Press Convert to Word, download the .docx and open it in Word. Check headings and tables first.'] },
+      { h: 'What you get', p: ['The text in reading order, paragraphs rebuilt from wrapped lines, headings for larger or bold titles, list items, simple tables, and a page break between PDF pages. Pages with two columns are read column by column.', 'Not carried over: pictures, exact fonts and colours, headers and footers, and precise positioning. Complex layouts need tidying in Word.'] },
+      { h: 'If the result is empty', p: ['A scanned PDF is only a picture of text. Run it through Read scans (OCR) first. That gives you a searchable PDF that this tool can convert.'] },
+      { h: 'Your file stays with you', p: ['The conversion runs in your browser tab, so contracts, CVs and other private documents are not uploaded anywhere.'] },
+    ],
+    faq: [
+      { q: 'Why do some lines break oddly?', a: 'Word reflows text to its own page width. Lines that were short in the PDF because of a layout are joined into paragraphs, but check poetry or addresses.' },
+      { q: 'Can I keep the pictures?', a: 'Not in this tool. Use PDF to pictures to save them and add them in Word.' },
+      { q: 'Does it work on password-protected PDFs?', a: 'Remove the password first with Remove a password, then convert.' },
+    ],
+  },
+  {
+    slug: 'how-to-convert-powerpoint-to-pdf',
+    title: 'How to convert a PowerPoint presentation to PDF',
+    seoTitle: 'How to Convert PowerPoint to PDF (.pptx, Free, Private)',
+    description: 'Turn a .pptx presentation into a PDF with one page per slide, in your browser. What is reproduced, what is not, and when to use PowerPoint instead.',
+    tool: 'pptx-to-pdf',
+    related: ['compress', 'lock', 'merge'],
+    intro: 'To convert PowerPoint to PDF, open the PowerPoint to PDF tool, add your .pptx and download the PDF. Each slide becomes a page of the same size, with shapes, pictures, tables and text drawn where they sit. It runs in your browser, so the deck is not uploaded.',
+    sections: [
+      { h: 'Convert a deck in two steps', p: ['Open PowerPoint to PDF and add your .pptx file.', 'Press Convert to PDF and download the result. Scroll through it before you share it.'] },
+      { h: 'What is reproduced', p: ['Slide size and background colour, filled shapes and lines, pictures (PNG and JPEG), tables, and text with its size, colour, bullets, numbering and alignment. Positions and styles that a shape inherits from its layout and master are applied.'] },
+      { h: 'What is not', p: ['Charts and SmartArt are drawn as plain boxes. Gradients, shadows, animations, videos, speaker notes and custom fonts are not reproduced, and non-Latin text cannot be drawn with the standard fonts. Hidden slides are left out.'] },
+      { h: 'When to use PowerPoint’s own export', p: ['For a designed deck with charts, custom fonts or heavy styling, use PowerPoint’s File, Save as PDF. Use this tool when you do not have PowerPoint to hand, or for text-and-picture slides.'] },
+    ],
+    faq: [
+      { q: 'Can I get handouts or notes pages?', a: 'No. It makes one PDF page per slide. Use Print several per sheet afterwards for handouts.' },
+      { q: 'Does it work with Keynote or Google Slides?', a: 'Export them as .pptx first, then convert.' },
+      { q: 'Is the file uploaded?', a: 'No. Everything happens in your browser tab.' },
+    ],
+  },
 ];
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug);

@@ -238,6 +238,120 @@ async function makeXlsx(sheets: { name: string; xml: string; state?: string }[],
   const scanErr = await throws(() => run('pdf-to-excel', { files: [pf('blank.pdf', blankBytes, 'application/pdf')] }));
   check('pdf to excel: a PDF with no text layer points to OCR', scanErr instanceof ToolError && /Read scans \(OCR\)/.test((scanErr as Error).message));
 
+  // ================= PDF to Word =================
+  const wd = await PDFDocument.create();
+  const reg = await wd.embedFont(StandardFonts.Helvetica);
+  const bold = await wd.embedFont(StandardFonts.HelveticaBold);
+  const wp1 = wd.addPage([595, 842]);
+  const w = (pg: any, t: string, x: number, y: number, size = 11, font = reg) => pg.drawText(t, { x, y, size, font });
+  w(wp1, 'Annual Report', 50, 780, 26, bold);
+  w(wp1, 'This report summarises the results of the year and', 50, 740);
+  w(wp1, 'explains what the board plans to do next.', 50, 726);
+  w(wp1, 'Highlights', 50, 690, 16, bold);
+  w(wp1, '\u2022 Alpha growth', 50, 668); w(wp1, '\u2022 Beta launch', 50, 652);
+  w(wp1, 'Region', 50, 610); w(wp1, 'Sales', 250, 610); w(wp1, 'Margin', 400, 610);
+  w(wp1, 'North', 50, 592); w(wp1, '120', 250, 592); w(wp1, '14%', 400, 592);
+  w(wp1, 'South', 50, 574); w(wp1, '98', 250, 574); w(wp1, '11%', 400, 574);
+  const wp2 = wd.addPage([595, 842]);
+  for (let i = 1; i <= 26; i++) { w(wp2, `LEFTCOL line ${i} text`, 50, 800 - i * 22); w(wp2, `RIGHTCOL line ${i} text`, 320, 800 - i * 22); }
+  const wordBytes = await wd.save();
+  r = await run('pdf-to-word', { files: [pf('report.pdf', wordBytes, 'application/pdf')] });
+  const dz = await JSZip.loadAsync(r.files![0].bytes);
+  const dxml = await dz.file('word/document.xml')!.async('string');
+  const plain = dxml.replace(/<w:br w:type="page"\/>/g, ' [PAGEBREAK] ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  check('pdf to word: a real .docx with document, styles and content types', !!dz.file('word/styles.xml') && !!dz.file('[Content_Types].xml') && r.files![0].name === 'report.docx');
+  check('pdf to word: the big bold title becomes a Heading 1 and the sub-heading a heading', /Heading1"\/>[^]*?Annual Report/.test(dxml) && /Heading[23]"\/>[^]*?Highlights/.test(dxml));
+  check('pdf to word: wrapped lines are joined into one paragraph', plain.includes('summarises the results of the year and explains what the board plans'), plain.slice(0, 200));
+  check('pdf to word: list items stay list items', /<w:ind w:left="540" w:hanging="360"\/>[^]*?Alpha growth/.test(dxml) && plain.includes('Beta launch'));
+  check('pdf to word: the table becomes a Word table with every cell', /<w:tbl>/.test(dxml) && ['Region', 'Sales', 'Margin', 'North', '120', '14%', 'South', '98', '11%'].every((c) => dxml.includes('>' + c + '<')));
+  check('pdf to word: pages are separated by a page break', dxml.includes('<w:br w:type="page"/>'));
+  const leftAt = plain.lastIndexOf('LEFTCOL line 26'), rightAt = plain.indexOf('RIGHTCOL line 1 ');
+  check('pdf to word: a two-column page is read column by column (left column first)', leftAt > 0 && rightAt > leftAt, `left26=${leftAt} right1=${rightAt}`);
+  const back = await run('word-to-pdf', { files: [pf('report.docx', r.files![0].bytes)] });
+  const backText = all(await pdfPages(back.files![0].bytes));
+  check('pdf to word: the .docx opens again (round trip through Word to PDF) with the same text', ['Annual Report', 'Highlights', 'Alpha growth', 'Region', 'North', 'LEFTCOL line 1 '].every((x) => backText.includes(x)));
+  r = await run('pdf-to-word', { files: [pf('report.pdf', wordBytes, 'application/pdf')] }, { tables: false });
+  check('pdf to word: with tables off there is no Word table', !(await (await JSZip.loadAsync(r.files![0].bytes)).file('word/document.xml')!.async('string')).includes('<w:tbl>'));
+  const scanDoc = await PDFDocument.create();
+  scanDoc.addPage([300, 300]);
+  const scanBytes = await scanDoc.save();
+  const scanErr2 = await throws(() => run('pdf-to-word', { files: [pf('scan.pdf', scanBytes, 'application/pdf')] }));
+  check('pdf to word: a PDF with no text layer points to OCR', scanErr2 instanceof ToolError && /Read scans \(OCR\)/.test((scanErr2 as Error).message));
+
+  // ================= PowerPoint to PDF =================
+  const A = 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"';
+  const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const relFile = (items: [string, string, string][]) => `<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${items.map(([id, type, target]) => `<Relationship Id="${id}" Type="${REL}/${type}" Target="${target}"/>`).join('')}</Relationships>`;
+  const png1 = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+  const pz = new JSZip();
+  pz.file('[Content_Types].xml', '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>');
+  pz.file('ppt/presentation.xml', `<?xml version="1.0"?><p:presentation ${A}><p:sldIdLst><p:sldId id="256" r:id="rId1"/><p:sldId id="257" r:id="rId2"/><p:sldId id="258" r:id="rId3"/></p:sldIdLst><p:sldSz cx="9144000" cy="6858000"/></p:presentation>`);
+  pz.file('ppt/_rels/presentation.xml.rels', relFile([['rId1', 'slide', 'slides/slide1.xml'], ['rId2', 'slide', 'slides/slide2.xml'], ['rId3', 'slide', 'slides/slide3.xml'], ['rId4', 'theme', 'theme/theme1.xml']]));
+  pz.file('ppt/theme/theme1.xml', '<?xml version="1.0"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:themeElements><a:clrScheme name="t"><a:dk1><a:sysClr val="windowText" lastClr="000000"/></a:dk1><a:lt1><a:sysClr val="window" lastClr="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="44546A"/></a:dk2><a:lt2><a:srgbClr val="E7E6E6"/></a:lt2><a:accent1><a:srgbClr val="4472C4"/></a:accent1><a:accent2><a:srgbClr val="ED7D31"/></a:accent2></a:clrScheme></a:themeElements></a:theme>');
+  pz.file('ppt/slideMasters/slideMaster1.xml', `<?xml version="1.0"?><p:sldMaster ${A}><p:cSld><p:spTree/></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2"/><p:txStyles><p:titleStyle><a:lvl1pPr algn="l"><a:defRPr sz="4400" b="1"><a:solidFill><a:schemeClr val="tx2"/></a:solidFill></a:defRPr></a:lvl1pPr></p:titleStyle><p:bodyStyle><a:lvl1pPr marL="342900" indent="-342900"><a:buChar char="\u2022"/><a:defRPr sz="2800"/></a:lvl1pPr></p:bodyStyle><p:otherStyle><a:lvl1pPr><a:defRPr sz="1800"/></a:lvl1pPr></p:otherStyle></p:txStyles></p:sldMaster>`);
+  pz.file('ppt/slideLayouts/slideLayout1.xml', `<?xml version="1.0"?><p:sldLayout ${A}><p:cSld><p:spTree>
+    <p:sp><p:nvSpPr><p:cNvPr id="2" name="Title"/><p:cNvSpPr/><p:nvPr><p:ph type="title"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="457200" y="274638"/><a:ext cx="8229600" cy="1143000"/></a:xfrm></p:spPr><p:txBody><a:bodyPr anchor="ctr"/><a:lstStyle/></p:txBody></p:sp>
+    <p:sp><p:nvSpPr><p:cNvPr id="3" name="Body"/><p:cNvSpPr/><p:nvPr><p:ph idx="1"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="457200" y="1600200"/><a:ext cx="8229600" cy="2000000"/></a:xfrm></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/></p:txBody></p:sp>
+  </p:spTree></p:cSld></p:sldLayout>`);
+  pz.file('ppt/slideLayouts/_rels/slideLayout1.xml.rels', relFile([['rId1', 'slideMaster', '../slideMasters/slideMaster1.xml']]));
+  const slideRels = relFile([['rId1', 'slideLayout', '../slideLayouts/slideLayout1.xml'], ['rId2', 'image', '../media/image1.png']]);
+  pz.file('ppt/media/image1.png', png1);
+  pz.file('ppt/slides/slide1.xml', `<?xml version="1.0"?><p:sld ${A}><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="FFF8E7"/></a:solidFill></p:bgPr></p:bg><p:spTree>
+    <p:sp><p:nvSpPr><p:cNvPr id="2" name="Title 1"/><p:cNvSpPr/><p:nvPr><p:ph type="title"/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US"/><a:t>Quarterly Review</a:t></a:r></a:p></p:txBody></p:sp>
+    <p:sp><p:nvSpPr><p:cNvPr id="3" name="Content 2"/><p:cNvSpPr/><p:nvPr><p:ph idx="1"/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:t>First point</a:t></a:r></a:p><a:p><a:r><a:t>Second point</a:t></a:r></a:p></p:txBody></p:sp>
+    <p:sp><p:nvSpPr><p:cNvPr id="4" name="Box"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="457200" y="4000000"/><a:ext cx="2743200" cy="914400"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:schemeClr val="accent1"/></a:solidFill></p:spPr><p:txBody><a:bodyPr anchor="ctr"/><a:lstStyle/><a:p><a:pPr algn="ctr"/><a:r><a:rPr sz="2000"><a:solidFill><a:schemeClr val="bg1"/></a:solidFill></a:rPr><a:t>Box label</a:t></a:r></a:p></p:txBody></p:sp>
+    <p:grpSp><p:nvGrpSpPr><p:cNvPr id="5" name="Group"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="4572000" y="4000000"/><a:ext cx="2000000" cy="1000000"/><a:chOff x="0" y="0"/><a:chExt cx="1000000" cy="500000"/></a:xfrm></p:grpSpPr>
+      <p:sp><p:nvSpPr><p:cNvPr id="6" name="Inner"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="1000000" cy="500000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr sz="1600"/><a:t>Grouped text</a:t></a:r></a:p></p:txBody></p:sp></p:grpSp>
+    <p:pic><p:nvPicPr><p:cNvPr id="7" name="Pic"/><p:cNvPicPr/><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rId2"/></p:blipFill><p:spPr><a:xfrm><a:off x="7000000" y="4000000"/><a:ext cx="1000000" cy="1000000"/></a:xfrm></p:spPr></p:pic>
+    <p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="8" name="Table"/><p:cNvGraphicFramePr/><p:nvPr/></p:nvGraphicFramePr><p:xfrm><a:off x="457200" y="5200000"/><a:ext cx="6000000" cy="800000"/></p:xfrm><a:graphic><a:graphicData><a:tbl><a:tblPr firstRow="1"/><a:tblGrid><a:gridCol w="3000000"/><a:gridCol w="3000000"/></a:tblGrid>
+      <a:tr h="400000"><a:tc><a:txBody><a:bodyPr/><a:p><a:r><a:t>Cell H1</a:t></a:r></a:p></a:txBody></a:tc><a:tc><a:txBody><a:bodyPr/><a:p><a:r><a:t>Cell H2</a:t></a:r></a:p></a:txBody></a:tc></a:tr>
+      <a:tr h="400000"><a:tc><a:txBody><a:bodyPr/><a:p><a:r><a:t>Cell A1</a:t></a:r></a:p></a:txBody></a:tc><a:tc><a:txBody><a:bodyPr/><a:p><a:r><a:t>Cell A2</a:t></a:r></a:p></a:txBody></a:tc></a:tr></a:tbl></a:graphicData></a:graphic></p:graphicFrame>
+  </p:spTree></p:cSld></p:sld>`);
+  pz.file('ppt/slides/_rels/slide1.xml.rels', slideRels);
+  pz.file('ppt/slides/slide2.xml', `<?xml version="1.0"?><p:sld ${A}><p:cSld><p:spTree><p:sp><p:nvSpPr><p:cNvPr id="2" name="Title"/><p:cNvSpPr/><p:nvPr><p:ph type="title"/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:t>Second slide title</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>`);
+  pz.file('ppt/slides/_rels/slide2.xml.rels', relFile([['rId1', 'slideLayout', '../slideLayouts/slideLayout1.xml']]));
+  pz.file('ppt/slides/slide3.xml', `<?xml version="1.0"?><p:sld ${A} show="0"><p:cSld><p:spTree><p:sp><p:nvSpPr><p:cNvPr id="2" name="T"/><p:cNvSpPr/><p:nvPr><p:ph type="title"/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:t>Hidden slide text</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>`);
+  pz.file('ppt/slides/_rels/slide3.xml.rels', relFile([['rId1', 'slideLayout', '../slideLayouts/slideLayout1.xml']]));
+  const pptx = await pz.generateAsync({ type: 'uint8array' });
+  if (process.env.DUMP_PPTX) require('fs').writeFileSync(process.env.DUMP_PPTX, pptx);
+  r = await run('pptx-to-pdf', { files: [pf('deck.pptx', pptx)] });
+
+  // read positions back with pdf.js
+  const pdoc = await pdfjs.getDocument({ data: r.files![0].bytes.slice(), isEvalSupported: false, disableFontFace: true, standardFontDataUrl: FONT_DIR, verbosity: 0 }).promise;
+  const slideItems = async (n: number) => {
+    const pg = await pdoc.getPage(n);
+    const vp = pg.getViewport({ scale: 1 });
+    const tc = await pg.getTextContent();
+    return { w: vp.width, h: vp.height, items: (tc.items as any[]).filter((i) => i.str.trim()).map((i) => { const t = pdfjs.Util.transform(vp.transform, i.transform); return { s: i.str as string, x: t[4] as number, y: t[5] as number, size: Math.hypot(t[2], t[3]) }; }) };
+  };
+  const s1 = await slideItems(1);
+  const at = (items: { s: string; x: number; y: number; size: number }[], word: string) => items.find((i) => i.s.includes(word));
+  check('pptx: one page per slide, the hidden slide left out', pdoc.numPages === 2 && !all(await pdfPages(r.files![0].bytes)).includes('Hidden slide text'), `${pdoc.numPages} pages`);
+  check('pptx: the page has the slide size (10 x 7.5 inches = 720 x 540 pt)', Math.abs(s1.w - 720) < 0.5 && Math.abs(s1.h - 540) < 0.5, `${s1.w} x ${s1.h}`);
+  const title = at(s1.items, 'Quarterly Review')!;
+  check('pptx: a title with no position of its own takes it from the layout (near the top, left margin)', !!title && title.y < 130 && Math.abs(title.x - 36 - 7.2) < 6, title ? `x=${title.x.toFixed(1)} y=${title.y.toFixed(1)}` : 'missing');
+  check('pptx: the title takes its size from the master (44 pt)', !!title && Math.abs(title.size - 44) < 1.5, title ? title.size.toFixed(1) : '');
+  const p1 = at(s1.items, 'First point')!, p2 = at(s1.items, 'Second point')!;
+  check('pptx: body paragraphs come out in order, below the title, with a bullet', !!p1 && !!p2 && p2.y > p1.y && p1.y > title.y && s1.items.some((i) => i.s.includes('\u2022')), p1 ? `y=${p1.y.toFixed(0)}/${p2?.y.toFixed(0)}` : '');
+  const box = at(s1.items, 'Box label')!;
+  check('pptx: text in a filled rectangle is centred in it', !!box && box.x > 36 && box.x < 36 + 216 && box.y > 4000000 / 12700 && box.y < (4000000 + 914400) / 12700 + 20, box ? `x=${box.x.toFixed(0)} y=${box.y.toFixed(0)}` : '');
+  const grouped = at(s1.items, 'Grouped text')!;
+  // the group is drawn at x = 4572000 EMU = 360 pt; child offset 0 plus a 7.2 pt inset
+  check('pptx: shapes inside a group follow the group position', !!grouped && Math.abs(grouped.x - (360 + 7.2 * 2)) < 8, grouped ? `x=${grouped.x.toFixed(1)}` : '');
+  check('pptx: table cells are drawn', ['Cell H1', 'Cell H2', 'Cell A1', 'Cell A2'].every((c) => !!at(s1.items, c)));
+  const ops = Buffer.from((await PDFDocument.load(r.files![0].bytes)).getPage(0).node.Contents() ? await (async () => { const d = await PDFDocument.load(r.files![0].bytes); const c: any = d.getPage(0).node.Contents(); const streams = c.size ? Array.from({ length: c.size() }, (_: unknown, i: number) => d.context.lookup(c.get(i))) : [c]; return Buffer.concat(streams.map((x: any) => Buffer.from((nodeRequire('pdf-lib') as any).decodePDFRawStream(x).decode()))); })() : '').toString('latin1');
+  const rgs = [...ops.matchAll(/(-?[\d.]+) (-?[\d.]+) (-?[\d.]+) rg/g)].map((m) => [Number(m[1]), Number(m[2]), Number(m[3])]);
+  const near = (a: number[], b: number[]) => a.every((v, i) => Math.abs(v - b[i]) < 0.02);
+  check('pptx: a theme colour (accent 1) is resolved for the rectangle fill', rgs.some((c) => near(c, [0x44 / 255, 0x72 / 255, 0xc4 / 255])));
+  check('pptx: the slide background colour is drawn', rgs.some((c) => near(c, [1, 0xf8 / 255, 0xe7 / 255])));
+  check('pptx: the picture is placed on the slide', Buffer.from(ops).includes(' Do'), '');
+  const s2 = await slideItems(2);
+  check('pptx: the second slide has its own title', !!at(s2.items, 'Second slide title'));
+  check('pptx: the notes say what is not reproduced', (r.notes || []).join(' ').includes('Charts'));
+  check('pptx: a file that is not a PowerPoint file is refused clearly', (await throws(() => run('pptx-to-pdf', { files: [pf('x.pptx', new TextEncoder().encode('nope'))] }))) instanceof ToolError);
+  const notPptx = await new JSZip().file('a.txt', 'hi').generateAsync({ type: 'uint8array' });
+  check('pptx: a zip with no presentation is refused clearly', (await throws(() => run('pptx-to-pdf', { files: [pf('x.pptx', notPptx)] }))) instanceof ToolError);
+
   void PDFDocument; void StandardFonts;
   console.log(`\n${pass} passed, ${fail} failed.`);
   if (fail) {
