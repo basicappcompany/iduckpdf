@@ -3,7 +3,7 @@
  * Run:  npx tsx scripts/test-engine.ts
  */
 import { PDFDict, PDFDocument, PDFName, StandardFonts, degrees } from 'pdf-lib';
-import { corners, placeImage } from '../src/engine/placement';
+import { corners, displayedToPage, placeImage } from '../src/engine/placement';
 import { ALL_TOOLS } from '../src/tools/all';
 
 const READY = ALL_TOOLS.filter((t) => t.status === 'ready');
@@ -213,6 +213,17 @@ const pages = async (b: Uint8Array) => (await PDFDocument.load(b)).getPageCount(
       check(`placement: rotation ${r}, an off-page position is clamped inside the page`, inside(corners(q)));
       const w = placeImage({ x: 50, y: 30, width: 400, height: 600 }, r, { x: 0.4, y: 0.4, w: 0.2 }, 3);
       check(`placement: rotation ${r}, respects a crop box that does not start at 0,0`, inside(corners(w), { x: 50, y: 30, width: 400, height: 600 }));
+    }
+
+    // single-point mapping: the displayed top-left of the page, and a point one third across and down, for every rotation
+    const dcrop = { x: 10, y: 20, width: 400, height: 600 };
+    const wantTL: Record<number, [number, number]> = { 0: [10, 620], 90: [10, 20], 180: [410, 20], 270: [410, 620] };
+    for (const r of [0, 90, 180, 270]) {
+      const o = displayedToPage(dcrop, r, 0, 0);
+      check(`displayedToPage: rotation ${r}, the displayed top-left is the right page corner`, o.x === wantTL[r][0] && o.y === wantTL[r][1] && o.angle === r, `${o.x},${o.y}`);
+      const d = r === 90 || r === 270 ? [600, 400] : [400, 600];
+      const m = displayedToPage(dcrop, r, d[0] / 3, d[1] / 3);
+      check(`displayedToPage: rotation ${r}, a point inside the displayed page stays inside the page`, m.x >= 10 && m.x <= 410 && m.y >= 20 && m.y <= 620);
     }
 
     const sharp = (await import('sharp')).default;

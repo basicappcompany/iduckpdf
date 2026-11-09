@@ -8,7 +8,6 @@ const soon = (t: Pick<ToolDef, 'id' | 'name' | 'short' | 'desc' | 'icon' | 'keyw
 });
 
 export const soonTools: ToolDef[] = [
-  soon({ id: 'ocr', name: 'Read scans (OCR)', short: 'Make scanned pages searchable and copyable.', desc: 'Recognise text in scanned PDFs and photos.', icon: '👁️', keywords: ['ocr', 'scan', 'recognise', 'searchable', 'image to text'], phase: 2, reason: 'Needs an in-browser OCR engine and language packs, which are large downloads.' }),
   soon({ id: 'word-to-pdf', name: 'Word to PDF', short: 'Convert .docx documents to PDF.', desc: 'Turn Word documents into PDFs with layout preserved.', icon: '📄', keywords: ['word', 'docx', 'doc', 'microsoft'], phase: 3, reason: 'Accurate conversion needs a document engine that does not run well in a browser. It would run on a server, and we would tell you clearly when a file leaves your device.' }),
   soon({ id: 'pdf-to-word', name: 'PDF to Word', short: 'Get an editable .docx from a PDF.', desc: 'Convert a PDF into an editable Word document.', icon: '📝', keywords: ['word', 'docx', 'editable', 'convert to word'], phase: 3, reason: 'Needs server-side layout analysis. Planned with a clear notice that files are sent to be converted.' }),
   soon({ id: 'excel-to-pdf', name: 'Excel to PDF', short: 'Spreadsheets to tidy PDFs.', desc: 'Convert .xlsx and .csv files into PDFs.', icon: '📊', keywords: ['excel', 'xlsx', 'csv', 'spreadsheet'], phase: 3, reason: 'Needs a spreadsheet layout engine, so it would run on a server.' }),

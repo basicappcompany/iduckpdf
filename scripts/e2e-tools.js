@@ -44,6 +44,13 @@ async function download(page) {
   await dl.saveAs(out);
   return out;
 }
+/** All content-stream operators of a page, as text. */
+async function pageContent(bytes, pageIndex) {
+  const doc = await PDFDocument.load(bytes);
+  const c = doc.getPage(pageIndex).node.Contents();
+  const streams = c instanceof PDFArray ? Array.from({ length: c.size() }, (_, i) => doc.context.lookup(c.get(i))) : [c];
+  return streams.map((x) => Buffer.from(decodePDFRawStream(x).decode()).toString('latin1')).join('\n');
+}
 /** Where the image on a page ended up, in the page's own coordinates: the four corners of the unit square under the page's CTM. */
 async function imageCorners(bytes, pageIndex) {
   const doc = await PDFDocument.load(bytes);
@@ -222,6 +229,95 @@ const fillPasswords = (a, b) => async (page) => {
     const [c3] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select file/i }).first().click()]);
     await c3.setFiles([src]);
     ok('fill: a PDF without fields explains itself and offers Write on a PDF', await page.getByText(/no fillable fields/i).first().waitFor({ timeout: 10000 }).then(() => true).catch(() => false));
+  }
+
+  // ---------- OCR: a scanned page made of pixels only ----------
+  {
+    // draw the "scan" with a canvas in the browser (a real, anti-aliased bitmap), then wrap it in a PDF
+    const dataUrl = await page.evaluate(() => {
+      const c = document.createElement('canvas');
+      c.width = 1400; c.height = 700;
+      const x = c.getContext('2d');
+      x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+      x.fillStyle = '#000'; x.font = '78px Arial, Helvetica, sans-serif';
+      x.fillText('Hello OCR world', 80, 200);
+      x.fillText('Invoice number 2026', 80, 340);
+      x.fillText('Total due 450 dollars', 80, 480);
+      return c.toDataURL('image/png');
+    });
+    const png = Buffer.from(dataUrl.split(',')[1], 'base64');
+    const pngPath = path.join(TMP, 'scan.png');
+    fs.writeFileSync(pngPath, png);
+    const sd = await PDFDocument.create();
+    const img = await sd.embedPng(png);
+    sd.addPage([700, 350]).drawImage(img, { x: 0, y: 0, width: 700, height: 350 });
+    const scanPath = path.join(TMP, 'scan.pdf');
+    fs.writeFileSync(scanPath, await sd.save());
+    const hasWords = (text) => ['hello', 'world', 'invoice', '2026'].filter((w) => text.toLowerCase().includes(w)).length;
+
+    await useTool(page, '/ocr-pdf', [scanPath], async (p) => { await p.getByText('Both', { exact: true }).first().click(); }, /Read the text/);
+    ok('ocr: reads a scanned PDF (first run downloads the engine)', await done(page, 180000));
+    const bodyText = await page.locator('body').innerText();
+    ok('ocr: the recognised text contains the words that were on the page', hasWords(bodyText) >= 3, hasWords(bodyText) + ' of 4 words');
+    const outPath = await download(page);
+    const outBytes = fs.readFileSync(outPath);
+    const od = await PDFDocument.load(outBytes);
+    const content = await pageContent(outBytes, 0);
+    ok('ocr: the searchable PDF still has one page and its image', od.getPageCount() === 1 && Buffer.from(outBytes).includes('/Subtype /Image'));
+    ok('ocr: the text layer is invisible (text render mode 3) and holds the words', /3 Tr/.test(content) && /\bTj\b/.test(content));
+
+    // the site's own text extractor can now read the result
+    await useTool(page, '/pdf-to-text', [outPath], async () => {}, /./);
+    await done(page, 30000);
+    const extracted = await page.locator('body').innerText();
+    ok('ocr: "Copy text out" now finds the words in the searchable PDF', hasWords(extracted) >= 3, hasWords(extracted) + ' of 4 words');
+
+    // a scan stored on a page with a rotation flag: the text layer must land where the words are as DISPLAYED
+    {
+      const rd = await PDFDocument.create();
+      const rimg = await rd.embedPng(png);
+      const rp = rd.addPage([350, 700]);
+      rp.setRotation(degrees(90));
+      rp.drawImage(rimg, { x: 350, y: 0, width: 700, height: 350, rotate: degrees(90) });
+      const rotPath = path.join(TMP, 'scan-rot.pdf');
+      fs.writeFileSync(rotPath, await rd.save());
+      await useTool(page, '/ocr-pdf', [rotPath], async () => {}, /Read the text/);
+      ok('ocr: reads a scan on a rotated page', await done(page, 120000));
+      const rotOut = fs.readFileSync(await download(page));
+      const pos = await page.evaluate(async (b64) => {
+        const lib = window.pdfjsLib;
+        const doc = await lib.getDocument({ data: Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)) }).promise;
+        const pg = await doc.getPage(1);
+        const vp = pg.getViewport({ scale: 1 });
+        const tc = await pg.getTextContent();
+        const items = tc.items.filter((i) => i.str.trim()).map((i) => { const t = lib.Util.transform(vp.transform, i.transform); return { s: i.str, x: t[4], y: t[5] }; });
+        return { w: vp.width, h: vp.height, items };
+      }, rotOut.toString('base64'));
+      const hello = pos.items.find((i) => /hello/i.test(i.s));
+      const total = pos.items.find((i) => /^total/i.test(i.s));
+      // displayed page is 700 x 350 points: "Hello" sits at about x=40 (of 700), baseline about y=100; "Total" is lower, same x
+      ok('ocr: on a rotated page the first word is at the top-left as displayed', !!hello && Math.abs(hello.x - 40) < 25 && hello.y > 60 && hello.y < 125, hello ? `x=${hello.x.toFixed(0)} y=${hello.y.toFixed(0)}` : 'no word');
+      ok('ocr: on a rotated page a later line is below the first, at the same left edge', !!hello && !!total && total.y > hello.y + 60 && Math.abs(total.x - hello.x) < 20, total ? `x=${total.x.toFixed(0)} y=${total.y.toFixed(0)}` : 'no word');
+    }
+
+    // photos instead of a PDF
+    await useTool(page, '/ocr-pdf', [pngPath], async (p) => { await p.getByText('Text file', { exact: true }).first().click(); }, /Read the text/);
+    ok('ocr: reads a picture and returns text', await done(page, 120000));
+    const photoText = await page.locator('body').innerText();
+    ok('ocr: the text from a picture contains the words', hasWords(photoText) >= 3, hasWords(photoText) + ' of 4 words');
+
+    // a PDF that already has text is left alone
+    const texty = await makePdf('texty.pdf', 2, 'This page already contains plenty of real selectable text, so no reading is needed.');
+    await useTool(page, '/ocr-pdf', [texty], async () => {}, /Read the text/);
+    ok('ocr: pages that already have text are skipped', (await done(page, 120000)) && /already had text/.test(await page.locator('body').innerText()));
+
+    // mixing a PDF and a picture is refused with a clear message
+    await page.goto(BASE + '/ocr-pdf');
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: /Select file/i }).first().click()]);
+    await chooser.setFiles([scanPath, pngPath]);
+    await page.waitForTimeout(400);
+    await page.getByRole('button', { name: /Read the text/i }).last().click();
+    ok('ocr: a PDF together with a picture is refused clearly', await errorText(page, /either one PDF or some pictures/));
   }
 
   // ---------- (more groups are added below as tools ship) ----------

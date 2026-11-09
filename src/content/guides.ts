@@ -258,6 +258,26 @@ export const GUIDES: Guide[] = [
       { q: 'Can I fill several copies of the same form?', a: 'Yes. Fill and download one, then add the original again for the next copy.' },
     ],
   },
+  {
+    slug: 'how-to-ocr-a-scanned-pdf',
+    title: 'How to make a scanned PDF searchable (OCR)',
+    seoTitle: 'How to Make a Scanned PDF Searchable (Free OCR)',
+    description: 'Turn a scanned PDF or photos of pages into text you can search and copy, using OCR in your browser. Nothing is uploaded.',
+    tool: 'ocr',
+    related: ['extract-text', 'compress', 'images-to-pdf'],
+    intro: 'To make a scanned PDF searchable, open the Read scans (OCR) tool, add the file, pick the language and press Read the text. You get back a PDF that looks the same but whose words can be searched and copied. It all happens in your browser.',
+    sections: [
+      { h: 'OCR a scan in three steps', p: ['Open Read scans (OCR) and add your scanned PDF, or pictures of pages. Choose the language of the text.', 'Choose a searchable PDF, a plain text file, or both, and press Read the text. Each page takes a few seconds.', 'Download the result. In the searchable PDF you can now use Ctrl+F, select text and copy it.'] },
+      { h: 'Get a better result', p: ['Scan at 200 to 300 dpi, with the page straight and evenly lit. Black text on white paper reads best. A blurry photo taken at an angle reads poorly: retake it flat, from directly above.', 'If the text comes out wrong, check that you picked the right language, then try a cleaner scan.'] },
+      { h: 'What it can and cannot read', p: ['It reads printed text in English, Spanish, French, German, Italian, Portuguese and Dutch. It does not read handwriting, and complex layouts such as tables and columns may come out in a different order. Always check numbers and names against the original.'] },
+      { h: 'Your files stay with you', p: ['The recognition engine and the language data are downloaded from this site the first time, then run on your device. The scan is not uploaded anywhere, which matters for contracts, medical records and ID.'] },
+    ],
+    faq: [
+      { q: 'Does the PDF get bigger?', a: 'Only slightly: the pages stay as they are and the text layer adds a little. Use Make it smaller afterwards if you need.' },
+      { q: 'Can I OCR several photos into one PDF?', a: 'Yes. Add the pictures in order and you get one multi-page searchable PDF.' },
+      { q: 'What if some pages already have text?', a: 'By default those pages are left alone and only the scanned pages are read.' },
+    ],
+  },
 ];
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug);
