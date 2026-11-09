@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-09 · Status key: ✅ built and checked · 🟡 built, only partly checked · ⏳ stubbed / waiting · 🗺️ planned
 
-**Totals:** 43 tools built (41 checked end to end, 2 AI tools checked only up to the missing-key message) · 0 on the roadmap: every announced tool is built · 20 guides · 78 pages built (71 indexable, 7 noindex) · 143 Node tests and 85 browser checks, all run in CI.
+**Totals:** 43 tools built (41 checked end to end, 2 AI tools checked only up to the missing-key message) · 0 on the roadmap: every announced tool is built · 20 guides · 78 pages built (71 indexable, 7 noindex) · 143 Node tests and 100 browser checks, all run in CI.
 
 For the same picture as one visual page, with what is pending from the owner and what Claude can do alone, open `docs/status.html`.
 
@@ -34,7 +34,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | `pages.dev` kept out of search results | ✅ | `X-Robots-Tag: noindex` via `public/_headers` |
 | GoDaddy nameservers → Cloudflare, custom domain `iduckpdf.com` | ✅ | live over HTTPS, indexable, canonical correct |
 | `www` → apex 301 redirect, SSL Full (strict), Always Use HTTPS | ✅ | Cloudflare Redirect Rule; verified live 9 Nov |
-| CI on every pull request: typecheck, 143 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 28 site checks and 57 tool checks; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
+| CI on every pull request: typecheck, 143 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 28 site checks and 72 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
 | Automatic deploy on merge to `main` | ✅ | Cloudflare token stored as a GitHub secret; a pull request never deploys |
 | `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; a Gmail filter keeps it out of Spam (first test landed in Spam); fresh inbox test pending; replying from it is TODO §1 |
 | Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
@@ -63,6 +63,8 @@ For the same picture as one visual page, with what is pending from the owner and
 | Lighthouse, mobile, throttled, **live** (2026-11-09) | ✅ | performance 93 (home), 94 (tool page), 93 (guide); accessibility, best practices and SEO 100; layout shift 0 |
 | First-load JavaScript | ✅ | about 333 KB gzipped (framework 294 KB + shared 39 KB). The PDF engine (about 276 KB gz) loads on the first interaction on a tool page; password, OCR and the Office converters add their own lazy chunks |
 | Layout shift on phones | ✅ | width-dependent layout is CSS from the first paint, so pre-rendered pages do not jump |
+| Security headers | ✅ | nosniff, referrer policy, permissions policy, frame-ancestors, and a Content-Security-Policy generated at build time (inline scripts allowed by hash, no unsafe-inline for scripts, object/frame sources none); HSTS is a Cloudflare setting (TODO §3) |
+| Dependency audit | 🟡 | `npm audit`: 1 high (pdfjs-dist 3.x, mitigated: the only getDocument call sets isEvalSupported false) and moderate/critical findings in build-only tools (Expo CLI, optional canvas) that are never shipped; upgrading pdf.js to 4+ or Expo is a larger job, see TODO §9 |
 | Accessibility | ✅ | main landmark, heading order, names that match visible text, contrast |
 
 ## Tools built (43)
@@ -123,10 +125,12 @@ Nothing is queued: every announced tool is built. Ideas on the list (not promise
 - `npm run test:engine`: 143 checks in Node: 73 on the PDF engine, signing geometry and every non-canvas tool, 70 on the Office and web conversions (Word, HTML, Excel, PowerPoint, PDF to Word, PDF to Excel) using hand-built files read back with pdf.js.
 - `npm run audit`: crawler-style audit of the built site (78 pages, 71 indexable). All checks pass.
 - `scripts/e2e-smoke.js` (headless Chromium via Playwright): 28 checks: crawler view with JavaScript off, hydration, no layout shift or theme flash, the PDF engine loads only after interaction, navigation, palette, a real merge, saved theme, phone drawer.
-- `scripts/e2e-tools.js`: 57 checks in a real browser: password protect and unlock, draw/type/upload a signature and drag it (position read back from the downloaded PDF, normal and rotated page), fill a form, OCR of a scan and of a picture (searchable PDF re-read by the site's own text tool, rotated page), and every conversion with the downloads opened and checked.
+- `scripts/e2e-tools.js`: 72 checks in a real browser, including the older tools (Photos to PDF, Scan to PDF, Grayscale, Redact, Compare, Logo stamp) and a check that the Content-Security-Policy blocks an injected script: password protect and unlock, draw/type/upload a signature and drag it (position read back from the downloaded PDF, normal and rotated page), fill a form, OCR of a scan and of a picture (searchable PDF re-read by the site's own text tool, rotated page), and every conversion with the downloads opened and checked.
 - Both browser suites also ran against the live site on 2026-11-09: 57/57 and 28/28. Every one of the 43 tool URLs answers 200 and is in the sitemap; the old URLs redirect.
 - `npm run typecheck`: clean. All of the above run on every pull request in CI.
 - Visual passes in Chromium (light and dark, phone and desktop): signing screen, converted Word, HTML, Excel and PowerPoint output rendered and looked at.
-- **Not checked:** Safari and Firefox, a real phone, real AI provider calls, and a mail app actually opening from the `mailto:` links.
+- Live-site health check: `node scripts/health-check.js` (every sitemap URL answers 200 and is its own canonical, redirects, www and http, headers, robots/llms/sitemap, real 404).
+- Found by it on 2026-11-09 and fixed: the guides index was in the sitemap and its canonical as `/guides`, but the host redirects that to `/guides/`; it is now `/guides/` everywhere.
+- **Not checked:** Safari and Firefox (the suites can run in both with `BROWSER=firefox` / `webkit`, once the browsers are downloaded), a real phone, real AI provider calls, and a mail app actually opening from the `mailto:` links.
 - Bugs found and fixed on the way (most recent first): plain PowerPoint text boxes inheriting body bullets; decrypted PDFs keeping a stale encryption entry; drawing pad ink invisible in dark mode; layout shift and theme flash on pre-rendered pages; stretched last-row cards; a custom `+html.tsx` that removed the app bundle.
 - Tooling quirk: the browser automation tool's Chrome sometimes stops producing animation frames. Playwright is the reliable check.

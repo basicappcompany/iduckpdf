@@ -52,7 +52,7 @@ for (const pg of pages) {
   }
 
   const canon = one(html, /<link[^>]*rel="canonical" href="([^"]*)"/);
-  if (canon !== SITE + (path === '/' ? '/' : path)) fail(path, `canonical is ${canon}`);
+  if (canon !== SITE + (path === '/' ? '/' : path === '/guides' ? '/guides/' : path)) fail(path, `canonical is ${canon}`);
 
   const h1 = (html.match(/<h1[ >]/g) || []).length;
   if (h1 !== 1) fail(path, `${h1} <h1> tags`);
@@ -112,7 +112,7 @@ if (urls.length !== indexable) fail('sitemap', `${urls.length} URLs in the sitem
   if (!existsSync(sp)) fail('seo-pages.json', 'missing: in-app navigation would not update the page title');
   else {
     const map = JSON.parse(readFileSync(sp, 'utf8')) as Record<string, { title: string; description: string }>;
-    for (const u of urls) if (!map[u === '/' ? '/' : u]) fail('seo-pages.json', `${u} is not listed`);
+    for (const u of urls) if (!map[u === '/' ? '/' : u.replace(/\/$/, '')]) fail('seo-pages.json', `${u} is not listed`); // /guides/ is keyed as /guides
   }
 }
 
@@ -120,6 +120,19 @@ for (const f of ['robots.txt', 'llms.txt', 'llms-full.txt', 'manifest.webmanifes
   if (!existsSync(join(dist, f))) fail('assets', `${f} missing from dist`);
 }
 if (!/Sitemap: https:\/\/iduckpdf\.com\/sitemap\.xml/.test(readFileSync(join(dist, 'robots.txt'), 'utf8'))) fail('robots.txt', 'no Sitemap line');
+
+{
+  // security headers: the policy must be written into _headers by the build, with the inline scripts allowed by hash
+  const hf = join(dist, '_headers');
+  const headers = existsSync(hf) ? readFileSync(hf, 'utf8') : '';
+  const csp = headers.split(/\r?\n/).find((l) => /Content-Security-Policy:/i.test(l)) || '';
+  if (!csp) fail('_headers', 'no Content-Security-Policy: gen-csp.ts did not run');
+  else {
+    if (/'unsafe-inline'/.test(csp.split(';').find((d) => d.trim().startsWith('script-src')) || '')) fail('_headers', "script-src must not allow 'unsafe-inline'");
+    if (!/'sha256-/.test(csp)) fail('_headers', 'the inline scripts are not allowed by hash');
+    if (!/object-src 'none'/.test(csp) || !/frame-ancestors/.test(csp)) fail('_headers', 'object-src or frame-ancestors missing from the policy');
+  }
+}
 
 console.log(`Audited ${pages.length} pages (${indexable} indexable). Sitemap lists ${urls.length}.`);
 if (warns.length) console.log(`\n${warns.length} warning(s):\n  - ${warns.join('\n  - ')}`);

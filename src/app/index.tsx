@@ -114,7 +114,7 @@ export default function Home() {
         <CardGrid min={300} gap={14}>
           {GUIDES.slice(0, 4).map((g) => <LinkCard key={g.slug} to={`/guides/${g.slug}`} icon={byId(g.tool)?.icon || '📚'} title={g.title} body={g.description} />)}
         </CardGrid>
-        <View style={{ alignSelf: 'flex-start' }}><Btn label="All guides" variant="ghost" small to="/guides" /></View>
+        <View style={{ alignSelf: 'flex-start' }}><Btn label="All guides" variant="ghost" small to="/guides/" /></View>
       </View>
 
       <View style={{ gap: 10 }}>

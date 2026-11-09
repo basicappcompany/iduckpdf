@@ -14,7 +14,7 @@ import { TOOLS } from '../src/tools';
 const pub = join(__dirname, '..', 'public');
 mkdirSync(pub, { recursive: true });
 
-const abs = (p: string) => SITE.url + p;
+const abs = (p: string) => SITE.url + (p === '/guides' ? '/guides/' : p); // the host serves the guides index at /guides/
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /* ---------------- sitemap.xml ---------------- */

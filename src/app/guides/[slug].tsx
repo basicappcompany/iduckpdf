@@ -21,7 +21,7 @@ export default function GuidePage() {
       <Screen narrow>
         <Seo path="/guides/not-found" />
         <T v="h1">We could not find that guide</T>
-        <Btn label="All guides" to="/guides" />
+        <Btn label="All guides" to="/guides/" />
       </Screen>
     );
   }
@@ -59,7 +59,7 @@ export default function GuidePage() {
         <T v="h3">Related tools</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {g.related.map((id) => byId(id)).filter(Boolean).map((x) => <Chip key={x!.id} label={x!.name} icon={x!.icon} to={toolPath(x!.id)} />)}
-          <Chip label="All guides" to="/guides" />
+          <Chip label="All guides" to="/guides/" />
         </View>
       </View>
       <SiteFooter />
