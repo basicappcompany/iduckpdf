@@ -318,6 +318,46 @@ export const GUIDES: Guide[] = [
       { q: 'Is my page uploaded?', a: 'No. The conversion happens in your browser tab.' },
     ],
   },
+  {
+    slug: 'how-to-convert-excel-to-pdf',
+    title: 'How to convert an Excel file to PDF',
+    seoTitle: 'How to Convert Excel to PDF (.xlsx or CSV, Free)',
+    description: 'Turn an Excel workbook or CSV into a tidy PDF in your browser, with every sheet as a table and the header repeated on each page. Nothing is uploaded.',
+    tool: 'excel-to-pdf',
+    related: ['compress', 'page-numbers', 'merge'],
+    intro: 'To convert Excel to PDF, open the Excel to PDF tool, add your .xlsx or CSV file and download the PDF. Every sheet becomes a table, wide sheets are scaled to fit, and the header row repeats on each page. It runs in your browser, so nothing is uploaded.',
+    sections: [
+      { h: 'Convert a workbook in three steps', p: ['Open Excel to PDF and add your workbook or CSV file.', 'Choose the sheets (all, or just the first), the page size, and whether the first row is a header. Leave orientation on Automatic and wide sheets go landscape.', 'Press Convert to PDF, then download and check the result.'] },
+      { h: 'What is kept and what is not', p: ['Kept: all the cell values, with number, date, percent and thousands formats as Excel shows them, sheet names, and numbers aligned to the right.', 'Not reproduced: colours, fonts, merged cells, charts and pictures. Formulas are not recalculated: the PDF shows the values saved with the file.'] },
+      { h: 'Very wide or very long sheets', p: ['Wide sheets are shrunk to fit the page. If that would make the text unreadable, the columns are split into groups printed one after another. Long sheets run over as many pages as needed, with the header repeated on each.'] },
+      { h: 'When to use Excel’s own export', p: ['If you need exact fonts, colours and print areas, use Excel’s File, Save as PDF. This tool is for a clean, readable table fast, on any device, without opening Excel.'] },
+    ],
+    faq: [
+      { q: 'Can I convert only part of a sheet?', a: 'Copy the part you need into a new workbook first, then convert that.' },
+      { q: 'Does it open CSV files with semicolons?', a: 'Yes. Commas, semicolons and tabs are detected automatically.' },
+      { q: 'Is the file uploaded?', a: 'No. Everything happens in your browser tab.' },
+    ],
+  },
+  {
+    slug: 'how-to-extract-tables-from-a-pdf-to-excel',
+    title: 'How to extract tables from a PDF into Excel',
+    seoTitle: 'How to Extract Tables from a PDF into Excel (Free)',
+    description: 'Turn the tables in a PDF, such as statements and invoices, into an Excel workbook with real numbers. Runs in your browser; nothing is uploaded.',
+    tool: 'pdf-to-excel',
+    related: ['extract-text', 'ocr', 'compress'],
+    intro: 'To extract a table from a PDF into Excel, open the PDF to Excel tool, add the file and download the workbook. The tool finds the columns from where the text sits, stores numbers as real numbers, and runs in your browser, so the document is not uploaded.',
+    sections: [
+      { h: 'Convert a PDF in three steps', p: ['Open PDF to Excel and add the PDF. It needs a text layer: if you can select the text in the PDF, it has one.', 'Choose “Find the columns” for tables and statements, and one sheet per page or everything on one sheet (best for a table that runs across pages).', 'Press Convert to Excel, download the .xlsx and compare a few rows with the PDF.'] },
+      { h: 'Scanned PDFs', p: ['A scanned PDF is a picture of a page, with no text to read. Run it through Read scans (OCR) first. That produces a searchable PDF, which you can then convert here.'] },
+      { h: 'Getting a cleaner result', p: ['Bank statements, invoices and reports with clear spacing between columns convert best. Merged cells, text that wraps inside a cell and tables without gaps between columns may need tidying in Excel. Choose “One line per row” if you only want the text, line by line.'] },
+      { h: 'Numbers', p: ['Plain numbers such as 1,234.50 and (45.00) become real numbers (the second becomes −45), so Excel can add them up. Codes with leading zeros, and values with currency symbols or percent signs, stay as text so nothing is changed by mistake.'] },
+    ],
+    faq: [
+      { q: 'Why are all my columns merged into one?', a: 'The columns have no clear gap between them in the PDF. Try “One line per row” and split the text with Excel’s Text to Columns.' },
+      { q: 'Does it work with password-protected PDFs?', a: 'Remove the password first with Remove a password, then convert.' },
+      { q: 'Is my PDF uploaded?', a: 'No. Everything happens in your browser tab.' },
+    ],
+  },
 ];
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug);

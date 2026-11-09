@@ -30,7 +30,7 @@ export type Para = {
 };
 export type Img = { type: 'img'; bytes: Uint8Array; kind: 'png' | 'jpg'; width?: number; height?: number; align?: Align };
 export type Cell = { blocks: Block[]; span?: number; bg?: Color };
-export type Table = { type: 'table'; cols?: number[]; rows: { cells: Cell[]; header?: boolean }[]; border?: boolean; pad?: number };
+export type Table = { type: 'table'; cols?: number[]; rows: { cells: Cell[]; header?: boolean }[]; border?: boolean; pad?: number; repeatHeader?: boolean };
 export type Rule = { type: 'hr' };
 export type Break = { type: 'pagebreak' };
 export type Space = { type: 'space'; h: number };
@@ -43,6 +43,8 @@ type Item = {
   draw: (page: PDFPage, x: number, top: number) => void; // top = PDF y coordinate of the item's top edge
   newPage?: boolean;
   keepNext?: boolean;
+  hdr?: Item; // table rows point at their header row so it can be repeated on each new page
+  isHeader?: boolean;
 };
 
 export class Fonts {
@@ -279,6 +281,10 @@ async function layoutTable(t: Table, width: number, maxH: number, fonts: Fonts, 
       },
     });
   }
+  if (t.repeatHeader && items.length > 1) {
+    items[0].isHeader = true;
+    for (let i = 1; i < items.length; i++) items[i].hdr = items[0];
+  }
   return items;
 }
 
@@ -316,7 +322,13 @@ export async function renderBlocks(doc: PDFDocument, fonts: Fonts, blocks: Block
     }
     const next = it.keepNext ? items[i + 1] : undefined;
     const need = it.h + (next ? Math.min(next.h, 40) : 0);
-    if (y > 0 && y + need > maxH) fresh();
+    if (y > 0 && y + need > maxH) {
+      fresh();
+      if (it.hdr && !it.isHeader) {
+        it.hdr.draw(page, spec.margin.left, spec.height - spec.margin.top);
+        y += it.hdr.h;
+      }
+    }
     it.draw(page, spec.margin.left, spec.height - spec.margin.top - y);
     y += it.h;
   }

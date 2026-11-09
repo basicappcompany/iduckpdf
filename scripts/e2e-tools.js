@@ -359,6 +359,51 @@ const fillPasswords = (a, b) => async (page) => {
     ok('word: a file that is not a Word document gets a clear message', await errorText(page, /does not look like a \.docx/));
   }
 
+  // ---------- Excel to PDF and PDF to Excel ----------
+  {
+    const JSZip2 = require('jszip');
+    const x = new JSZip2();
+    x.file('[Content_Types].xml', '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/></Types>');
+    x.file('xl/workbook.xml', '<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Budget" sheetId="1" r:id="rId1"/></sheets></workbook>');
+    x.file('xl/_rels/workbook.xml.rels', '<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="x" Target="worksheets/sheet1.xml"/></Relationships>');
+    x.file('xl/sharedStrings.xml', '<?xml version="1.0"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><si><t>Category</t></si><si><t>Amount</t></si><si><t>Rent</t></si><si><t>Food</t></si></sst>');
+    x.file('xl/styles.xml', '<?xml version="1.0"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.00"/></numFmts><cellXfs count="2"><xf numFmtId="0"/><xf numFmtId="164"/></cellXfs></styleSheet>');
+    x.file('xl/worksheets/sheet1.xml', '<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c></row><row r="2"><c r="A2" t="s"><v>2</v></c><c r="B2" s="1"><v>1250.5</v></c></row><row r="3"><c r="A3" t="s"><v>3</v></c><c r="B3" s="1"><v>310</v></c></row></sheetData></worksheet>');
+    const xlsxPath = path.join(TMP, 'budget.xlsx');
+    fs.writeFileSync(xlsxPath, await x.generateAsync({ type: 'nodebuffer' }));
+    await useTool(page, '/excel-to-pdf', [xlsxPath], async () => {}, /Convert to PDF/);
+    ok('excel: an .xlsx converts in the browser', await done(page));
+    const xt = await textOf(page, await (async () => { await useTool(page, '/excel-to-pdf', [xlsxPath], async () => {}, /Convert to PDF/); await done(page); return download(page); })());
+    ok('excel: the PDF has the sheet name, headers, rows and formatted amounts', ['Budget', 'Category', 'Amount', 'Rent', '1,250.50', 'Food', '310.00'].every((w) => xt.includes(w)));
+    fs.writeFileSync(path.join(TMP, 'data.csv'), 'City;Population\nOslo;709,037\nBergen;285,911\n');
+    await useTool(page, '/excel-to-pdf', [path.join(TMP, 'data.csv')], async () => {}, /Convert to PDF/);
+    ok('csv: a CSV converts in the browser', await done(page));
+
+    // PDF to Excel: build a small statement and read the workbook back
+    const td = await PDFDocument.create();
+    const tfont = await td.embedFont(StandardFonts.Helvetica);
+    const tpg = td.addPage([595, 842]);
+    const at = (t, px, py) => tpg.drawText(t, { x: px, y: py, size: 11, font: tfont });
+    at('Item', 50, 740); at('Qty', 260, 740); at('Price', 360, 740);
+    at('Apple', 50, 720); at('3', 268, 720); at('1,200.50', 345, 720);
+    at('Pear', 50, 700); at('12', 262, 700); at('9.99', 362, 700);
+    const stmtPath = path.join(TMP, 'statement.pdf');
+    fs.writeFileSync(stmtPath, await td.save());
+    await useTool(page, '/pdf-to-excel', [stmtPath], async () => {}, /Convert to Excel/);
+    ok('pdf to excel: a PDF converts in the browser', await done(page));
+    const xlsxOut = fs.readFileSync(await download(page));
+    const zz = await JSZip2.loadAsync(xlsxOut);
+    const sheetXml = await zz.file('xl/worksheets/sheet1.xml').async('string');
+    ok('pdf to excel: the workbook has the table, with real numbers', ['Apple', 'Pear', 'Item', '<v>1200.5</v>', '<v>12</v>', '<v>9.99</v>'].every((w) => sheetXml.includes(w)), sheetXml.slice(0, 120));
+    ok('pdf to excel: the workbook is a complete .xlsx (workbook, styles, content types)', !!zz.file('xl/workbook.xml') && !!zz.file('xl/styles.xml') && !!zz.file('[Content_Types].xml'));
+    const blankPdf = await PDFDocument.create();
+    blankPdf.addPage([300, 300]);
+    const blankPath = path.join(TMP, 'blank.pdf');
+    fs.writeFileSync(blankPath, await blankPdf.save());
+    await useTool(page, '/pdf-to-excel', [blankPath], async () => {}, /Convert to Excel/);
+    ok('pdf to excel: a PDF with no text points to OCR', await errorText(page, /Read scans \(OCR\)/));
+  }
+
   // ---------- (more groups are added below as tools ship) ----------
 
   ok('no page errors during the tool tests', problems.length === 0, problems.slice(0, 2).join(' | '));
