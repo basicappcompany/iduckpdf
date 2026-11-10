@@ -21,6 +21,8 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2 # the IndexNow step compares the last commit with the one before it
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -45,6 +47,10 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=iduckpdf --branch=main
+      - name: Tell IndexNow engines (Bing and others) about the deploy
+        if: env.CLOUDFLARE_API_TOKEN != '' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true # a failed ping must never fail a deploy
+        run: node scripts/indexnow.js
       - name: Deploy skipped
         if: env.CLOUDFLARE_API_TOKEN == '' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: echo "::warning::CLOUDFLARE_API_TOKEN secret is not set, so the build passed but nothing was deployed. See docs/TODO.md section 3."

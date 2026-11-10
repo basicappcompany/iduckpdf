@@ -129,7 +129,8 @@ Nothing is queued: every announced tool is built. Ideas on the list (not promise
 - Both browser suites also ran against the live site on 2026-11-09: 57/57 and 28/28. Every one of the 43 tool URLs answers 200 and is in the sitemap; the old URLs redirect.
 - `npm run typecheck`: clean. All of the above run on every pull request in CI.
 - Visual passes in Chromium (light and dark, phone and desktop): signing screen, converted Word, HTML, Excel and PowerPoint output rendered and looked at.
-- Live-site health check: `node scripts/health-check.js` (every sitemap URL answers 200 and is its own canonical, redirects, www and http, headers, robots/llms/sitemap, real 404).
+- Live-site health check: `node scripts/health-check.js` (every sitemap URL answers 200 and is its own canonical, redirects, www and http, headers, robots/llms/sitemap, real 404, the IndexNow key file).
+- IndexNow: `scripts/indexnow.js` runs after each deploy to `main` (skips docs-only commits) and pings Bing and the other IndexNow engines; the key file is `public/<key>.txt`.
 - Found by it on 2026-11-09 and fixed: the guides index was in the sitemap and its canonical as `/guides`, but the host redirects that to `/guides/`; it is now `/guides/` everywhere.
 - **Firefox and WebKit:** both browser suites (28 + 72) pass in Firefox and in WebKit as well as Chromium (`BROWSER=firefox` / `webkit`).
 - **Not checked:** a real Safari on a Mac or iPhone (WebKit is the same engine, but not the same build), a real phone, real AI provider calls, and a mail app actually opening from the `mailto:` links.

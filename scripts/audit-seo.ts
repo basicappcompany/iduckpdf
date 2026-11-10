@@ -122,6 +122,13 @@ for (const f of ['robots.txt', 'llms.txt', 'llms-full.txt', 'manifest.webmanifes
 if (!/Sitemap: https:\/\/iduckpdf\.com\/sitemap\.xml/.test(readFileSync(join(dist, 'robots.txt'), 'utf8'))) fail('robots.txt', 'no Sitemap line');
 
 {
+  // IndexNow: the key file (<32 hex>.txt) must be in dist and contain its own name, or the pings are rejected
+  const keyFiles = readdirSync(dist).filter((f) => /^[0-9a-f]{32}\.txt$/.test(f));
+  if (keyFiles.length !== 1) fail('indexnow', `expected exactly one key file in dist, found ${keyFiles.length}`);
+  else if (readFileSync(join(dist, keyFiles[0]), 'utf8').trim() !== keyFiles[0].replace('.txt', '')) fail('indexnow', 'the key file does not contain its own name');
+}
+
+{
   // security headers: the policy must be written into _headers by the build, with the inline scripts allowed by hash
   const hf = join(dist, '_headers');
   const headers = existsSync(hf) ? readFileSync(hf, 'utf8') : '';
