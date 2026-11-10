@@ -72,6 +72,12 @@ const get = (url, opts = {}) => fetch(url, { redirect: 'manual', ...opts });
     const r = await get(site + p);
     ok(`${p} is served`, r.status === 200);
   }
+  {
+    // IndexNow key file: served at /<key>.txt and containing exactly the key (the key is the file name in public/)
+    const keyFile = require('fs').readdirSync(require('path').join(__dirname, '..', 'public')).find((f) => /^[0-9a-f]{32}\.txt$/.test(f));
+    const r = keyFile ? await get(site + '/' + keyFile) : null;
+    ok('IndexNow key file is served and names itself', !!r && r.status === 200 && (await r.text()).trim() === keyFile.replace('.txt', ''));
+  }
   const gone = await get(site + '/this-page-does-not-exist');
   ok('an unknown address is a real 404', gone.status === 404);
 

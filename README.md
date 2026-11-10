@@ -20,6 +20,7 @@ npm run test:engine          # 143 Node tests: the PDF engine, signing geometry,
 npm run serve:dist           # serve dist/ on http://localhost:8080 (gzip, extensionless pages, 404.html)
 npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 28 site checks + 72 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
 node scripts/health-check.js # live-site health check: every sitemap URL, redirects, headers, canonicals (default https://iduckpdf.com)
+npm run indexnow -- --all # IndexNow: tell Bing and others about the sitemap URLs (CI does this after each deploy to main)
 npm run icons                # regenerate the duck icons and social card (outputs are committed)
 ```
 Do **not** preview `dist/` with `serve -s` (single-page fallback): it answers every URL with the home page and hides the per-page HTML; use `npm run serve:dist`. Set `BASE_URL` to run the browser tests against another address (for example the live site).
@@ -47,7 +48,7 @@ src/ui/         themed building blocks, tool screen, sidebar shell, signature/pl
 src/content/    tool SEO copy, guides, legal pages, home FAQ, tool URL slugs, changelog (plain TS, also read by the build scripts)
 src/lib/        theme, command palette, storage, AI client, mail helper, SEO data
 functions/      Cloudflare Pages Function: POST /api/donate (Dodo Payments checkout)
-scripts/        gen-seo, gen-tool-meta, gen-status, inject-seo, gen-csp, audit-seo, health-check, copy-vendor, make-icons, serve-dist, test-engine, test-office, e2e-smoke, e2e-tools
+scripts/        gen-seo, gen-tool-meta, gen-status, inject-seo, gen-csp, audit-seo, health-check, indexnow, copy-vendor, make-icons, serve-dist, test-engine, test-office, e2e-smoke, e2e-tools
 public/         robots.txt, manifest, _headers, _redirects (generated), icons, og.png; llms files, sitemap and vendor/ (pdf.js, OCR) are generated
 ```
 
