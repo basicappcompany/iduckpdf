@@ -254,7 +254,7 @@
    DATA. Edit here. States: done | progress | todo | waiting | later.  Owners: me | you | both | external | none.
    "me" = I can do it with no input. "you" = only you can. "both" = I do the mechanics, you sign in / approve / supply a secret.
    =================================================================================================================== */
-const VERIFIED = "9 Nov 2026 (after the final deploy)";
+const VERIFIED = "10 Nov 2026 (live health check 18/18; browser suites passed on the final build)";
 const REPO = "https://github.com/basicappcompany/iduckpdf";
 
 /* GENERATED:TOOLS:START (scripts/gen-status.ts: do not edit by hand) */
@@ -407,6 +407,7 @@ const TIMELINE = [
   ["9 Nov 2026", "Browser tests in CI; first-load JavaScript trimmed (PR #11)", "28 site + 57 tool checks run on every PR. SEO text out of the bundle: live Lighthouse home 93, tool page 94, guide 93."],
   ["9 Nov 2026", "www redirect, SSL Full (strict), Gmail filter, Actions on Node 24", "Cloudflare Redirect Rule sends www to the apex (301); SSL mode Full (strict) and Always Use HTTPS on; a Gmail filter keeps hello@ mail out of Spam; the CI actions moved to their Node 24 releases (PR #14)."],
   ["9 Nov 2026", "Phase 9: older tools tested, Content-Security-Policy, guides canonical fix", "14 new browser checks for the older tools (suite now 72), a build-time Content-Security-Policy enforced in the tests and audited, a live health-check script that found the /guides canonical problem, a security and dependency review (pdf.js mitigation documented)."],
+  ["9 Nov 2026", "Firefox and WebKit (PR #17)", "Both browser suites (28 + 72) pass in Firefox and in WebKit as well as Chromium. WebKit hydrates later, so two tests now wait for the page to settle; no product code changed."],
   ["9 Nov 2026", "Final production verification", "Both browser suites passed against iduckpdf.com (57/57, 28/28); all 43 tool URLs answer 200; docs, tracker and this page refreshed."],
 ];
 
@@ -416,7 +417,7 @@ const SCORECARD = [
   { k: "Layout shift (CLS)", v: "0", d: "Measured at 390, 700, 1000 and 1280 px on 8 pages. Was about 1.0 on phones." },
   { k: "First-load JavaScript", v: "~333 KB gz", d: "Was 572 KB. The PDF engine (about 276 KB gz) and the password, OCR and Office code are lazy chunks loaded only when used." },
   { k: "Pages", v: "78 built, 71 indexable", d: "Sitemap lists the 71; the rest are forms, settings and the 404." },
-  { k: "Automated tests", v: "143 + 100", d: "143 Node tests (73 engine, 70 conversions) and 100 browser checks (28 site, 72 tools), all run in CI on every pull request; the browser suites also passed on the live site." },
+  { k: "Automated tests", v: "143 + 100", d: "143 Node tests (73 engine, 70 conversions) and 100 browser checks (28 site, 72 tools), all run in CI on every pull request (Chromium); the browser suites also pass in Firefox and WebKit locally, and on the live site in Chromium." },
   { k: "Tools", v: "43 built, 0 planned", d: "41 checked end to end; the 2 AI tools only up to the missing-key message (needs your key)." },
   { k: "Guides", v: "20", d: "11 added for the new tools on 9 Nov; each links to its tool." },
 ];
