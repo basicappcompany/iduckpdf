@@ -38,8 +38,8 @@ For the same picture as one visual page, with what is pending from the owner and
 | Automatic deploy on merge to `main` | ✅ | Cloudflare token stored as a GitHub secret; a pull request never deploys |
 | `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; a Gmail filter keeps it out of Spam (first test landed in Spam); fresh inbox test pending; replying from it is TODO §1 |
 | Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
-| Google Search Console | ✅ | verified Domain property, sitemap submitted; indexing requests for the new URLs retry after Google's daily quota resets |
-| Bing Webmaster Tools | ⏳ | one-click import from Search Console: TODO §8 |
+| Google Search Console | ✅ | verified Domain property, sitemap submitted; indexing requested on 10 Nov for the 8 key URLs (Google may take days to list them) |
+| Bing Webmaster Tools | ✅ | imported from Search Console 10 Nov; sitemap submitted (Processing); data can take up to 48 h |
 
 ## SEO & GEO (search engines and AI assistants)
 | Item | Status | Notes |
