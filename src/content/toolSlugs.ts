@@ -48,6 +48,11 @@ export const TOOL_SLUGS: Record<string, string> = {
   'pdf-to-excel': 'pdf-to-excel',
   'pptx-to-pdf': 'powerpoint-to-pdf',
   'html-to-pdf': 'html-to-pdf',
+  'extract-images': 'extract-images-from-pdf',
+  'pdf-to-pptx': 'pdf-to-powerpoint',
+  'merge-pdf-images': 'merge-pdf-and-images',
+  'jpg-to-pdf': 'jpg-to-pdf',
+  'pdf-to-jpg': 'pdf-to-jpg',
 };
 
 /** The page that lists every tool. It used to live at /tools. */

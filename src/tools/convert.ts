@@ -1,7 +1,8 @@
 import { PDFDocument, PDFFont, StandardFonts, rgb } from 'pdf-lib';
 import type { OutFile, PickedFile, ToolDef } from '../engine/types';
 import { MM, PAGE_SIZES, ToolError, baseName, loadDoc, needOne, parsePages, pdfOut, safeText, save, wrapText } from '../engine/util';
-import { processImage, type ImgMode } from '../engine/imaging';
+import type { ImgMode } from '../engine/imaging';
+import { addImagePage, embedPicture } from '../engine/imagepage';
 import { canvasToBytes, openPdfjs, renderPage, textByPage } from '../engine/render';
 import { zipFiles } from '../engine/zip';
 
@@ -12,30 +13,8 @@ async function buildImagePdf(
 ): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   for (let i = 0; i < list.length; i++) {
-    const pr = await processImage(list[i], { maxSide: o.shrink ? 2200 : 0, quality: 0.82, mode: o.mode });
-    const img = pr.kind === 'png' ? await doc.embedPng(pr.bytes) : await doc.embedJpg(pr.bytes);
-    let pw: number;
-    let ph: number;
-    let x = 0;
-    let y = 0;
-    let w = img.width;
-    let h = img.height;
-    if (o.size === 'fit') {
-      const s = Math.min(1, 1000 / Math.max(w, h));
-      pw = w = w * s;
-      ph = h = h * s;
-    } else {
-      [pw, ph] = PAGE_SIZES[o.size] || PAGE_SIZES.a4;
-      const landscape = o.orient === 'landscape' || (o.orient === 'auto' && img.width > img.height);
-      if (landscape) [pw, ph] = [ph, pw];
-      const m = o.marginMm * MM;
-      const s = Math.min((pw - 2 * m) / w, (ph - 2 * m) / h);
-      w *= s;
-      h *= s;
-      x = (pw - w) / 2;
-      y = (ph - h) / 2;
-    }
-    doc.addPage([pw, ph]).drawImage(img, { x, y, width: w, height: h });
+    const img = await embedPicture(doc, list[i], { shrink: o.shrink, mode: o.mode });
+    addImagePage(doc, img, { size: o.size, orient: o.orient, marginMm: o.marginMm });
     progress((i + 1) / list.length, `Added ${list[i].name}`);
   }
   return save(doc);

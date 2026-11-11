@@ -15,6 +15,7 @@ import { ocrTools } from './ocr';
 import { officeTools } from './office';
 import { sheetTools } from './sheets';
 import { slideTools } from './slides';
+import { extraTools } from './extras';
 import { soonTools } from './soon';
 
 // Re-exported so the UI can reach JSZip through the lazy engine chunk instead of pulling it into the first load.
@@ -35,5 +36,6 @@ export const ALL_TOOLS: ToolDef[] = [
   ...officeTools,
   ...sheetTools,
   ...slideTools,
+  ...extraTools,
   ...soonTools,
 ];

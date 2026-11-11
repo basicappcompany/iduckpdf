@@ -1,8 +1,8 @@
 # iDuckPDF tracker
 
-Last updated: 2026-11-09 · Status key: ✅ built and checked · 🟡 built, only partly checked · ⏳ stubbed / waiting · 🗺️ planned
+Last updated: 2026-11-11 · Status key: ✅ built and checked · 🟡 built, only partly checked · ⏳ stubbed / waiting · 🗺️ planned
 
-**Totals:** 43 tools built (41 checked end to end, 2 AI tools checked only up to the missing-key message) · 0 on the roadmap: every announced tool is built · 20 guides · 78 pages built (71 indexable, 7 noindex) · 143 Node tests and 100 browser checks, all run in CI.
+**Totals:** 48 tools built (46 checked end to end, 2 AI tools checked only up to the missing-key message) · 0 on the roadmap: every announced tool is built · 22 guides · 85 pages built (78 indexable, 7 noindex) · 169 Node tests and 113 browser checks, all run in CI.
 
 For the same picture as one visual page, with what is pending from the owner and what Claude can do alone, open `docs/status.html`.
 
@@ -34,7 +34,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | `pages.dev` kept out of search results | ✅ | `X-Robots-Tag: noindex` via `public/_headers` |
 | GoDaddy nameservers → Cloudflare, custom domain `iduckpdf.com` | ✅ | live over HTTPS, indexable, canonical correct |
 | `www` → apex 301 redirect, SSL Full (strict), Always Use HTTPS | ✅ | Cloudflare Redirect Rule; verified live 9 Nov |
-| CI on every pull request: typecheck, 143 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 28 site checks and 72 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
+| CI on every pull request: typecheck, 169 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 28 site checks and 85 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
 | Automatic deploy on merge to `main` | ✅ | Cloudflare token stored as a GitHub secret; a pull request never deploys |
 | `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; a Gmail filter keeps it out of Spam (first test landed in Spam); fresh inbox test pending; replying from it is TODO §1 |
 | Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
@@ -44,11 +44,11 @@ For the same picture as one visual page, with what is pending from the owner and
 ## SEO & GEO (search engines and AI assistants)
 | Item | Status | Notes |
 |---|---|---|
-| Every page pre-rendered to real HTML (no JavaScript needed to read it) | ✅ | 78 HTML files; checked with JavaScript switched off |
+| Every page pre-rendered to real HTML (no JavaScript needed to read it) | ✅ | 85 HTML files; checked with JavaScript switched off |
 | Tool URLs that contain "pdf" | ✅ | `/merge-pdf`, `/ocr-pdf`, `/pdf-to-word` ... (map in `src/content/toolSlugs.ts`); hub is `/pdf-tools`; old `/tool/<id>` and `/tools` 301 via the generated `public/_redirects`; the build fails if a slug lacks "pdf", is duplicated or collides with a route |
 | Unique title, description, canonical per indexable page | ✅ | single source: `seoForPath()` in `src/lib/seoData.ts`, written into the HTML by `scripts/inject-seo.ts`; the app uses `seo-pages.json` (written by the build) when someone navigates inside it |
 | Structured data | ✅ | WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, CollectionPage, AboutPage, Organization (parent organisation, email), WebSite + SearchAction |
-| Unique copy for all 43 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
+| Unique copy for all 48 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
 | 20 how-to guides + index | ✅ | `src/content/guides.ts` (11 added on 9 Nov for the new tools) |
 | Crawlable links, one `<h1>` per page, visible FAQ answers | ✅ | audited |
 | `sitemap.xml` (71 URLs), `robots.txt` (search + AI crawlers welcome), `llms.txt`, `llms-full.txt` | ✅ | generated from the tool/guide registries by `scripts/gen-seo.ts` |
@@ -67,8 +67,8 @@ For the same picture as one visual page, with what is pending from the owner and
 | Dependency audit | 🟡 | `npm audit`: 1 high (pdfjs-dist 3.x, mitigated: the only getDocument call sets isEvalSupported false) and moderate/critical findings in build-only tools (Expo CLI, optional canvas) that are never shipped; upgrading pdf.js to 4+ or Expo is a larger job, see TODO §9 |
 | Accessibility | ✅ | main landmark, heading order, names that match visible text, contrast |
 
-## Tools built (43)
-Join & cut 5 · Arrange & repair 8 · Stamp & annotate 7 · Make & extract 12 · Shrink & restyle 2 · Privacy & cleanup 6 · Compare & ask 3. This table is the registry; `docs/status.html` has a searchable, generated copy.
+## Tools built (48)
+Join & cut 6 · Arrange & repair 8 · Stamp & annotate 7 · Make & extract 16 · Shrink & restyle 2 · Privacy & cleanup 6 · Compare & ask 3. This table is the registry; `docs/status.html` has a searchable, generated copy.
 
 | Category | Tool | URL | Status |
 |---|---|---|---|
@@ -115,6 +115,11 @@ Join & cut 5 · Arrange & repair 8 · Stamp & annotate 7 · Make & extract 12 ·
 | Make & extract | PDF to Excel | `/pdf-to-excel` | ✅ new 9 Nov, Node and browser tests |
 | Make & extract | PDF to Word | `/pdf-to-word` | ✅ new 9 Nov, Node and browser tests |
 | Make & extract | PowerPoint to PDF | `/powerpoint-to-pdf` | ✅ new 9 Nov, Node and browser tests |
+| Join & cut | Merge PDFs and pictures | `/merge-pdf-and-images` | ✅ new 11 Nov, Node and browser tests |
+| Make & extract | Extract pictures | `/extract-images-from-pdf` | ✅ new 11 Nov, Node and browser tests (JPEGs byte for byte, PNG for the rest) |
+| Make & extract | PDF to PowerPoint | `/pdf-to-powerpoint` | ✅ new 11 Nov, Node (writer read back) and browser tests; exact-look and editable-text modes |
+| Make & extract | JPG to PDF | `/jpg-to-pdf` | ✅ new 11 Nov, Node and browser tests (same engine as Photos to PDF, own landing page) |
+| Make & extract | PDF to JPG | `/pdf-to-jpg` | ✅ new 11 Nov, browser tests (same engine as PDF to pictures, own landing page) |
 
 Known limits (stated on each tool page): the Office conversions run in the browser, so layout is simplified: Word to PDF does not reproduce headers, footers, text boxes or charts; Excel to PDF shows values, not formulas, colours or merged cells; PowerPoint to PDF draws charts and SmartArt as plain boxes; PDF to Word and PDF to Excel read text layers only (scans need OCR first) and detect structure heuristically; standard PDF fonts mean non-Latin scripts become "?"; OCR covers English, Spanish, French, German, Italian, Portuguese and Dutch.
 
@@ -122,10 +127,10 @@ Known limits (stated on each tool page): the Office conversions run in the brows
 Nothing is queued: every announced tool is built. Ideas on the list (not promises): more OCR languages (needs larger fonts), closer Word/Excel/PowerPoint conversions, Android and iPhone apps.
 
 ## How the checks were done
-- `npm run test:engine`: 143 checks in Node: 73 on the PDF engine, signing geometry and every non-canvas tool, 70 on the Office and web conversions (Word, HTML, Excel, PowerPoint, PDF to Word, PDF to Excel) using hand-built files read back with pdf.js.
-- `npm run audit`: crawler-style audit of the built site (78 pages, 71 indexable). All checks pass.
+- `npm run test:engine`: 169 checks in Node: 73 on the PDF engine, signing geometry and every non-canvas tool, 70 on the Office and web conversions (Word, HTML, Excel, PowerPoint, PDF to Word, PDF to Excel) using hand-built files read back with pdf.js, and 26 on the picture tools (extraction is checked pixel for pixel and byte for byte; the PowerPoint writer is read back by the PowerPoint to PDF reader).
+- `npm run audit`: crawler-style audit of the built site (85 pages, 78 indexable). All checks pass.
 - `scripts/e2e-smoke.js` (headless Chromium via Playwright): 28 checks: crawler view with JavaScript off, hydration, no layout shift or theme flash, the PDF engine loads only after interaction, navigation, palette, a real merge, saved theme, phone drawer.
-- `scripts/e2e-tools.js`: 72 checks in a real browser, including the older tools (Photos to PDF, Scan to PDF, Grayscale, Redact, Compare, Logo stamp) and a check that the Content-Security-Policy blocks an injected script: password protect and unlock, draw/type/upload a signature and drag it (position read back from the downloaded PDF, normal and rotated page), fill a form, OCR of a scan and of a picture (searchable PDF re-read by the site's own text tool, rotated page), and every conversion with the downloads opened and checked.
+- `scripts/e2e-tools.js`: 85 checks in a real browser (13 new for the picture tools and PDF to PowerPoint on 11 Nov), including the older tools (Photos to PDF, Scan to PDF, Grayscale, Redact, Compare, Logo stamp) and a check that the Content-Security-Policy blocks an injected script: password protect and unlock, draw/type/upload a signature and drag it (position read back from the downloaded PDF, normal and rotated page), fill a form, OCR of a scan and of a picture (searchable PDF re-read by the site's own text tool, rotated page), and every conversion with the downloads opened and checked.
 - Both browser suites also ran against the live site on 2026-11-09: 57/57 and 28/28. Every one of the 43 tool URLs answers 200 and is in the sitemap; the old URLs redirect.
 - `npm run typecheck`: clean. All of the above run on every pull request in CI.
 - Visual passes in Chromium (light and dark, phone and desktop): signing screen, converted Word, HTML, Excel and PowerPoint output rendered and looked at.
