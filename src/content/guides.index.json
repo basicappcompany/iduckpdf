@@ -130,5 +130,23 @@
   "title": "How to convert a PDF to PowerPoint",
   "description": "Turn a PDF into slides, either as exact pictures or with editable text, and learn which to pick.",
   "tool": "pdf-to-pptx"
+ },
+ {
+  "slug": "how-to-translate-a-pdf",
+  "title": "How to translate a PDF",
+  "description": "Translate a PDF with your own AI key, what you get back, and how to keep the cost and the errors down.",
+  "tool": "translate"
+ },
+ {
+  "slug": "how-to-make-flashcards-from-a-pdf",
+  "title": "How to make flashcards from a PDF",
+  "description": "Turn notes, a chapter or an article into flashcards or a quiz, and import them into Anki, Quizlet or a spreadsheet.",
+  "tool": "flashcards"
+ },
+ {
+  "slug": "how-to-extract-data-from-a-pdf-with-ai",
+  "title": "How to extract data from a PDF with AI",
+  "description": "Pull invoice lines, contract terms or dates and amounts out of a PDF into a spreadsheet, and when to use a table finder instead.",
+  "tool": "ai-extract"
  }
 ]

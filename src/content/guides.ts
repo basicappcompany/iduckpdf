@@ -434,6 +434,61 @@ export const GUIDES: Guide[] = [
       { q: 'Is my PDF uploaded?', a: 'No. The conversion runs in your browser.' },
     ],
   },
+  {
+    slug: 'how-to-translate-a-pdf',
+    title: 'How to translate a PDF',
+    seoTitle: 'How to Translate a PDF into Another Language',
+    description: 'Translate a PDF with your own AI key, what you get back, and how to keep the cost and the errors down.',
+    tool: 'translate',
+    related: ['ocr', 'summarize', 'text-to-pdf'],
+    intro: 'To translate a PDF, add it to Translate a PDF, choose the language, and press Translate. The text is sent from your browser to the AI provider you set up in Settings, using your own key, and you get the translation back as a text file and, for Western European languages, a plain PDF.',
+    sections: [
+      { h: 'Set up once', p: ['Open Settings and add an API key from OpenAI, Anthropic or Google. It is stored only in your browser and sent only to the provider you chose. Use a key with a spending limit.'] },
+      { h: 'Translate', p: ['Add a PDF with selectable text, choose the language, and press Translate. For a long document, pick a page range: about 60,000 characters are translated in one go, in several requests, and the result tells you if some pages were left over.', 'Keep the page markers on if you want to match the translation to the original page by page.'] },
+      { h: 'Scans and layout', p: ['A scanned PDF has no text to send. Run it through Read scans (OCR) first. The translation is text in reading order, not a copy of the layout, so pictures and tables are not reproduced.'] },
+      { h: 'Check what matters', p: ['Machine translation can be wrong, especially for legal, medical and technical text. Use it to understand a document, and have anything important checked by a person.'] },
+    ],
+    faq: [
+      { q: 'Why did I get no PDF?', a: 'The built-in PDF fonts cannot draw scripts such as Chinese, Arabic or Hindi. Those languages come as a text file.' },
+      { q: 'How much will it cost?', a: 'Your AI provider charges your account by the amount of text. Try a few pages first to see.' },
+    ],
+  },
+  {
+    slug: 'how-to-make-flashcards-from-a-pdf',
+    title: 'How to make flashcards from a PDF',
+    seoTitle: 'How to Make Flashcards or a Quiz from a PDF',
+    description: 'Turn notes, a chapter or an article into flashcards or a quiz, and import them into Anki, Quizlet or a spreadsheet.',
+    tool: 'flashcards',
+    related: ['summarize', 'ask', 'extract-pages'],
+    intro: 'To make flashcards from a PDF, add it to Flashcards and quiz, choose flashcards or a multiple-choice quiz, and press the button. You get the cards on screen and as a CSV that imports into Anki, Quizlet, Excel or Google Sheets.',
+    sections: [
+      { h: 'Make the cards', p: ['Add your AI key in Settings once, then add a PDF with selectable text. Choose flashcards or a quiz and how many. For a long document, pick the pages for the topic you are revising: a narrow range gives sharper cards than a whole book.'] },
+      { h: 'Import them', p: ['In Anki use File, Import and choose the CSV. In Quizlet use Import and paste the two columns. In Excel or Google Sheets, open the file. The quiz CSV has the question, four choices, the right letter and a short explanation.'] },
+      { h: 'Skim before you study', p: ['An AI writes the cards from your document, so it can misread a page or word something badly. Skim the set, and delete or fix any card that looks wrong.'] },
+    ],
+    faq: [
+      { q: 'Is my PDF uploaded to iDuckPDF?', a: 'No. The text is sent straight from your browser to your own AI provider.' },
+      { q: 'Can I get the cards in another language?', a: 'Yes. Type the language in the Language box, or leave it blank to use the language of the document.' },
+    ],
+  },
+  {
+    slug: 'how-to-extract-data-from-a-pdf-with-ai',
+    title: 'How to extract data from a PDF with AI',
+    seoTitle: 'How to Extract Data from a PDF into Excel with AI',
+    description: 'Pull invoice lines, contract terms or dates and amounts out of a PDF into a spreadsheet, and when to use a table finder instead.',
+    tool: 'ai-extract',
+    related: ['pdf-to-excel', 'ocr', 'ask'],
+    intro: 'To extract data from a PDF with AI, add the file to Pull data into Excel, choose a preset or describe what you need, and press the button. An AI reads the text, using your own key, and you download an Excel workbook.',
+    sections: [
+      { h: 'When to use it', p: ['Use it when the facts you need are scattered or the layout is messy: the key terms of a contract, every date and amount in a report, the lines of an invoice that is not a clean table. For a clean ruled table, Extract tables to Excel is exact and sends nothing anywhere.'] },
+      { h: 'Get a good result', p: ['Be specific: name the columns you want. Pick the pages that hold the data, since long documents are cut off. Leave the page column on so every row can be checked against its page.'] },
+      { h: 'Always check the numbers', p: ['The AI is told to leave a cell empty rather than guess, but it can still misread a figure. Compare totals and key values with the PDF before you rely on them.'] },
+    ],
+    faq: [
+      { q: 'Is my PDF uploaded to iDuckPDF?', a: 'No. The text is sent straight from your browser to the AI provider you chose, using your own key.' },
+      { q: 'What if it finds nothing?', a: 'Describe it differently, or pick the pages where the data is. A scanned PDF needs Read scans (OCR) first.' },
+    ],
+  },
 ];
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug);

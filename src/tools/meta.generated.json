@@ -1610,7 +1610,7 @@
   ],
   "runLabel": "Extract now",
   "tips": [
-   "A scanned PDF is really a picture, so it has no text to copy. OCR for scans is on the roadmap."
+   "A scanned PDF is really a picture, so it has no text to copy. Run it through Read scans (OCR) first."
   ],
   "status": "ready"
  },
@@ -3498,6 +3498,385 @@
    {
     "q": "Which settings should I use?",
     "a": "150 dpi and High quality suit screens and sharing. Use 300 dpi for printing."
+   }
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "translate",
+  "name": "Translate a PDF",
+  "short": "Translate a document into another language (your own AI key).",
+  "desc": "Translate the text of a PDF into another language, page by page, and get it back as a text file and, for Western European languages, a PDF. You bring your own API key from OpenAI, Anthropic or Google, set once in Settings.",
+  "category": "insight",
+  "icon": "🌍",
+  "keywords": [
+   "translate",
+   "translation",
+   "language",
+   "spanish",
+   "french",
+   "german",
+   "chinese",
+   "ai",
+   "foreign document",
+   "localise"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF with selectable text",
+    "accept": "pdf",
+    "hint": "Scans have no text layer: run them through Read scans (OCR) first."
+   }
+  ],
+  "options": [
+   {
+    "key": "lang",
+    "type": "select",
+    "label": "Translate into",
+    "default": "Spanish",
+    "options": [
+     {
+      "value": "Spanish",
+      "label": "Spanish"
+     },
+     {
+      "value": "French",
+      "label": "French"
+     },
+     {
+      "value": "German",
+      "label": "German"
+     },
+     {
+      "value": "Italian",
+      "label": "Italian"
+     },
+     {
+      "value": "Portuguese",
+      "label": "Portuguese"
+     },
+     {
+      "value": "Dutch",
+      "label": "Dutch"
+     },
+     {
+      "value": "Swedish",
+      "label": "Swedish"
+     },
+     {
+      "value": "Danish",
+      "label": "Danish"
+     },
+     {
+      "value": "Norwegian",
+      "label": "Norwegian"
+     },
+     {
+      "value": "English",
+      "label": "English"
+     },
+     {
+      "value": "Arabic",
+      "label": "Arabic"
+     },
+     {
+      "value": "Chinese (Simplified)",
+      "label": "Chinese (Simplified)"
+     },
+     {
+      "value": "Hindi",
+      "label": "Hindi"
+     },
+     {
+      "value": "Japanese",
+      "label": "Japanese"
+     },
+     {
+      "value": "Korean",
+      "label": "Korean"
+     },
+     {
+      "value": "Russian",
+      "label": "Russian"
+     },
+     {
+      "value": "Turkish",
+      "label": "Turkish"
+     },
+     {
+      "value": "Polish",
+      "label": "Polish"
+     },
+     {
+      "value": "Indonesian",
+      "label": "Indonesian"
+     },
+     {
+      "value": "Other",
+      "label": "Other (type it below)"
+     }
+    ]
+   },
+   {
+    "key": "other",
+    "type": "text",
+    "label": "Language",
+    "placeholder": "e.g. Swahili",
+    "showIf": {
+     "key": "lang",
+     "eq": "Other"
+    }
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)",
+    "placeholder": "e.g. 1-5",
+    "hint": "Up to about 60,000 characters are translated in one go. Use this to do a long document in parts."
+   },
+   {
+    "key": "markers",
+    "type": "toggle",
+    "label": "Keep page markers",
+    "default": true,
+    "hint": "Shows “=== Page 3 ===” before each page so you can match it to the original."
+   },
+   {
+    "key": "makePdf",
+    "type": "toggle",
+    "label": "Also make a PDF",
+    "default": true,
+    "hint": "Only for English, Spanish, French, German, Italian, Portuguese, Dutch, Swedish, Danish and Norwegian. Other languages come as a text file."
+   }
+  ],
+  "warn": "Text from your PDF is sent straight to the AI provider you chose in Settings, using your own API key (which may cost a little). It does not pass through iDuckPDF’s servers.",
+  "runLabel": "Translate",
+  "tips": [
+   "You get the translated text, not the original layout: pictures, tables and fonts are not reproduced.",
+   "Machine translation can be wrong. Have anything important, such as a contract, checked by a person.",
+   "Long documents are sent in several requests, so they cost more of your AI credit. Try a few pages first."
+  ],
+  "faq": [
+   {
+    "q": "Is my PDF uploaded to iDuckPDF?",
+    "a": "No. The text is read in your browser and sent directly to the AI provider you chose in Settings, using your own key. It does not pass through our servers."
+   },
+   {
+    "q": "Will the translation look like the original PDF?",
+    "a": "No. You get the translated text in reading order, as a text file and, for Western European languages, a plain PDF. Layout, pictures and tables are not reproduced."
+   },
+   {
+    "q": "Why is there no PDF for Chinese, Arabic or Hindi?",
+    "a": "The PDF fonts built into the browser tool cannot draw those scripts, so those languages come as a .txt file that opens anywhere."
+   },
+   {
+    "q": "How much does it cost?",
+    "a": "Your AI provider charges your own account by the amount of text. A page of text is usually a fraction of a cent to a few cents, depending on the model you chose."
+   }
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "flashcards",
+  "name": "Flashcards and quiz",
+  "short": "Turn a PDF into study cards or a quiz (your own AI key).",
+  "desc": "Make flashcards or a multiple-choice quiz from the text of a PDF, with the answers. Download a CSV that imports into Anki, Quizlet, Excel or Google Sheets. You bring your own API key, set once in Settings.",
+  "category": "insight",
+  "icon": "🧠",
+  "keywords": [
+   "flashcards",
+   "quiz",
+   "study",
+   "revision",
+   "anki",
+   "quizlet",
+   "exam",
+   "multiple choice",
+   "learn",
+   "notes",
+   "ai"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF with selectable text",
+    "accept": "pdf",
+    "hint": "Lecture notes, a chapter or an article work well."
+   }
+  ],
+  "options": [
+   {
+    "key": "kind",
+    "type": "select",
+    "label": "Make",
+    "default": "cards",
+    "options": [
+     {
+      "value": "cards",
+      "label": "Flashcards (question and answer)"
+     },
+     {
+      "value": "quiz",
+      "label": "Multiple-choice quiz"
+     }
+    ]
+   },
+   {
+    "key": "count",
+    "type": "select",
+    "label": "How many",
+    "default": "15",
+    "options": [
+     {
+      "value": "10",
+      "label": "10"
+     },
+     {
+      "value": "15",
+      "label": "15"
+     },
+     {
+      "value": "25",
+      "label": "25"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)",
+    "placeholder": "e.g. 3-8"
+   },
+   {
+    "key": "lang",
+    "type": "text",
+    "label": "Language (blank = same as document)"
+   }
+  ],
+  "warn": "Text from your PDF is sent straight to the AI provider you chose in Settings, using your own API key (which may cost a little). It does not pass through iDuckPDF’s servers.",
+  "runLabel": "Make study material",
+  "tips": [
+   "Check the cards before you rely on them: the AI can misread a page or phrase something badly.",
+   "A narrower page range gives sharper, more focused cards than a whole book."
+  ],
+  "faq": [
+   {
+    "q": "Is my PDF uploaded to iDuckPDF?",
+    "a": "No. The text is read in your browser and sent directly to the AI provider you chose in Settings, using your own key."
+   },
+   {
+    "q": "How do I get the cards into Anki or Quizlet?",
+    "a": "Download the CSV. In Anki use File, Import. In Quizlet use Import and paste the two columns. In Excel or Google Sheets just open it."
+   },
+   {
+    "q": "Are the answers guaranteed correct?",
+    "a": "No. They are written by an AI from your document, so skim them. The quiz includes a one-line reason taken from the document to help you check."
+   }
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "ai-extract",
+  "name": "Pull data into Excel",
+  "short": "Describe what you need, get it as a spreadsheet (your own AI key).",
+  "desc": "Tell the AI what to pull out of a PDF (invoice lines, key contract terms, dates and amounts, contact details) and get an Excel workbook back. Good for documents where the layout is messy and a table finder would fail. You bring your own API key, set once in Settings.",
+  "category": "insight",
+  "icon": "🧾",
+  "keywords": [
+   "extract data",
+   "invoice",
+   "receipt",
+   "contract terms",
+   "dates",
+   "amounts",
+   "excel",
+   "xlsx",
+   "csv",
+   "structured",
+   "ai",
+   "pull out"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF with selectable text",
+    "accept": "pdf",
+    "hint": "Scans have no text layer: run them through Read scans (OCR) first."
+   }
+  ],
+  "options": [
+   {
+    "key": "preset",
+    "type": "select",
+    "label": "What to pull out",
+    "default": "invoice",
+    "options": [
+     {
+      "value": "invoice",
+      "label": "Invoice or receipt lines"
+     },
+     {
+      "value": "terms",
+      "label": "Key terms of a contract"
+     },
+     {
+      "value": "dates",
+      "label": "Dates, deadlines and amounts"
+     },
+     {
+      "value": "people",
+      "label": "People, companies and contact details"
+     },
+     {
+      "value": "custom",
+      "label": "Something else (describe it)"
+     }
+    ]
+   },
+   {
+    "key": "request",
+    "type": "textarea",
+    "label": "Describe what you need",
+    "placeholder": "e.g. every product with its price and the supplier name",
+    "showIf": {
+     "key": "preset",
+     "eq": "custom"
+    }
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)",
+    "placeholder": "e.g. 1-3"
+   },
+   {
+    "key": "pageCol",
+    "type": "toggle",
+    "label": "Add a page column",
+    "default": true,
+    "hint": "Shows which page each row came from, so you can check it."
+   }
+  ],
+  "warn": "Text from your PDF is sent straight to the AI provider you chose in Settings, using your own API key (which may cost a little). It does not pass through iDuckPDF’s servers.",
+  "runLabel": "Pull out the data",
+  "tips": [
+   "Always check the numbers against the PDF. The AI is told to leave a cell empty rather than guess, but it can still misread.",
+   "For clean tables with ruled columns, Extract tables to Excel is exact and sends nothing anywhere.",
+   "Long documents are cut off. Pick a page range to do the rest."
+  ],
+  "faq": [
+   {
+    "q": "Is my PDF uploaded to iDuckPDF?",
+    "a": "No. The text is read in your browser and sent directly to the AI provider you chose in Settings, using your own key."
+   },
+   {
+    "q": "How is this different from PDF to Excel?",
+    "a": "PDF to Excel finds the tables that are laid out in the PDF and sends nothing anywhere. This tool asks an AI to find the facts you describe, wherever they are, so it can handle messy layouts, but it needs your AI key and can make mistakes."
+   },
+   {
+    "q": "Can it invent values?",
+    "a": "It is told to use only what appears in the document and to leave missing cells empty, but language models can still err. Check the result against the PDF."
    }
   ],
   "status": "ready"

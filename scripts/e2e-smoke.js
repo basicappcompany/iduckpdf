@@ -105,7 +105,7 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
     await grid.getByRole('button', { name: /^Everything/ }).click();
     await page.waitForTimeout(150);
     ok('home grid: Everything brings every tool back', (await n()) === meta.length);
-    ok('home grid: the newest tools carry a "new" badge', (await grid.getByText('new', { exact: true }).count()) === 5);
+    ok('home grid: the newest tools carry a "new" badge', (await grid.getByText('new', { exact: true }).count()) === 8);
   }
   ok('no console errors or warnings on load', problems.length === 0, problems.slice(0, 3).join(' | '));
 

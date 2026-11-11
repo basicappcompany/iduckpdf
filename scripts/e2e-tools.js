@@ -613,6 +613,62 @@ const fillPasswords = (a, b) => async (page) => {
     ok('merge pdf and pictures: 2 PDF pages + 1 picture = 3 pages', (await PDFDocument.load(fs.readFileSync(await download(page)))).getPageCount() === 3);
   }
 
+  // ---------- AI tools, against a FAKE provider: the key is seeded in the page and the provider URLs are intercepted ----------
+  {
+    const JSZip5 = require('jszip');
+    const sent = [];
+    let answer = () => '';
+    const ctx5 = await browser.newContext({ acceptDownloads: true });
+    await ctx5.addInitScript(() => { try { localStorage.setItem('duck.ai', JSON.stringify({ provider: 'openai', key: 'sk-fake-key', model: 'fake-model' })); } catch {} });
+    const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, OPTIONS' };
+    await ctx5.route('https://api.openai.com/**', async (route) => {
+      const req = route.request();
+      if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+      const body = JSON.parse(req.postData() || '{}');
+      sent.push({ auth: req.headers()['authorization'], system: body.messages[0].content, prompt: body.messages[body.messages.length - 1].content });
+      await route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify({ choices: [{ message: { content: answer(body) } }] }) });
+    });
+    const aiPage = await ctx5.newPage();
+    const aiProblems = [];
+    aiPage.on('pageerror', (e) => aiProblems.push(e.message));
+    aiPage.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) aiProblems.push(m.text()); });
+    const doc = await makePdf('aidoc.pdf', 2, 'Hello');
+
+    answer = (b) => b.messages[b.messages.length - 1].content.replace(/Hello/g, 'Hola');
+    await useTool(aiPage, '/translate-pdf', [doc], async () => {}, /Translate$/);
+    ok('translate: runs in the browser against the fake provider', await done(aiPage));
+    ok('translate: the key went to the provider and the text was sent', sent.length === 1 && sent[0].auth === 'Bearer sk-fake-key' && /Hello page 1/.test(sent[0].prompt), JSON.stringify(sent[0] || {}).slice(0, 120));
+    ok('translate: the translation is shown on the page', await aiPage.getByText(/Hola page 1/).first().waitFor({ timeout: 5000 }).then(() => true).catch(() => false));
+    const tpdf = await download(aiPage);
+    ok('translate: a PDF is offered for Spanish', (await PDFDocument.load(fs.readFileSync(tpdf))).getPageCount() >= 1);
+
+    answer = () => '[{"q":"Greeting?","a":"Hello"},{"q":"Page?","a":"Two"}]';
+    await useTool(aiPage, '/pdf-to-flashcards', [doc], async () => {}, /Make study material/);
+    ok('flashcards: runs in the browser against the fake provider', await done(aiPage));
+    const csvPath = await download(aiPage);
+    ok('flashcards: the CSV has the cards', /Greeting\?,Hello/.test(fs.readFileSync(csvPath, 'utf8')));
+
+    answer = () => '{"columns":["Item","Qty","Page"],"rows":[["Pen","2",1],["Book",1,2]]}';
+    await useTool(aiPage, '/extract-data-from-pdf', [doc], async () => {}, /Pull out the data/);
+    ok('pull data: runs in the browser against the fake provider', await done(aiPage));
+    const xz = await JSZip5.loadAsync(fs.readFileSync(await download(aiPage)));
+    const sheet = await xz.file('xl/worksheets/sheet1.xml').async('string');
+    ok('pull data: the workbook has the rows, numbers as numbers', sheet.includes('<v>2</v>') && /Pen/.test(sheet) && /Item/.test(sheet));
+
+    // an unusable answer must give a clear message
+    answer = () => 'sorry, no';
+    await useTool(aiPage, '/extract-data-from-pdf', [doc], async () => {}, /Pull out the data/);
+    ok('pull data: an unusable AI answer gives a clear message', await errorText(aiPage, /cut off or was not in the expected form/));
+
+    const noKey = await browser.newContext();
+    const np = await noKey.newPage();
+    await useTool(np, '/translate-pdf', [doc], async () => {}, /Translate$/);
+    ok('translate: without a key the tool says so and offers Settings', await errorText(np, /Add your own API key in Settings/) && (await np.getByRole('link', { name: /Open Settings/ }).count()) > 0);
+    ok('no page errors in the AI tool tests', aiProblems.length === 0, aiProblems.slice(0, 2).join(' | '));
+    await noKey.close();
+    await ctx5.close();
+  }
+
   // ---------- (more groups are added below as tools ship) ----------
 
   // the Content-Security-Policy is really in force: an injected inline script must be blocked (set by the server from _headers)

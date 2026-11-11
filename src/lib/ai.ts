@@ -25,7 +25,7 @@ async function readError(res: Response): Promise<string> {
 }
 
 /** Calls the provider the user configured, with the key they supplied. Nothing goes through our servers. */
-export async function askAI(system: string, prompt: string): Promise<string> {
+export async function askAI(system: string, prompt: string, o: { maxTokens?: number } = {}): Promise<string> {
   const cfg = getAi();
   if (!cfg) throw new ToolError('Add your own API key in Settings to use this tool.', 'NO_KEY');
   const model = cfg.model || AI_DEFAULTS[cfg.provider].model;
@@ -46,13 +46,13 @@ export async function askAI(system: string, prompt: string): Promise<string> {
           'anthropic-version': '2023-06-01',
           'anthropic-dangerous-direct-browser-access': 'true',
         },
-        body: JSON.stringify({ model, max_tokens: 2048, system, messages: [{ role: 'user', content: prompt }] }),
+        body: JSON.stringify({ model, max_tokens: o.maxTokens || 2048, system, messages: [{ role: 'user', content: prompt }] }),
       });
     } else {
       res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cfg.key },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: 'user', parts: [{ text: prompt }] }] }),
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: 'user', parts: [{ text: prompt }] }], ...(o.maxTokens ? { generationConfig: { maxOutputTokens: o.maxTokens } } : {}) }),
       });
     }
   } catch {
@@ -71,10 +71,11 @@ export async function askAI(system: string, prompt: string): Promise<string> {
 }
 
 /** Page-tagged document text, capped so the request stays reasonable. */
-export function buildContext(pages: string[], maxChars = 90000): { text: string; truncated: boolean } {
+export function buildContext(pages: string[], maxChars = 90000, only?: number[]): { text: string; truncated: boolean } {
   let out = '';
   let truncated = false;
-  for (let i = 0; i < pages.length; i++) {
+  for (const i of only || pages.map((_, k) => k)) {
+    if (!(pages[i] || '').trim()) continue;
     const chunk = `\n[Page ${i + 1}]\n${pages[i]}\n`;
     if (out.length + chunk.length > maxChars) {
       truncated = true;

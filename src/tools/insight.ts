@@ -89,7 +89,7 @@ export const insightTools: ToolDef[] = [
       const f = needOne(files.files);
       const pages = await textByPage(await f.bytes(), (i, n) => progress((i / n) * 0.6));
       const { text, truncated } = buildContext(pages);
-      if (!text.trim()) throw new ToolError('This PDF has no selectable text, so there is nothing to summarise. (Scans need OCR, which is on the roadmap.)');
+      if (!text.trim()) throw new ToolError('This PDF has no selectable text, so there is nothing to summarise. Scans have no text layer: run them through Read scans (OCR) first.');
       const len = { short: 'Write 3 to 5 short bullet points.', medium: 'Write a clear summary of about 150 to 250 words, then list the key points as bullets.', long: 'Write a detailed structured summary with headings and bullet points.' }[opts.length as string];
       progress(0.7, 'Asking the AI…');
       const ans = await askAI(
