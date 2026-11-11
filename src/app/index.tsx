@@ -3,8 +3,8 @@ import { Pressable, Text, View } from 'react-native';
 import { useTheme } from '../lib/theme';
 import { usePalette } from '../lib/palette';
 import { KEYS, getJSON } from '../lib/storage';
-import { VISIBLE_CATEGORIES, READY, SOON, byId, inCategory } from '../tools';
-import { NEW_TOOL_IDS } from '../content/changelog';
+import { VISIBLE_CATEGORIES, READY, SOON, TOOLS, byId, inCategory, type CategoryId } from '../tools';
+import { NEW_BADGE_COUNT, NEW_TOOL_IDS } from '../content/changelog';
 import { Btn, Card, Chip, Hl, Screen, T, CardGrid } from '../ui/kit';
 import { Logo } from '../ui/Logo';
 import { ToolCard } from '../ui/ToolCard';
@@ -22,6 +22,10 @@ export default function Home() {
   const { t } = useTheme();
   const { open } = usePalette();
   const [recent, setRecent] = useState<string[]>([]);
+  const [cat, setCat] = useState<CategoryId | 'all'>('all');
+  const fresh = new Set(NEW_TOOL_IDS.slice(0, NEW_BADGE_COUNT));
+  const shown = TOOLS.filter((x) => x.status === 'ready' && (cat === 'all' || x.category === cat));
+  const shownCat = VISIBLE_CATEGORIES.find((c) => c.id === cat);
   useEffect(() => setRecent(getJSON<string[]>(KEYS.recent, [])), []);
 
   return (
@@ -71,17 +75,21 @@ export default function Home() {
         </CardGrid>
       </View>
 
-      {VISIBLE_CATEGORIES.filter((c) => c.id !== 'soon').map((c) => (
-        <View key={c.id} style={{ gap: 12 }}>
-          <View style={{ gap: 2 }}>
-            <T v="h2">{c.icon} {c.name}</T>
-            <T muted>{c.blurb}</T>
-          </View>
-          <CardGrid min={220} gap={12}>
-            {inCategory(c.id).map((tl) => <ToolCard key={tl.id} tool={tl} compact />)}
-          </CardGrid>
+      <View style={{ gap: 12 }} testID="all-tools">
+        <View style={{ gap: 2 }}>
+          <T v="h2">All {READY.length} PDF tools</T>
+          <T muted>{shownCat ? shownCat.blurb : 'Pick a group to narrow the list, or press Ctrl K to search.'}</T>
         </View>
-      ))}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <Chip label={`Everything (${READY.length})`} on={cat === 'all'} onPress={() => setCat('all')} small />
+          {VISIBLE_CATEGORIES.filter((c) => c.id !== 'soon').map((c) => (
+            <Chip key={c.id} label={`${c.name} (${inCategory(c.id).length})`} icon={c.icon} on={cat === c.id} onPress={() => setCat(c.id)} small />
+          ))}
+        </View>
+        <CardGrid min={250} gap={12}>
+          {shown.map((tl) => <ToolCard key={tl.id} tool={tl} badge={fresh.has(tl.id) ? 'new' : undefined} />)}
+        </CardGrid>
+      </View>
 
       <View style={{ gap: 12 }}>
         <T v="h2">✨ New and next</T>

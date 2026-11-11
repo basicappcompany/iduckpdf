@@ -112,6 +112,7 @@ export function Chip({ label, on, onPress, icon, to, small }: { label: string; o
   const node = (
     <Pressable
       accessibilityRole={to ? 'link' : 'button'}
+      {...(!to && onPress ? ({ 'aria-pressed': !!on } as any) : null)}
       onPress={to ? nav(to) : onPress}
       style={((s: any) => [
         {

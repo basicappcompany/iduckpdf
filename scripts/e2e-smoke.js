@@ -29,6 +29,14 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
     ok('no-JS: canonical is /merge-pdf', (await p.locator('link[rel=canonical]').getAttribute('href')) === 'https://iduckpdf.com/merge-pdf');
     ok('no-JS: FAQ answer text is in the HTML', (await p.content()).includes('as many as your device has memory for'.slice(0, 20)) || (await p.content()).includes('How many PDFs can I merge at once'));
     ok('no-JS: many real <a href> links', (await p.locator('a[href^="/"]').count()) > 20, String(await p.locator('a[href^="/"]').count()));
+    // the home page grid must list every tool as a real link in the HTML (crawlers and no-JS visitors)
+    {
+      const meta = require('../src/tools/meta.generated.json').filter((t) => t.status === 'ready');
+      const slugs = fs.readFileSync(path.join(__dirname, '..', 'src', 'content', 'toolSlugs.ts'), 'utf8');
+      const home = await (await ctx.request.get(BASE + '/')).text();
+      const missing = meta.filter((t) => { const m = slugs.match(new RegExp("'?" + t.id.replace(/-/g, '-') + "'?: '([a-z0-9-]+)'")); return !m || !home.includes('href="/' + m[1] + '"'); }).map((t) => t.id);
+      ok('no-JS: the home page links to every tool', missing.length === 0, missing.slice(0, 5).join(', '));
+    }
     const ld = await p.locator('script[type="application/ld+json"]').allTextContents();
     let parsed = true; try { ld.forEach((t) => JSON.parse(t)); } catch { parsed = false; }
     ok('no-JS: JSON-LD blocks parse', parsed && ld.length >= 4, `${ld.length} blocks`);
@@ -84,6 +92,21 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   }
   const frames = await page.evaluate(() => new Promise((res) => { let n = 0; const t0 = performance.now(); (function f() { n++; performance.now() - t0 < 1000 ? requestAnimationFrame(f) : res(n); })(); }));
   ok('home runs at a healthy frame rate', frames > 20, `${frames} fps`);
+  // the all-tools grid: every tool, filterable by group, and back
+  {
+    const meta = require('../src/tools/meta.generated.json').filter((t) => t.status === 'ready');
+    const grid = page.locator('[data-testid=all-tools]');
+    const n = async () => grid.locator('a[href^="/"]').count();
+    ok('home grid shows every tool', (await n()) === meta.length, `${await n()} of ${meta.length}`);
+    await grid.getByRole('button', { name: /Join & cut \(/ }).click();
+    await page.waitForTimeout(150);
+    ok('home grid: a group chip narrows the list to that group', (await n()) === meta.filter((t) => t.category === 'join').length, String(await n()));
+    ok('home grid: the chosen chip is marked pressed', (await grid.getByRole('button', { name: /Join & cut \(/ }).getAttribute('aria-pressed')) === 'true');
+    await grid.getByRole('button', { name: /^Everything/ }).click();
+    await page.waitForTimeout(150);
+    ok('home grid: Everything brings every tool back', (await n()) === meta.length);
+    ok('home grid: the newest tools carry a "new" badge', (await grid.getByText('new', { exact: true }).count()) === 5);
+  }
   ok('no console errors or warnings on load', problems.length === 0, problems.slice(0, 3).join(' | '));
 
   // client-side navigation must not reload the document

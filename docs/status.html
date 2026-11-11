@@ -375,7 +375,8 @@ const PHASES = [
     I("10.1", "Extract pictures, PDF to PowerPoint, Merge PDFs and pictures, JPG to PDF, PDF to JPG", "done", "none", { when: "11 Nov", note: "All five run in the browser. Extract pictures copies JPEGs byte for byte and writes the rest as PNG; PDF to PowerPoint has an exact-look mode (a picture per slide) and an editable-text mode. JPG to PDF and PDF to JPG share an engine with Photos to PDF and PDF to pictures but have their own keyword page and copy. 26 new Node checks, 13 new browser checks, 2 new guides." }),
     I("10.2", "Request indexing for the 5 new tool URLs and 2 new guides", "todo", "you", { prio: 2, effort: "5 min", note: "After the pull request merges and deploys: /extract-images-from-pdf, /pdf-to-powerpoint, /merge-pdf-and-images, /jpg-to-pdf, /pdf-to-jpg and the two new guides, in Search Console (URL inspection, Request indexing). IndexNow pings Bing on deploy by itself." }),
     I("10.3", "Run the new tools against the live site and in Firefox and WebKit", "todo", "me", { prio: 3, effort: "10 min", note: "After the first deploy: BASE_URL=https://iduckpdf.com on the tool suite, and BROWSER=firefox and webkit locally. Chromium passes." }),
-    I("10.4", "Ebook conversions (EPUB to PDF, PDF to EPUB)", "later", "both", { effort: "1-2 days", note: "Not built. EPUB is feasible on the existing layout engine; MOBI, AZW and DJVU need heavy decoders or a server and are not planned. Your call whether to do EPUB." }),
+    I("10.4", "Home page grid of every tool (name, one-line benefit, group chips, new badge)", "done", "none", { when: "11 Nov", note: "Replaces the per-group sections on the home page; the full grouped list stays on /pdf-tools. All tools are real links in the pre-rendered HTML. Layout shift 0, no overflow in light, dark, phone and desktop; 6 new browser checks." }),
+    I("10.5", "Ebook conversions (EPUB to PDF, PDF to EPUB)", "later", "both", { effort: "1-2 days", note: "Not built. EPUB is feasible on the existing layout engine; MOBI, AZW and DJVU need heavy decoders or a server and are not planned. Your call whether to do EPUB." }),
   ]},
 ];
 
@@ -419,6 +420,7 @@ const TIMELINE = [
   ["11 Nov 2026", "Bing has read the sitemap", "Bing Webmaster Tools shows https://iduckpdf.com/sitemap.xml as Success with 71 URLs discovered, the same as the 71 indexable pages. Whether those pages are indexed is a separate, slower step."],
   ["9 Nov 2026", "Final production verification", "Both browser suites passed against iduckpdf.com (57/57, 28/28); all 43 tool URLs answer 200; docs, tracker and this page refreshed."],
   ["11 Nov 2026", "Five more PDF tools (gap against another tool site)", "Extract pictures, PDF to PowerPoint, Merge PDFs and pictures, JPG to PDF and PDF to JPG; 48 tools, 22 guides. 169 Node tests and 28 + 85 browser checks pass on the build."],
+  ["11 Nov 2026", "Home page: one grid of every tool", "A flat grid with each tool's name and one-line benefit, group chips that filter it, and a \"new\" badge on the latest five. Every tool is a real link in the HTML; 6 new browser checks."],
 ];
 
 const SCORECARD = [
@@ -427,7 +429,7 @@ const SCORECARD = [
   { k: "Layout shift (CLS)", v: "0", d: "Measured at 390, 700, 1000 and 1280 px on 8 pages. Was about 1.0 on phones." },
   { k: "First-load JavaScript", v: "~333 KB gz", d: "Was 572 KB. The PDF engine (about 276 KB gz) and the password, OCR and Office code are lazy chunks loaded only when used." },
   { k: "Pages", v: "85 built, 78 indexable", d: "Sitemap lists the 78; the rest are forms, settings and the 404." },
-  { k: "Automated tests", v: "169 + 113", d: "169 Node tests (73 engine, 70 conversions, 26 picture tools) and 113 browser checks (28 site, 85 tools), all run in CI on every pull request (Chromium); the browser suites also pass in Firefox and WebKit locally, and on the live site in Chromium." },
+  { k: "Automated tests", v: "169 + 119", d: "169 Node tests (73 engine, 70 conversions, 26 picture tools) and 119 browser checks (34 site, 85 tools), all run in CI on every pull request (Chromium); the browser suites also pass in Firefox and WebKit locally, and on the live site in Chromium." },
   { k: "Tools", v: "48 built, 0 planned", d: "46 checked end to end; the 2 AI tools only up to the missing-key message (needs your key)." },
   { k: "Guides", v: "22", d: "11 added for the new tools on 9 Nov and 2 on 11 Nov (extract pictures, PDF to PowerPoint); each links to its tool." },
 ];
