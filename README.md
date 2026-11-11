@@ -18,7 +18,7 @@ npm run typecheck            # also regenerates src/tools/meta.generated.json an
 npm run meta                 # regenerate those light indexes and the tool table in docs/status.html (run after editing src/tools/ or src/content/guides.ts)
 npm run test:engine          # 169 Node tests: the PDF engine, signing geometry, every Office/web conversion, and the picture tools
 npm run serve:dist           # serve dist/ on http://localhost:8080 (gzip, extensionless pages, 404.html)
-npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 28 site checks + 85 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
+npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 34 site checks + 85 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
 node scripts/health-check.js # live-site health check: every sitemap URL, redirects, headers, canonicals (default https://iduckpdf.com)
 npm run indexnow -- --all # IndexNow: tell Bing and others about the sitemap URLs (CI does this after each deploy to main)
 npm run icons                # regenerate the duck icons and social card (outputs are committed)

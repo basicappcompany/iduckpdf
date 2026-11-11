@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-11 · Status key: ✅ built and checked · 🟡 built, only partly checked · ⏳ stubbed / waiting · 🗺️ planned
 
-**Totals:** 48 tools built (46 checked end to end, 2 AI tools checked only up to the missing-key message) · 0 on the roadmap: every announced tool is built · 22 guides · 85 pages built (78 indexable, 7 noindex) · 169 Node tests and 113 browser checks, all run in CI.
+**Totals:** 48 tools built (46 checked end to end, 2 AI tools checked only up to the missing-key message) · 0 on the roadmap: every announced tool is built · 22 guides · 85 pages built (78 indexable, 7 noindex) · 169 Node tests and 119 browser checks, all run in CI.
 
 For the same picture as one visual page, with what is pending from the owner and what Claude can do alone, open `docs/status.html`.
 
@@ -10,7 +10,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | Feature | Status | Notes |
 |---|---|---|
 | Expo (React Native + web) project, statically pre-rendered web build | ✅ | `npm run export:web` builds, injects SEO tags, hydrates cleanly in Chromium |
-| Home page with search bar, popular tools, categories, "New and next" | ✅ | renders; tool cards navigate |
+| Home page with search bar, popular tools, one grid of every tool (name and benefit line, group chips, "new" badge), "New and next" | ✅ | 6 browser checks: every tool is a real link in the HTML, chips filter and mark the chosen group, badge count |
 | Sidebar (categories, community links) + mobile drawer | ✅ | empty categories are hidden |
 | `Ctrl K` / `/` command palette (tools, pages, theme) | ✅ | opens, filters, Enter navigates |
 | Ask the helper (keyword chat, no AI) | ✅ | matches tools, answers privacy question |
@@ -34,7 +34,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | `pages.dev` kept out of search results | ✅ | `X-Robots-Tag: noindex` via `public/_headers` |
 | GoDaddy nameservers → Cloudflare, custom domain `iduckpdf.com` | ✅ | live over HTTPS, indexable, canonical correct |
 | `www` → apex 301 redirect, SSL Full (strict), Always Use HTTPS | ✅ | Cloudflare Redirect Rule; verified live 9 Nov |
-| CI on every pull request: typecheck, 169 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 28 site checks and 85 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
+| CI on every pull request: typecheck, 169 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 34 site checks and 85 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
 | Automatic deploy on merge to `main` | ✅ | Cloudflare token stored as a GitHub secret; a pull request never deploys |
 | `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; a Gmail filter keeps it out of Spam (first test landed in Spam); fresh inbox test pending; replying from it is TODO §1 |
 | Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
