@@ -29,7 +29,6 @@ Code is done; it stays **off** until the steps below are complete.
 - [x] Code is on GitHub: `basicappcompany/iduckpdf` (private). Make it public when you are ready (Settings → Danger zone); that also helps the SEO plan in §8.
 - [x] **`iduckpdf.com` is live** (2026-11-08). GoDaddy nameservers now point at Cloudflare (`bob.ns.cloudflare.com`, `deb.ns.cloudflare.com`), the apex and `www` are Pages custom domains, HTTPS works.
 - [x] `www.iduckpdf.com/*` 301-redirects to `https://iduckpdf.com/$1` (Cloudflare Redirect Rule, query string kept; done 2026-11-09). SSL/TLS mode is Full (strict) and Always Use HTTPS is on.
-- [ ] SSL/TLS → set to **Full**, and turn on "Always Use HTTPS" (Cloudflare dashboard).
 - [x] **Automatic deploys are on** (9 Nov): the Cloudflare API token is a GitHub secret. Every pull request builds, tests (226 Node checks), audits and runs the browser tests (34 site + 96 tool checks); merging to `main` deploys. Branch protection would add a hard gate, but GitHub only offers it on private repos with a paid plan or on a public repo.
 - [ ] Manual deploy any time: `npm run export:web`, then `npx wrangler pages deploy dist --project-name iduckpdf --branch main`.
 - [ ] **Lockfile caveat:** this machine's npm uses a private company registry, which writes its URLs into `package-lock.json` when you add packages. GitHub's runners can't reach it. If CI starts failing at `npm ci`, replace those URLs with `https://registry.npmjs.org/` (scoped packages use `.../@scope/name/-/name-x.y.z.tgz`).
@@ -45,7 +44,7 @@ Code is done; it stays **off** until the steps below are complete.
 ## 5. Still to verify
 All 51 tools are covered by Node tests and by browser tests. The first 43 also ran against the live site on 2026-11-09, and the 5 picture tools added on 2026-11-11 on that day (see `TRACKER.md`). The 5 AI tools are tested against a fake provider, never a real one: that part is yours (status page item 9.5). What is left:
 - [ ] Summarise with AI and Ask your PDF with a real key for each provider (OpenAI, Anthropic, Gemini). Only the missing-key path has been tried. Model names in `src/config.ts` → `AI_DEFAULTS` may need updating. *You add a key in Settings; I cannot enter keys.*
-- [ ] Re-run the older browser-only tools once on the live site: Photos to PDF, Scan to PDF, Grayscale, Black out text, Spot the differences, Logo or image stamp. (PDF to pictures, Copy text, Make it smaller, Watermark and Inspect were re-run after the bundle split, and every new tool is covered by `scripts/e2e-tools.js`.) *I can do this.*
+- [x] Re-ran the older browser-only tools on the live site (2026-11-12): Photos to PDF, Scan to PDF, Grayscale, Black out text, Spot the differences, Logo or image stamp all pass, as part of the full `scripts/e2e-tools.js` run against `https://iduckpdf.com` (96/96). (PDF to pictures, Copy text, Make it smaller, Watermark and Inspect were re-run after the bundle split.)
 - [x] Firefox and Safari (WebKit): both suites pass in Playwright's Firefox and WebKit builds (`BROWSER=firefox` / `webkit`).
 - [ ] A real iPhone and a real Android phone: open the site, merge two PDFs, sign one with your finger, toggle dark mode. *You.*
 - [ ] Mail links (`mailto:`) in a browser with a mail app configured. *You, 2 minutes.*
