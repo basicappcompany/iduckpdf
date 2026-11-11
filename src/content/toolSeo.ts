@@ -518,4 +518,41 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
       { q: 'Is my PDF uploaded?', a: 'No. Pages are drawn and saved inside your browser tab.' },
     ],
   },
+  translate: {
+    title: 'Translate a PDF with Your Own AI Key',
+    description: 'Translate the text of a PDF into Spanish, French, German, Chinese and more. Uses your own OpenAI, Anthropic or Google key; nothing goes through our servers.',
+    answer: 'To translate a PDF, add the file, choose the language and press Translate. The text is read in your browser and sent straight to the AI provider you set up in Settings, using your own key. You get the translated text as a file and, for Western European languages, a plain PDF.',
+    steps: ['Add a PDF that has selectable text, and add your AI key in Settings once.', 'Choose the language and, for a long document, the pages.', 'Press Translate and download the text or PDF.'],
+    uses: ['Read a foreign-language contract, manual or letter', 'Translate lecture notes or a paper', 'Get the gist of a document before paying for a professional translation'],
+    faq: [
+      { q: 'Is my PDF uploaded to iDuckPDF?', a: 'No. The text goes straight from your browser to the AI provider you chose, using your own key. It does not pass through our servers.' },
+      { q: 'Will the translated file look like the original?', a: 'No. You get the translated text in reading order. Layout, pictures and tables are not reproduced.' },
+      { q: 'Why is there no PDF for some languages?', a: 'The built-in PDF fonts cannot draw scripts such as Chinese, Arabic or Hindi, so those come as a text file.' },
+      { q: 'Can I trust the translation?', a: 'It is a machine translation and can be wrong. Have anything important, such as a legal document, checked by a person.' },
+    ],
+  },
+  flashcards: {
+    title: 'Make Flashcards or a Quiz from a PDF',
+    description: 'Turn a PDF into flashcards or a multiple-choice quiz with answers. Download a CSV for Anki, Quizlet or Excel. Uses your own AI key.',
+    answer: 'To make flashcards from a PDF, add the file, choose flashcards or a quiz and how many, then press Make study material. The text is sent straight from your browser to your own AI provider, and you download a CSV that imports into Anki, Quizlet, Excel or Google Sheets.',
+    steps: ['Add a PDF with selectable text, and add your AI key in Settings once.', 'Choose flashcards or a quiz, how many, and optionally the pages.', 'Press Make study material, skim the result, and download the CSV.'],
+    uses: ['Revise a chapter or a set of lecture notes', 'Test yourself on a report before a meeting', 'Make a quick quiz for a class from a handout'],
+    faq: [
+      { q: 'Is my PDF uploaded to iDuckPDF?', a: 'No. The text goes straight from your browser to the AI provider you chose, using your own key.' },
+      { q: 'How do I import the cards?', a: 'In Anki use File, Import. In Quizlet use Import and paste the two columns. In Excel or Google Sheets, open the CSV.' },
+      { q: 'Are the answers always right?', a: 'No. An AI writes them from your document, so skim them first. Quiz questions include a one-line reason from the document to help you check.' },
+    ],
+  },
+  'ai-extract': {
+    title: 'Pull Data from a PDF into Excel with AI',
+    description: 'Describe what you need (invoice lines, contract terms, dates and amounts) and get an Excel file. Uses your own AI key; nothing goes through our servers.',
+    answer: 'To pull data from a PDF into Excel, add the file, pick what to extract or describe it, and press Pull out the data. An AI reads the text, using your own key, and you download an Excel workbook. Check the numbers against the PDF, because an AI can misread.',
+    steps: ['Add a PDF with selectable text, and add your AI key in Settings once.', 'Choose a preset such as invoice lines, or describe what you need.', 'Press Pull out the data, check the rows, and download the workbook.'],
+    uses: ['List the line items of a supplier invoice', 'Collect the key dates and terms of a contract', 'Gather every date and amount mentioned in a report'],
+    faq: [
+      { q: 'Is my PDF uploaded to iDuckPDF?', a: 'No. The text goes straight from your browser to the AI provider you chose, using your own key.' },
+      { q: 'How is this different from PDF to Excel?', a: 'PDF to Excel finds tables laid out in the PDF and sends nothing anywhere. This tool asks an AI for the facts you describe, so it copes with messy layouts but needs your key and can make mistakes.' },
+      { q: 'Can it invent numbers?', a: 'It is told to use only what is in the document and to leave missing cells empty, but language models can still err. Always check against the PDF.' },
+    ],
+  },
 };

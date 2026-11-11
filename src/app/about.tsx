@@ -25,7 +25,7 @@ export default function About() {
           For {READY.filter((x) => !x.warn).length} of the {READY.length} tools, the PDF is read and rewritten inside your browser tab using JavaScript. It is not uploaded to our servers. When you close the tab, it is gone.
         </T>
         <T>
-          The two AI tools are different. If you add your own API key, the text of the PDF you choose is sent to the AI provider you picked (OpenAI, Anthropic or Google), directly from your browser. Those tools say so before you start. We do not see that text or your key.
+          The AI tools are different. If you add your own API key, the text of the PDF you choose is sent to the AI provider you picked (OpenAI, Anthropic or Google), directly from your browser. Those tools say so before you start. We do not see that text or your key.
         </T>
         <T muted v="small">
           We are not claiming magic: your browser, extensions and any cloud-synced folders you use are outside our control. For highly sensitive files, use a trusted device.

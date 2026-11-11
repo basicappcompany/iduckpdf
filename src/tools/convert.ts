@@ -26,7 +26,7 @@ const pageSizeOpts = [
   { value: 'letter', label: 'Letter' },
 ];
 
-async function renderTextPdf(
+export async function renderTextPdf(
   source: string,
   o: { markdown: boolean; size: string; fontSize: number; marginMm: number; face: string },
 ): Promise<Uint8Array> {
@@ -241,7 +241,7 @@ export const convertTools: ToolDef[] = [
       { key: 'marks', type: 'toggle', label: 'Mark where each page starts', default: true },
     ],
     runLabel: 'Extract now',
-    tips: ['A scanned PDF is really a picture, so it has no text to copy. OCR for scans is on the roadmap.'],
+    tips: ['A scanned PDF is really a picture, so it has no text to copy. Run it through Read scans (OCR) first.'],
     status: 'ready',
     async run({ files, opts, progress }) {
       const f = needOne(files.files);

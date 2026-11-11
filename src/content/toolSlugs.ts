@@ -53,6 +53,9 @@ export const TOOL_SLUGS: Record<string, string> = {
   'merge-pdf-images': 'merge-pdf-and-images',
   'jpg-to-pdf': 'jpg-to-pdf',
   'pdf-to-jpg': 'pdf-to-jpg',
+  translate: 'translate-pdf',
+  flashcards: 'pdf-to-flashcards',
+  'ai-extract': 'extract-data-from-pdf',
 };
 
 /** The page that lists every tool. It used to live at /tools. */

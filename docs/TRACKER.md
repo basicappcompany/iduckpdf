@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-11 · Status key: ✅ built and checked · 🟡 built, only partly checked · ⏳ stubbed / waiting · 🗺️ planned
 
-**Totals:** 48 tools built (46 checked end to end, 2 AI tools checked only up to the missing-key message) · 0 on the roadmap: every announced tool is built · 22 guides · 85 pages built (78 indexable, 7 noindex) · 169 Node tests and 119 browser checks, all run in CI.
+**Totals:** 51 tools built (46 checked end to end; the 5 AI tools are checked against a fake provider, in Node and in a browser, but never against a real one) · 0 on the roadmap: every announced tool is built · 25 guides · 91 pages built (84 indexable, 7 noindex) · 226 Node tests and 130 browser checks, all run in CI.
 
 For the same picture as one visual page, with what is pending from the owner and what Claude can do alone, open `docs/status.html`.
 
@@ -34,7 +34,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | `pages.dev` kept out of search results | ✅ | `X-Robots-Tag: noindex` via `public/_headers` |
 | GoDaddy nameservers → Cloudflare, custom domain `iduckpdf.com` | ✅ | live over HTTPS, indexable, canonical correct |
 | `www` → apex 301 redirect, SSL Full (strict), Always Use HTTPS | ✅ | Cloudflare Redirect Rule; verified live 9 Nov |
-| CI on every pull request: typecheck, 169 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 34 site checks and 85 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
+| CI on every pull request: typecheck, 226 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 34 site checks and 96 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
 | Automatic deploy on merge to `main` | ✅ | Cloudflare token stored as a GitHub secret; a pull request never deploys |
 | `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; a Gmail filter keeps it out of Spam (first test landed in Spam); fresh inbox test pending; replying from it is TODO §1 |
 | Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
@@ -44,11 +44,11 @@ For the same picture as one visual page, with what is pending from the owner and
 ## SEO & GEO (search engines and AI assistants)
 | Item | Status | Notes |
 |---|---|---|
-| Every page pre-rendered to real HTML (no JavaScript needed to read it) | ✅ | 85 HTML files; checked with JavaScript switched off |
+| Every page pre-rendered to real HTML (no JavaScript needed to read it) | ✅ | 91 HTML files; checked with JavaScript switched off |
 | Tool URLs that contain "pdf" | ✅ | `/merge-pdf`, `/ocr-pdf`, `/pdf-to-word` ... (map in `src/content/toolSlugs.ts`); hub is `/pdf-tools`; old `/tool/<id>` and `/tools` 301 via the generated `public/_redirects`; the build fails if a slug lacks "pdf", is duplicated or collides with a route |
 | Unique title, description, canonical per indexable page | ✅ | single source: `seoForPath()` in `src/lib/seoData.ts`, written into the HTML by `scripts/inject-seo.ts`; the app uses `seo-pages.json` (written by the build) when someone navigates inside it |
 | Structured data | ✅ | WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, CollectionPage, AboutPage, Organization (parent organisation, email), WebSite + SearchAction |
-| Unique copy for all 48 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
+| Unique copy for all 51 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
 | 20 how-to guides + index | ✅ | `src/content/guides.ts` (11 added on 9 Nov for the new tools) |
 | Crawlable links, one `<h1>` per page, visible FAQ answers | ✅ | audited |
 | `sitemap.xml` (71 URLs), `robots.txt` (search + AI crawlers welcome), `llms.txt`, `llms-full.txt` | ✅ | generated from the tool/guide registries by `scripts/gen-seo.ts` |
@@ -67,8 +67,8 @@ For the same picture as one visual page, with what is pending from the owner and
 | Dependency audit | 🟡 | `npm audit`: 1 high (pdfjs-dist 3.x, mitigated: the only getDocument call sets isEvalSupported false) and moderate/critical findings in build-only tools (Expo CLI, optional canvas) that are never shipped; upgrading pdf.js to 4+ or Expo is a larger job, see TODO §9 |
 | Accessibility | ✅ | main landmark, heading order, names that match visible text, contrast |
 
-## Tools built (48)
-Join & cut 6 · Arrange & repair 8 · Stamp & annotate 7 · Make & extract 16 · Shrink & restyle 2 · Privacy & cleanup 6 · Compare & ask 3. This table is the registry; `docs/status.html` has a searchable, generated copy.
+## Tools built (51)
+Join & cut 6 · Arrange & repair 8 · Stamp & annotate 7 · Make & extract 16 · Shrink & restyle 2 · Privacy & cleanup 6 · Compare & ask 6. This table is the registry; `docs/status.html` has a searchable, generated copy.
 
 | Category | Tool | URL | Status |
 |---|---|---|---|
@@ -102,7 +102,10 @@ Join & cut 6 · Arrange & repair 8 · Stamp & annotate 7 · Make & extract 16 ·
 | Privacy & cleanup | Flatten forms | `/flatten-pdf` | ✅ |
 | Privacy & cleanup | Black out text | `/redact-pdf` | ✅ |
 | Compare & ask | Spot the differences | `/compare-pdf` | ✅ |
-| Compare & ask | Summarise with AI | `/summarize-pdf` | 🟡 key-missing path only; no provider call tried |
+| Compare & ask | Summarise with AI | `/summarize-pdf` | 🟡 fake-provider tests (Node); no real provider call tried |
+| Compare & ask | Translate a PDF | `/translate-pdf` | 🟡 new 11 Nov, fake-provider tests in Node and in a browser; no real provider call tried |
+| Compare & ask | Flashcards and quiz | `/pdf-to-flashcards` | 🟡 new 11 Nov, fake-provider tests in Node and in a browser; no real provider call tried |
+| Compare & ask | Pull data into Excel | `/extract-data-from-pdf` | 🟡 new 11 Nov, fake-provider tests in Node and in a browser; no real provider call tried |
 | Compare & ask | Ask your PDF | `/chat-with-pdf` | 🟡 key-missing path only; no provider call tried |
 | Privacy & cleanup | Add a password | `/password-protect-pdf` | ✅ new 9 Nov, Node and browser tests |
 | Privacy & cleanup | Remove a password | `/unlock-pdf` | ✅ new 9 Nov, Node and browser tests |
@@ -127,10 +130,10 @@ Known limits (stated on each tool page): the Office conversions run in the brows
 Nothing is queued: every announced tool is built. Ideas on the list (not promises): more OCR languages (needs larger fonts), closer Word/Excel/PowerPoint conversions, Android and iPhone apps.
 
 ## How the checks were done
-- `npm run test:engine`: 169 checks in Node: 73 on the PDF engine, signing geometry and every non-canvas tool, 70 on the Office and web conversions (Word, HTML, Excel, PowerPoint, PDF to Word, PDF to Excel) using hand-built files read back with pdf.js, and 26 on the picture tools (extraction is checked pixel for pixel and byte for byte; the PowerPoint writer is read back by the PowerPoint to PDF reader).
-- `npm run audit`: crawler-style audit of the built site (85 pages, 78 indexable). All checks pass.
+- `npm run test:engine`: 226 checks in Node: 73 on the PDF engine, signing geometry and every non-canvas tool, 70 on the Office and web conversions (Word, HTML, Excel, PowerPoint, PDF to Word, PDF to Excel) using hand-built files read back with pdf.js, and 26 on the picture tools (extraction is checked pixel for pixel and byte for byte; the PowerPoint writer is read back by the PowerPoint to PDF reader), and 57 on the AI tools against a fake provider (what is sent and to which host, the page and size limits, partial results when the provider fails part-way, JSON parsing, the workbook and CSV that come out).
+- `npm run audit`: crawler-style audit of the built site (91 pages, 84 indexable). All checks pass.
 - `scripts/e2e-smoke.js` (headless Chromium via Playwright): 28 checks: crawler view with JavaScript off, hydration, no layout shift or theme flash, the PDF engine loads only after interaction, navigation, palette, a real merge, saved theme, phone drawer.
-- `scripts/e2e-tools.js`: 85 checks in a real browser (13 new for the picture tools and PDF to PowerPoint on 11 Nov), including the older tools (Photos to PDF, Scan to PDF, Grayscale, Redact, Compare, Logo stamp) and a check that the Content-Security-Policy blocks an injected script: password protect and unlock, draw/type/upload a signature and drag it (position read back from the downloaded PDF, normal and rotated page), fill a form, OCR of a scan and of a picture (searchable PDF re-read by the site's own text tool, rotated page), and every conversion with the downloads opened and checked.
+- `scripts/e2e-tools.js`: 96 checks in a real browser (13 for the picture tools and PDF to PowerPoint, 11 for the AI tools with the provider URL intercepted, on 11 Nov), including the older tools (Photos to PDF, Scan to PDF, Grayscale, Redact, Compare, Logo stamp) and a check that the Content-Security-Policy blocks an injected script: password protect and unlock, draw/type/upload a signature and drag it (position read back from the downloaded PDF, normal and rotated page), fill a form, OCR of a scan and of a picture (searchable PDF re-read by the site's own text tool, rotated page), and every conversion with the downloads opened and checked.
 - Both browser suites also ran against the live site on 2026-11-09: 57/57 and 28/28. Every one of the 43 tool URLs answers 200 and is in the sitemap; the old URLs redirect.
 - `npm run typecheck`: clean. All of the above run on every pull request in CI.
 - Visual passes in Chromium (light and dark, phone and desktop): signing screen, converted Word, HTML, Excel and PowerPoint output rendered and looked at.

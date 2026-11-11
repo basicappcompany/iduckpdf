@@ -45,7 +45,7 @@ export default function Settings() {
       <Card style={{ gap: 14 }}>
         <T v="h2">AI key (optional)</T>
         <T muted>
-          “Summarise with AI” and “Ask your PDF” use a key you provide. It is saved only in this browser and sent only to the provider you pick. It is never sent to iDuckPDF. Use a key with a spending limit, and delete it on shared computers.
+          The AI tools (summarise, ask, translate, flashcards and quiz, and pull data into Excel) use a key you provide. It is saved only in this browser and sent only to the provider you pick. It is never sent to iDuckPDF. Use a key with a spending limit, and delete it on shared computers.
         </T>
         <Field label="Provider">
           <Choice options={Object.entries(AI_DEFAULTS).map(([value, v]) => ({ value, label: v.label }))} value={provider} onChange={(v) => { setProvider(v as AiConfig['provider']); setSaved(null); }} />
