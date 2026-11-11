@@ -11,7 +11,7 @@ export const SITE = {
   // TODO(docs/TODO.md): replace with the real inbox, or with a serverless endpoint.
   feedbackEmail: 'hello@iduckpdf.com',
   updated: '2026-11-09', // bump when content changes; used in sitemap, schema and "last updated" lines
-  legalUpdated: '2026-11-09', // bump when the privacy policy or terms change
+  legalUpdated: '2026-11-12', // bump when the privacy policy or terms change
   ogImage: '/og.png',
 };
 
@@ -20,7 +20,7 @@ export const DONATE = {
   // The serverless function in /functions/api/donate.ts creates the checkout session.
   endpoint: '/api/donate',
   enabled: false, // flip to true after the Dodo keys are configured on the host
-  presets: [3, 5, 10, 25],
+  presets: [5, 10, 25, 50, 100],
   currency: 'USD',
 };
 

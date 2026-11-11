@@ -9,21 +9,22 @@ import { Seo } from '../lib/seo';
 export default function Donate() {
   const { t } = useTheme();
   const { thanks } = useLocalSearchParams<{ thanks?: string }>();
-  const [amount, setAmount] = useState<number>(DONATE.presets[1]);
+  const [amount, setAmount] = useState<number>(DONATE.presets[0]);
   const [custom, setCustom] = useState('');
+  const [monthly, setMonthly] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ tone: 'info' | 'error'; text: string } | null>(null);
 
   const value = custom.trim() ? Number(custom) : amount;
-  const valid = Number.isFinite(value) && value >= 1 && value <= 500;
+  const valid = Number.isFinite(value) && value >= 1 && value <= 500 && (!monthly || Number.isInteger(value)); // monthly tips are whole dollars
 
   const go = async () => {
-    if (!valid) return setMsg({ tone: 'error', text: 'Please choose an amount between $1 and $500.' });
+    if (!valid) return setMsg({ tone: 'error', text: monthly ? 'Please choose a whole number of dollars between $1 and $500.' : 'Please choose an amount between $1 and $500.' });
     if (!DONATE.enabled) return setMsg({ tone: 'info', text: 'Tips are not switched on yet, but thank you for the thought. It really means a lot. 💛' });
     setBusy(true);
     setMsg(null);
     try {
-      const res = await fetch(DONATE.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: value }) });
+      const res = await fetch(DONATE.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: value, monthly }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.url) throw new Error(data.error || 'Could not start the checkout.');
       if (Platform.OS === 'web') window.location.assign(data.url);
@@ -53,6 +54,12 @@ export default function Donate() {
       ) : null}
 
       <Card style={{ gap: 16 }}>
+        <Field label="How often?">
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+            <Chip label="One time" on={!monthly} onPress={() => setMonthly(false)} />
+            <Chip label="Every month" on={monthly} onPress={() => setMonthly(true)} />
+          </View>
+        </Field>
         <Field label="Choose an amount (USD)">
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
             {DONATE.presets.map((p) => (
@@ -60,13 +67,13 @@ export default function Donate() {
             ))}
           </View>
         </Field>
-        <Field label="Or type your own" hint="Between $1 and $500.">
+        <Field label="Or type your own" hint={monthly ? 'A whole number between $1 and $500.' : 'Between $1 and $500.'}>
           <TextField value={custom} onChange={(v) => setCustom(v.replace(/[^0-9.]/g, ''))} placeholder="e.g. 7" numeric />
         </Field>
-        <Btn label={busy ? 'Opening checkout…' : `Donate ${valid ? '$' + value : ''}`.trim()} icon="💛" onPress={go} disabled={busy} />
+        <Btn label={busy ? 'Opening checkout…' : `Donate ${valid ? '$' + value : ''}${valid && monthly ? ' a month' : ''}`.trim()} icon="💛" onPress={go} disabled={busy} />
         {msg ? <Banner tone={msg.tone === 'error' ? 'error' : 'warn'}>{msg.text}</Banner> : null}
         <T v="small" muted>
-          Payments are handled by Dodo Payments, who act as the seller of record. You will see their secure checkout page. We never see your card details.
+          Payments are handled by Dodo Payments, who act as the seller of record. You will see their secure checkout page. We never see your card details.{monthly ? ' A monthly tip renews every month until you cancel it, and you can cancel at any time in Dodo’s customer portal.' : ''}
         </T>
       </Card>
 
