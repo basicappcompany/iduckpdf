@@ -8,6 +8,8 @@
  * Needed environment variables (see docs/TODO.md):
  *   DODO_PAYMENTS_API_KEY       secret API key (test key first!)
  *   DODO_DONATION_PRODUCT_ID    id of a one-time, Pay-What-You-Want product (pdt_...)
+ *   DODO_MONTHLY_PRODUCT_ID     id of a $1-per-month subscription product (pdt_...). A monthly tip of $N is this product with
+ *                               quantity N, so one product covers every amount. Optional: without it, monthly tips answer 503.
  *   DODO_API_BASE               optional. https://test.dodopayments.com (default) or the live base URL
  *   SITE_URL                    optional. Where Dodo sends people after paying. Default https://iduckpdf.com
  *
@@ -17,6 +19,7 @@
 type Env = {
   DODO_PAYMENTS_API_KEY?: string;
   DODO_DONATION_PRODUCT_ID?: string;
+  DODO_MONTHLY_PRODUCT_ID?: string;
   DODO_API_BASE?: string;
   SITE_URL?: string;
 };
@@ -30,17 +33,27 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
   }
 
   let amount = NaN;
+  let monthly = false;
   try {
-    const body = (await request.json()) as { amount?: unknown };
+    const body = (await request.json()) as { amount?: unknown; monthly?: unknown };
     amount = Number(body.amount);
+    monthly = body.monthly === true;
   } catch {
     return json({ error: 'Invalid request.' }, 400);
   }
-  // major units (dollars) in, whole-dollar amounts between 1 and 500
+  // major units (dollars) in, between 1 and 500
   if (!Number.isFinite(amount) || amount < 1 || amount > 500) {
     return json({ error: 'Please choose an amount between 1 and 500.' }, 400);
   }
+  if (monthly) {
+    if (!env.DODO_MONTHLY_PRODUCT_ID) return json({ error: 'Monthly tips are not switched on yet.' }, 503);
+    // the monthly product costs 1 per month, so the amount is its quantity: whole dollars only
+    if (!Number.isInteger(amount)) return json({ error: 'Monthly tips must be a whole number of dollars.' }, 400);
+  }
   const cents = Math.round(amount * 100);
+  const cartItem = monthly
+    ? { product_id: env.DODO_MONTHLY_PRODUCT_ID, quantity: amount }
+    : { product_id: env.DODO_DONATION_PRODUCT_ID, quantity: 1, amount: cents };
 
   const base = (env.DODO_API_BASE || 'https://test.dodopayments.com').replace(/\/$/, '');
   const site = (env.SITE_URL || 'https://iduckpdf.com').replace(/\/$/, '');
@@ -51,9 +64,9 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
       method: 'POST',
       headers: { Authorization: `Bearer ${env.DODO_PAYMENTS_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        product_cart: [{ product_id: env.DODO_DONATION_PRODUCT_ID, quantity: 1, amount: cents }],
+        product_cart: [cartItem],
         return_url: `${site}/donate?thanks=1`,
-        metadata: { source: 'iduckpdf-donate' },
+        metadata: { source: 'iduckpdf-donate', kind: monthly ? 'monthly' : 'one-time' },
       }),
     });
   } catch {

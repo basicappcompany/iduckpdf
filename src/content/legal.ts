@@ -106,6 +106,7 @@ export const TERMS: LegalDoc = {
       h: 'Tips and refunds',
       p: [
         'Tips are optional, voluntary payments that support hosting and development. They do not buy a product, a licence, support or any feature, because everything on the site is free either way. Payments are processed by Dodo Payments as the seller of record, and their terms apply to the transaction.',
+        'A tip can be one time or monthly. A monthly tip renews every month until you cancel it, and you can cancel at any time yourself in the customer portal run by Dodo Payments, which stops future payments. Cancelling does not refund a payment that has already been taken.',
         'If you tipped by mistake or in the wrong amount, email us within 14 days of the payment with the details and we will arrange a refund through the payment provider.',
       ],
     },

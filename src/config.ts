@@ -11,7 +11,7 @@ export const SITE = {
   // TODO(docs/TODO.md): replace with the real inbox, or with a serverless endpoint.
   feedbackEmail: 'hello@iduckpdf.com',
   updated: '2026-11-09', // bump when content changes; used in sitemap, schema and "last updated" lines
-  legalUpdated: '2026-11-09', // bump when the privacy policy or terms change
+  legalUpdated: '2026-11-12', // bump when the privacy policy or terms change
   ogImage: '/og.png',
 };
 
