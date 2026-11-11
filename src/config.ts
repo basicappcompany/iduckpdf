@@ -20,7 +20,7 @@ export const DONATE = {
   // The serverless function in /functions/api/donate.ts creates the checkout session.
   endpoint: '/api/donate',
   enabled: false, // flip to true after the Dodo keys are configured on the host
-  presets: [3, 5, 10, 25],
+  presets: [5, 10, 25, 50, 100],
   currency: 'USD',
 };
 

@@ -9,7 +9,7 @@ import { Seo } from '../lib/seo';
 export default function Donate() {
   const { t } = useTheme();
   const { thanks } = useLocalSearchParams<{ thanks?: string }>();
-  const [amount, setAmount] = useState<number>(DONATE.presets[1]);
+  const [amount, setAmount] = useState<number>(DONATE.presets[0]);
   const [custom, setCustom] = useState('');
   const [monthly, setMonthly] = useState(false);
   const [busy, setBusy] = useState(false);
