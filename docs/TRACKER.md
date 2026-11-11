@@ -39,7 +39,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; a Gmail filter keeps it out of Spam (first test landed in Spam); fresh inbox test pending; replying from it is TODO §1 |
 | Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
 | Google Search Console | ✅ | verified Domain property, sitemap submitted; indexing requested on 10 Nov for the 8 key URLs (Google may take days to list them) |
-| Bing Webmaster Tools | ✅ | imported from Search Console 10 Nov; sitemap submitted (Processing); data can take up to 48 h |
+| Bing Webmaster Tools | ✅ | imported from Search Console 10 Nov; sitemap read successfully on 11 Nov, 71 URLs discovered (indexing itself still to follow) |
 
 ## SEO & GEO (search engines and AI assistants)
 | Item | Status | Notes |

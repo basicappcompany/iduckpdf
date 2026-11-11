@@ -254,7 +254,7 @@
    DATA. Edit here. States: done | progress | todo | waiting | later.  Owners: me | you | both | external | none.
    "me" = I can do it with no input. "you" = only you can. "both" = I do the mechanics, you sign in / approve / supply a secret.
    =================================================================================================================== */
-const VERIFIED = "10 Nov 2026 (live health check 18/18; browser suites passed on the final build)";
+const VERIFIED = "11 Nov 2026 (live health check 19/19; Bing sitemap read, 71 URLs; browser suites passed on the final build)";
 const REPO = "https://github.com/basicappcompany/iduckpdf";
 
 /* GENERATED:TOOLS:START (scripts/gen-status.ts: do not edit by hand) */
@@ -320,7 +320,7 @@ const PHASES = [
     I("5.6", "Keyword URLs that contain 'pdf', with 301 redirects from the old ones", "done", "none", { when: "9 Nov", note: "`/merge-pdf`, `/ocr-pdf`, `/pdf-to-word`, `/password-protect-pdf`; the hub is `/pdf-tools`. The build fails if any tool slug lacks 'pdf', is duplicated or collides with a route. All 43 tool URLs and the redirects verified live." }),
     I("5.7", "Google Search Console: verified domain, sitemap submitted", "done", "none", { when: "8 Nov", note: "The verification TXT record in Cloudflare DNS must never be deleted." }),
     I("5.8", "Request indexing for the new key URLs", "done", "me", { note: "On 10 Nov Google accepted all eight requests ('Indexing requested'): /pdf-tools, /merge-pdf, /compress-pdf, /split-pdf, /pdf-to-image, /ocr-pdf, /sign-pdf, /pdf-to-word. One failed once with a generic error and worked on retry. Search Console still says the pages are unknown to Google, so it can take days to list them." }),
-    I("5.9", "Bing Webmaster Tools: import from Search Console", "done", "both", { note: "Signed in with Google and imported iduckpdf.com (and leaflockpdf.com) from Search Console on 10 Nov. The import did not carry a sitemap over, so https://iduckpdf.com/sitemap.xml and https://leaflockpdf.com/sitemap.xml were submitted by hand; both show Submitted / Processing. Bing says data can take up to 48 hours to appear. Check the sitemap status and URLs discovered in a couple of days." }),
+    I("5.9", "Bing Webmaster Tools: import from Search Console", "done", "both", { note: "Signed in with Google and imported iduckpdf.com (and leaflockpdf.com) from Search Console on 10 Nov. The import did not carry a sitemap over, so https://iduckpdf.com/sitemap.xml and https://leaflockpdf.com/sitemap.xml were submitted by hand; both show Submitted / Processing. Bing says data can take up to 48 hours to appear. On 11 Nov Bing showed the sitemap as read successfully (Success) with 71 URLs discovered, matching the 71 indexable pages." }),
     I("5.10", "IndexNow pings for Bing, Yandex and others", "done", "me", { note: "A key file (public/<key>.txt, the key is not a secret) proves the site is yours. After each deploy to main, scripts/indexnow.js sends the sitemap URLs to api.indexnow.org, which shares them with Bing, Yandex, Seznam, Naver and others. It skips commits that only touch docs, and a failed ping never fails a deploy. The build audit and the live health check both verify the key file." }),
     I("5.11", "Cloudflare Web Analytics on, to see search and AI referrals", "done", "none", { when: "9 Nov", note: "Figures: Cloudflare dashboard, Analytics and Logs, Web Analytics, iduckpdf." }),
     I("5.12", "Maker or organisation on the About page, plus sameAs links", "todo", "you", { prio: 2, effort: "10 min", decision: true, note: "Search engines and AI assistants trust pages with a real, checkable maker. The operator name is there; add profile links (GitHub, X, LinkedIn, Product Hunt) and I add them to the structured data.", steps: ["Send me the public profile URLs you are happy to list."] }),
@@ -410,6 +410,7 @@ const TIMELINE = [
   ["9 Nov 2026", "Firefox and WebKit (PR #17)", "Both browser suites (28 + 72) pass in Firefox and in WebKit as well as Chromium. WebKit hydrates later, so two tests now wait for the page to settle; no product code changed."],
   ["10 Nov 2026", "Google indexing requests and Bing Webmaster Tools", "Google accepted indexing requests for the 8 key URLs; the site was imported into Bing Webmaster Tools from Search Console and its sitemap submitted (Processing)."],
   ["10 Nov 2026", "IndexNow", "Key file plus a post-deploy ping of the sitemap URLs to Bing and the other IndexNow engines; audited at build time and checked by the live health check."],
+  ["11 Nov 2026", "Bing has read the sitemap", "Bing Webmaster Tools shows https://iduckpdf.com/sitemap.xml as Success with 71 URLs discovered, the same as the 71 indexable pages. Whether those pages are indexed is a separate, slower step."],
   ["9 Nov 2026", "Final production verification", "Both browser suites passed against iduckpdf.com (57/57, 28/28); all 43 tool URLs answer 200; docs, tracker and this page refreshed."],
 ];
 
