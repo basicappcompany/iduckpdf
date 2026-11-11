@@ -398,6 +398,42 @@ export const GUIDES: Guide[] = [
       { q: 'Is the file uploaded?', a: 'No. Everything happens in your browser tab.' },
     ],
   },
+  {
+    slug: 'how-to-extract-images-from-a-pdf',
+    title: 'How to extract images from a PDF',
+    seoTitle: 'How to Extract Images from a PDF (Original Quality)',
+    description: 'Save the photos inside a PDF as separate files without losing quality, and know what to do when a picture will not come out.',
+    tool: 'extract-images',
+    related: ['pdf-to-images', 'compress', 'merge-pdf-images'],
+    intro: 'To extract images from a PDF, add the file to Extract pictures and press the button. JPEGs are copied out exactly as they are stored, so there is no quality loss, and other pictures are saved as PNG.',
+    sections: [
+      { h: 'Extract the pictures', p: ['Open Extract pictures and add your PDF. Leave the pages blank for the whole document, or type a range such as 2-6.', 'The tool skips very small pictures, such as icons and spacers, so you are not buried in junk. Set the minimum to 0 if you want everything.'] },
+      { h: 'Pictures versus pages', p: ['A PDF page can hold stored pictures, text, and vector drawings. Only stored pictures can be extracted. Charts and many logos are drawn with lines and shapes, so they will not appear.', 'To save a chart or a whole page as a picture, use PDF to pictures instead. It draws the page and saves what you see.'] },
+      { h: 'Scanned documents', p: ['A scanned PDF is usually one large picture per page. Extracting gives you those page scans. If you need the words, run Read scans (OCR) instead.'] },
+    ],
+    faq: [
+      { q: 'Why do I get fewer pictures than I expected?', a: 'Vector charts and logos are not stored pictures. Tiny pictures are skipped by default, and some formats (JPEG 2000, scanned-fax, CMYK pixels) cannot be extracted.' },
+      { q: 'Is the PDF uploaded?', a: 'No. Everything runs in your browser.' },
+    ],
+  },
+  {
+    slug: 'how-to-convert-pdf-to-powerpoint',
+    title: 'How to convert a PDF to PowerPoint',
+    seoTitle: 'How to Convert a PDF to PowerPoint (Editable or Exact)',
+    description: 'Turn a PDF into slides, either as exact pictures or with editable text, and learn which to pick.',
+    tool: 'pdf-to-pptx',
+    related: ['pptx-to-pdf', 'pdf-to-word', 'ocr'],
+    intro: 'To convert a PDF to PowerPoint, add the PDF to PDF to PowerPoint, choose Exact look or Editable text, and press Convert. Each page becomes one slide in a .pptx file.',
+    sections: [
+      { h: 'Which option should I choose?', p: ['Choose Exact look when the design matters and you only need to present or add slides around it. Each slide is a sharp picture of the page, so it looks identical, but the words cannot be changed.', 'Choose Editable text when you want to reuse the wording. Every line becomes a text box where it sat on the page. Pictures, shapes and backgrounds are not carried over, so expect to tidy the slides.'] },
+      { h: 'Scans and image-only PDFs', p: ['Editable text needs a text layer. If the result says there is no text, run the PDF through Read scans (OCR) first, then convert the searchable copy. Exact look works on scans as they are.'] },
+      { h: 'Slide size', p: ['The slides take the shape of your first page, so a portrait PDF gives portrait slides. Pages of another size are fitted inside it.'] },
+    ],
+    faq: [
+      { q: 'Can I get editable text and the original look?', a: 'Not in one step. Convert twice and copy what you need, or place the Exact look slide as a background and retype over it.' },
+      { q: 'Is my PDF uploaded?', a: 'No. The conversion runs in your browser.' },
+    ],
+  },
 ];
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug);

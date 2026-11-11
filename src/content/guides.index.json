@@ -118,5 +118,17 @@
   "title": "How to convert a PowerPoint presentation to PDF",
   "description": "Turn a .pptx presentation into a PDF with one page per slide, in your browser. What is reproduced, what is not, and when to use PowerPoint instead.",
   "tool": "pptx-to-pdf"
+ },
+ {
+  "slug": "how-to-extract-images-from-a-pdf",
+  "title": "How to extract images from a PDF",
+  "description": "Save the photos inside a PDF as separate files without losing quality, and know what to do when a picture will not come out.",
+  "tool": "extract-images"
+ },
+ {
+  "slug": "how-to-convert-pdf-to-powerpoint",
+  "title": "How to convert a PDF to PowerPoint",
+  "description": "Turn a PDF into slides, either as exact pictures or with editable text, and learn which to pick.",
+  "tool": "pdf-to-pptx"
  }
 ]

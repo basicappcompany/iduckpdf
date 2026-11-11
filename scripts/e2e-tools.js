@@ -554,6 +554,65 @@ const fillPasswords = (a, b) => async (page) => {
     ok('logo stamp: 3 pages kept, the picture sits inside the first page', logoDoc.getPageCount() === 3 && inside);
   }
 
+  // ---------- picture tools: extract pictures, PDF to PowerPoint, PDF to JPG, JPG to PDF, merge PDFs and pictures ----------
+  {
+    const JSZip4 = require('jszip');
+    const zlib = require('zlib');
+    const crcT = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
+    const crc = (b) => { let c = 0xffffffff; for (const v of b) c = crcT[(c ^ v) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+    const chunk = (t, body) => { const o = Buffer.alloc(12 + body.length); o.writeUInt32BE(body.length, 0); o.write(t, 4, 'latin1'); body.copy(o, 8); o.writeUInt32BE(crc(o.subarray(4, 8 + body.length)), 8 + body.length); return o; };
+    const makePng = (w, h) => {
+      const raw = Buffer.alloc((w * 3 + 1) * h);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * (w * 3 + 1) + 1 + x * 3; raw[i] = x * 4; raw[i + 1] = y * 4; raw[i + 2] = 120; }
+      const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4); ihdr[8] = 8; ihdr[9] = 2;
+      return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]);
+    };
+    const pngPath = path.join(TMP, 'photo.png');
+    fs.writeFileSync(pngPath, makePng(64, 64));
+    const d = await PDFDocument.create();
+    const hf = await d.embedFont(StandardFonts.HelveticaBold);
+    const img = await d.embedPng(makePng(64, 64));
+    const pa = d.addPage([595, 842]);
+    pa.drawText('Annual Report', { x: 50, y: 780, size: 26, font: hf });
+    pa.drawImage(img, { x: 50, y: 500, width: 128, height: 128 });
+    d.addPage([595, 842]).drawText('Second page', { x: 50, y: 780, size: 20, font: hf });
+    const pics = path.join(TMP, 'pics.pdf');
+    fs.writeFileSync(pics, await d.save());
+
+    await useTool(page, '/extract-images-from-pdf', [pics], async () => {}, /Extract pictures/);
+    ok('extract pictures: a PDF with a picture runs in the browser', await done(page));
+    const ex = fs.readFileSync(await download(page));
+    ok('extract pictures: the picture comes out as a PNG file', ex[0] === 0x89 && ex[1] === 0x50);
+    await useTool(page, '/extract-images-from-pdf', [await makePdf('textonly.pdf', 1, 'Words')], async () => {}, /Extract pictures/);
+    ok('extract pictures: a PDF with no pictures gets advice, not a blank result', await errorText(page, /No pictures could be extracted/));
+
+    await useTool(page, '/pdf-to-powerpoint', [pics], async () => {}, /Convert to PowerPoint/);
+    ok('pdf to powerpoint: exact look converts in the browser', await done(page));
+    const pz = await JSZip4.loadAsync(fs.readFileSync(await download(page)));
+    const jpg = await pz.file('ppt/media/image1.jpg').async('uint8array');
+    ok('pdf to powerpoint: exact look gives one picture slide per page', !!pz.file('ppt/slides/slide2.xml') && jpg[0] === 0xff && jpg[1] === 0xd8);
+    await useTool(page, '/pdf-to-powerpoint', [pics], async (p) => { await p.getByText('Editable text (text in boxes)').first().click(); }, /Convert to PowerPoint/);
+    ok('pdf to powerpoint: editable text converts in the browser', await done(page));
+    const tz = await JSZip4.loadAsync(fs.readFileSync(await download(page)));
+    const sx = await tz.file('ppt/slides/slide1.xml').async('string');
+    ok('pdf to powerpoint: editable text puts the words in text boxes', sx.includes('<a:t>Annual Report</a:t>') && !tz.file('ppt/media/image1.jpg'));
+
+    await useTool(page, '/pdf-to-jpg', [pics], async () => {}, /Convert to JPG/);
+    ok('pdf to jpg: a PDF converts in the browser', await done(page));
+    const jz = await JSZip4.loadAsync(fs.readFileSync(await download(page)));
+    const jnames = Object.keys(jz.files);
+    const j0 = await jz.file(jnames[0]).async('uint8array');
+    ok('pdf to jpg: one JPG per page in a ZIP', jnames.length === 2 && jnames.every((n) => n.endsWith('.jpg')) && j0[0] === 0xff && j0[1] === 0xd8, jnames.join(', '));
+
+    await useTool(page, '/jpg-to-pdf', [pngPath], async () => {}, /Make PDF/);
+    ok('jpg to pdf: a picture becomes a PDF in the browser', await done(page));
+    ok('jpg to pdf: the result is a one-page PDF', (await PDFDocument.load(fs.readFileSync(await download(page)))).getPageCount() === 1);
+
+    await useTool(page, '/merge-pdf-and-images', [pics, pngPath], async () => {}, /Merge now/);
+    ok('merge pdf and pictures: a PDF and a picture merge in the browser', await done(page));
+    ok('merge pdf and pictures: 2 PDF pages + 1 picture = 3 pages', (await PDFDocument.load(fs.readFileSync(await download(page)))).getPageCount() === 3);
+  }
+
   // ---------- (more groups are added below as tools ship) ----------
 
   // the Content-Security-Policy is really in force: an injected inline script must be blocked (set by the server from _headers)

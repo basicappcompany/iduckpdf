@@ -1,6 +1,6 @@
 # iDuckPDF
 
-Free PDF tools in the browser: join, cut, arrange, sign, fill in forms, protect, read scans (OCR), convert to and from Word, Excel, PowerPoint and web pages, shrink, clean and compare PDFs. 43 tools, no sign-up, no watermark.
+Free PDF tools in the browser: join, cut, arrange, sign, fill in forms, protect, read scans (OCR), convert to and from Word, Excel, PowerPoint and web pages, shrink, clean and compare PDFs. 48 tools, no sign-up, no watermark.
 Built with **Expo (React Native + react-native-web)**, so one codebase serves the website today and can become the Android / iOS apps later.
 
 - Engines: [`pdf-lib`](https://pdf-lib.js.org) for editing and [`@cantoo/pdf-lib`](https://github.com/cantoo-scribe/pdf-lib) (a fork with AES-256 encryption, loaded only by the password tools), [`pdf.js`](https://mozilla.github.io/pdf.js/) for rendering and text, [`Tesseract.js`](https://tesseract.projectnaptha.com) for OCR, JSZip for ZIP and Office files. A small layout engine (`src/engine/layout.ts`) draws Word, HTML and Excel content into PDF pages.
@@ -16,9 +16,9 @@ npm run export:web           # production build: clean -> tool metadata -> seo f
 npm run audit                # crawler-style SEO audit of dist/ (run after export:web)
 npm run typecheck            # also regenerates src/tools/meta.generated.json and src/content/guides.index.json
 npm run meta                 # regenerate those light indexes and the tool table in docs/status.html (run after editing src/tools/ or src/content/guides.ts)
-npm run test:engine          # 143 Node tests: the PDF engine, signing geometry, and every Office/web conversion
+npm run test:engine          # 169 Node tests: the PDF engine, signing geometry, every Office/web conversion, and the picture tools
 npm run serve:dist           # serve dist/ on http://localhost:8080 (gzip, extensionless pages, 404.html)
-npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 28 site checks + 72 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
+npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 28 site checks + 85 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
 node scripts/health-check.js # live-site health check: every sitemap URL, redirects, headers, canonicals (default https://iduckpdf.com)
 npm run indexnow -- --all # IndexNow: tell Bing and others about the sitemap URLs (CI does this after each deploy to main)
 npm run icons                # regenerate the duck icons and social card (outputs are committed)

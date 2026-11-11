@@ -30,7 +30,7 @@ Code is done; it stays **off** until the steps below are complete.
 - [x] **`iduckpdf.com` is live** (2026-11-08). GoDaddy nameservers now point at Cloudflare (`bob.ns.cloudflare.com`, `deb.ns.cloudflare.com`), the apex and `www` are Pages custom domains, HTTPS works.
 - [x] `www.iduckpdf.com/*` 301-redirects to `https://iduckpdf.com/$1` (Cloudflare Redirect Rule, query string kept; done 2026-11-09). SSL/TLS mode is Full (strict) and Always Use HTTPS is on.
 - [ ] SSL/TLS → set to **Full**, and turn on "Always Use HTTPS" (Cloudflare dashboard).
-- [x] **Automatic deploys are on** (9 Nov): the Cloudflare API token is a GitHub secret. Every pull request builds, tests (143 Node checks), audits and runs the browser tests (28 site + 72 tool checks); merging to `main` deploys. Branch protection would add a hard gate, but GitHub only offers it on private repos with a paid plan or on a public repo.
+- [x] **Automatic deploys are on** (9 Nov): the Cloudflare API token is a GitHub secret. Every pull request builds, tests (169 Node checks), audits and runs the browser tests (28 site + 85 tool checks); merging to `main` deploys. Branch protection would add a hard gate, but GitHub only offers it on private repos with a paid plan or on a public repo.
 - [ ] Manual deploy any time: `npm run export:web`, then `npx wrangler pages deploy dist --project-name iduckpdf --branch main`.
 - [ ] **Lockfile caveat:** this machine's npm uses a private company registry, which writes its URLs into `package-lock.json` when you add packages. GitHub's runners can't reach it. If CI starts failing at `npm ci`, replace those URLs with `https://registry.npmjs.org/` (scoped packages use `.../@scope/name/-/name-x.y.z.tgz`).
 - `functions/` is deployed with the site (Pages Functions); pages are pre-rendered, so no rewrite rule is needed. Unknown URLs get `404.html` with a real 404 status. `public/_headers` sets caching and security headers.
@@ -43,7 +43,7 @@ Code is done; it stays **off** until the steps below are complete.
 - [x] Analytics decided 2026-11-09: keep Cloudflare Web Analytics (cookie-free, page views only). The privacy policy discloses it. Figures: Cloudflare dashboard → Analytics & Logs → Web Analytics → iduckpdf.
 
 ## 5. Still to verify
-All 43 tools are covered by Node tests and by browser tests that also ran against the live site on 2026-11-09 (see `TRACKER.md`). What is left:
+All 48 tools are covered by Node tests and by browser tests. The first 43 also ran against the live site on 2026-11-09; the 5 added on 2026-11-11 (Extract pictures, PDF to PowerPoint, Merge PDFs and pictures, JPG to PDF, PDF to JPG) run against the live site after their first deploy (see `TRACKER.md`). What is left:
 - [ ] Summarise with AI and Ask your PDF with a real key for each provider (OpenAI, Anthropic, Gemini). Only the missing-key path has been tried. Model names in `src/config.ts` → `AI_DEFAULTS` may need updating. *You add a key in Settings; I cannot enter keys.*
 - [ ] Re-run the older browser-only tools once on the live site: Photos to PDF, Scan to PDF, Grayscale, Black out text, Spot the differences, Logo or image stamp. (PDF to pictures, Copy text, Make it smaller, Watermark and Inspect were re-run after the bundle split, and every new tool is covered by `scripts/e2e-tools.js`.) *I can do this.*
 - [x] Firefox and Safari (WebKit): both suites pass in Playwright's Firefox and WebKit builds (`BROWSER=firefox` / `webkit`).

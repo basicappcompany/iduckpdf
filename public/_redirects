@@ -43,4 +43,9 @@
 /tool/pdf-to-excel /pdf-to-excel 301
 /tool/pdf-to-word /pdf-to-word 301
 /tool/pptx-to-pdf /powerpoint-to-pdf 301
+/tool/extract-images /extract-images-from-pdf 301
+/tool/pdf-to-pptx /pdf-to-powerpoint 301
+/tool/merge-pdf-images /merge-pdf-and-images 301
+/tool/jpg-to-pdf /jpg-to-pdf 301
+/tool/pdf-to-jpg /pdf-to-jpg 301
 /tool/* /pdf-tools 301
