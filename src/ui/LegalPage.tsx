@@ -5,12 +5,16 @@ import { SITE } from '../config';
 import { Btn, Card, Screen, T } from './kit';
 import { Seo } from '../lib/seo';
 import { SiteFooter } from './SiteFooter';
+import { useLang, useT } from '../i18n/react';
 
 export function LegalPage({ path, doc }: { path: string; doc: LegalDoc }) {
+  const tr = useT();
+  const lang = useLang();
   return (
     <Screen narrow>
       <Seo path={path} />
-      <T v="small" muted>Last updated {SITE.legalUpdated}</T>
+      {lang !== 'en' ? <T v="small" muted>{tr('This legal text is available in English only.')}</T> : null}
+      <T v="small" muted>{tr('Last updated {date}.', { date: SITE.legalUpdated })}</T>
       <T v="h1">{doc.title}</T>
       <Card hot>
         <T color="#17160f" style={{ fontWeight: '700' }}>{doc.intro}</T>
@@ -22,15 +26,15 @@ export function LegalPage({ path, doc }: { path: string; doc: LegalDoc }) {
         </View>
       ))}
       <Card style={{ gap: 6 }}>
-        <T v="h3">Contact {SITE.operator}</T>
+        <T v="h3">{tr('Contact {name}', { name: SITE.operator })}</T>
         <T muted>
           <a href={`mailto:${SITE.feedbackEmail}`} style={{ color: 'inherit', fontWeight: 700 }}>{SITE.feedbackEmail}</a>
         </T>
       </Card>
       <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-        <Btn label="Privacy policy" variant="ghost" small to="/privacy" />
-        <Btn label="Terms of use" variant="ghost" small to="/terms" />
-        <Btn label="About" variant="ghost" small to="/about" />
+        <Btn label={tr('Privacy policy')} variant="ghost" small to="/privacy" />
+        <Btn label={tr('Terms of use')} variant="ghost" small to="/terms" />
+        <Btn label={tr('About')} variant="ghost" small to="/about" />
       </View>
       <SiteFooter />
     </Screen>

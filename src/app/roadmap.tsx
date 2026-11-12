@@ -7,45 +7,47 @@ import { toolPath } from '../content/toolSlugs';
 import { Btn, Card, Chip, Hl, Screen, T } from '../ui/kit';
 import { Seo } from '../lib/seo';
 import { SiteFooter } from '../ui/SiteFooter';
+import { useT } from '../i18n/react';
 
 // Ideas, not promises. Everything announced earlier is built.
-const IDEAS = [
-  { title: 'More OCR languages', blurb: 'Arabic, Hindi, Chinese, Japanese and other scripts need larger fonts to write the invisible text layer.' },
-  { title: 'Closer Word, Excel and PowerPoint conversions', blurb: 'Headers and footers, text boxes, charts and exact fonts are not reproduced yet.' },
-  { title: 'Android and iPhone apps', blurb: 'The site is built with React Native (via Expo), so the same code can become apps. Tools that draw pages need extra mobile work first.' },
-];
 
 export default function Roadmap() {
   const { t } = useTheme();
+  const tr = useT();
+  const IDEAS = [
+    { title: tr('More OCR languages'), blurb: tr('Arabic, Hindi, Chinese, Japanese and other scripts need larger fonts to write the invisible text layer.') },
+    { title: tr('Closer Word, Excel and PowerPoint conversions'), blurb: tr('Headers and footers, text boxes, charts and exact fonts are not reproduced yet.') },
+    { title: tr('Android and iPhone apps'), blurb: tr('The site is built with React Native (via Expo), so the same code can become apps. Tools that draw pages need extra mobile work first.') },
+  ];
   const added = NEW_TOOL_IDS.map((id) => byId(id)).filter(Boolean);
   return (
     <Screen narrow>
       <Seo path="/roadmap" />
       <T v="h1">
-        What’s <Hl>next</Hl>
+        {tr('What’s')} <Hl>{tr('next')}</Hl>
       </T>
       <T muted>
-        {SOON.length ? 'An honest list of what exists, and what is coming.' : 'Every PDF tool we announced is built. Here is what is live, what was added recently, and what we are thinking about next.'} Tell us what matters most and we will build that first.
+        {SOON.length ? tr('An honest list of what exists, and what is coming.') : tr('Every PDF tool we announced is built. Here is what is live, what was added recently, and what we are thinking about next.')} {tr('Tell us what matters most and we will build that first.')}
       </T>
 
       <Card hot>
-        <T v="h3" color={t.duckInk}>Already live: {READY.length} tools</T>
+        <T v="h3" color={t.duckInk}>{tr('Already live: {n} tools', { n: READY.length })}</T>
         <T color={t.duckInk} style={{ marginTop: 4 }}>
-          {VISIBLE_CATEGORIES.map((c) => `${c.name} (${inCategory(c.id).length})`).join(' · ')}
+          {VISIBLE_CATEGORIES.map((c) => `${tr(c.name)} (${inCategory(c.id).length})`).join(' · ')}
         </T>
       </Card>
 
       <View style={{ gap: 10 }}>
-        <T v="h2">Recently added</T>
-        <T muted>All of these run in your browser, so your files are not uploaded.</T>
+        <T v="h2">{tr('Recently added')}</T>
+        <T muted>{tr('All of these run in your browser, so your files are not uploaded.')}</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {added.map((tl) => <Chip key={tl!.id} label={tl!.name} icon={tl!.icon} to={toolPath(tl!.id)} />)}
+          {added.map((tl) => <Chip key={tl!.id} label={tr(tl!.name)} icon={tl!.icon} to={toolPath(tl!.id)} />)}
         </View>
       </View>
 
       <View style={{ gap: 10 }}>
-        <T v="h2">Ideas on our list</T>
-        <T muted>Nothing here is promised. Requests decide what moves up.</T>
+        <T v="h2">{tr('Ideas on our list')}</T>
+        <T muted>{tr('Nothing here is promised. Requests decide what moves up.')}</T>
         {IDEAS.map((i) => (
           <Card key={i.title} style={{ gap: 4 }}>
             <T v="h3">{i.title}</T>
@@ -55,8 +57,8 @@ export default function Roadmap() {
       </View>
 
       <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-        <Btn label="Request a feature" icon="💡" to="/request" />
-        <Btn label="Send feedback" variant="ghost" to="/feedback" />
+        <Btn label={tr('Request a feature')} icon="💡" to="/request" />
+        <Btn label={tr('Send feedback')} variant="ghost" to="/feedback" />
       </View>
       <SiteFooter />
     </Screen>

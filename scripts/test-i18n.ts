@@ -4,6 +4,8 @@
  * so nothing here depends on a real translation existing.
  * Run:  npx tsx scripts/test-i18n.ts
  */
+import { existsSync } from 'fs';
+import { join } from 'path';
 import { DEFAULT_LANG, LOCALES, ENGLISH_ONLY_PATHS, isLang, localeOf, localePath, localizeLink, splitPath } from '../src/i18n/locales';
 import { setCatalog, translate, type Catalog } from '../src/i18n/catalog';
 import { abs, headHtml, seoForPath } from '../src/lib/seoData';
@@ -26,7 +28,10 @@ function check(name: string, ok: boolean, extra = '') {
 check('ten languages, English first, codes unique', LOCALES.length === 10 && LOCALES[0].code === 'en' && new Set(LOCALES.map((l) => l.code)).size === 10);
 check('the nine target languages are the leaflockpdf list', ['bn', 'de', 'es', 'fr', 'hi', 'id', 'pt-br', 'ru', 'tr'].every(isLang));
 check('Brazilian Portuguese is hreflang pt-BR with an og locale', localeOf('pt-br').hreflang === 'pt-BR' && localeOf('pt-br').og === 'pt_BR');
-check('no language is live before its catalog is complete', LOCALES.filter((l) => l.live).map((l) => l.code).join() === 'en');
+check('a language is live only when its catalog file exists', LOCALES.filter((l) => l.live && l.code !== 'en').every((l) => existsSync(join(__dirname, '..', 'src', 'i18n', 'catalogs', l.code + '.json'))));
+// the SEO tests below describe a site where only English is live, whatever the real languages are; the real state is put back at the end
+const realLive = LOCALES.map((l) => l.live);
+LOCALES.forEach((l) => { if (l.code !== 'en') l.live = false; });
 
 check('splitPath: English path stays English', JSON.stringify(splitPath('/merge-pdf')) === '{"lang":"en","path":"/merge-pdf"}');
 check('splitPath: /es/merge-pdf', JSON.stringify(splitPath('/es/merge-pdf')) === '{"lang":"es","path":"/merge-pdf"}');
@@ -38,7 +43,7 @@ check('localizeLink prefixes internal paths only', localizeLink('/about', 'de') 
 
 /* ---- translate ---- */
 const spanish = (): Catalog => ({
-  ui: { Home: 'Inicio', 'How to use {name}': 'Cómo usar {name}', 'Merge PDF': 'Unir PDF' },
+  ui: { Home: 'Inicio', 'How to use {name}': 'Cómo usar {name}', 'Merge PDFs': 'Unir PDF' },
   seo: { '/': { title: 'iDuckPDF: herramientas PDF gratis en tu navegador', description: 'Une, divide, comprime y edita PDF gratis en tu navegador, sin registrarte y sin marcas de agua. Tus archivos no salen de tu dispositivo.' } },
   tools: { merge: { name: 'Unir PDF', title: 'Unir archivos PDF gratis', description: 'Combina varios PDF en un solo archivo desde tu navegador. Ordénalos con las flechas, sin registro y sin marca de agua en cualquier dispositivo.', answer: 'Añade dos o más archivos, ordénalos y pulsa Unir.', steps: ['Añade tus PDF.', 'Ordénalos.', 'Pulsa Unir.'], uses: ['Unir contratos'], faq: [{ q: '¿Cuántos PDF puedo unir?', a: 'Tantos como permita tu dispositivo.' }] } },
   guides: {},
@@ -47,6 +52,12 @@ const spanish = (): Catalog => ({
 setCatalog('es', spanish());
 const es = localeOf('es');
 check('translate: known string, missing string, placeholder, English', translate('es', 'Home') === 'Inicio' && translate('es', 'Unknown text') === 'Unknown text' && translate('es', 'How to use {name}', { name: 'X' }) === 'Cómo usar X' && translate('en', 'Home') === 'Home');
+
+// run-time messages built by the tools ("Rotated 3 pages.") are translated by pattern, with singular and plural forms
+setCatalog('es', { ...spanish(), patterns: [['^Rotated (\\d+) pages?\\.$', '{p1:Página girada|Páginas giradas}: $1.'], ['^Page (\\d+) of (\\d+)$', 'Página $1 de $2']] });
+check('patterns: plural and singular forms', translate('es', 'Rotated 3 pages.') === 'Páginas giradas: 3.' && translate('es', 'Rotated 1 page.') === 'Página girada: 1.' && translate('es', 'Page 2 of 9') === 'Página 2 de 9');
+check('patterns: an unknown message stays English', translate('es', 'Something else entirely') === 'Something else entirely');
+setCatalog('es', spanish());
 
 /* ---- SEO with only English live ---- */
 const en0 = seoForPath('/merge-pdf');
@@ -98,6 +109,7 @@ check('the checker insists on the same placeholders', problemsFor('es', wrongPla
 es.live = false;
 setCatalog('es', null);
 check('switching a language off again restores the English-only output', seoForPath('/merge-pdf').alternates.length === 0 && toolPath('merge') === '/merge-pdf' && DEFAULT_LANG === 'en');
-
+LOCALES.forEach((l, i) => (l.live = realLive[i]));
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);
+process.exit(0);

@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useHref } from '../i18n/react';
+import { useHref, useT } from '../i18n/react';
 import { useTheme } from './theme';
 import { READY, searchTools } from '../tools';
 import { toolPath } from '../content/toolSlugs';
@@ -63,6 +63,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
   const { t, toggle } = useTheme();
   const router = useRouter();
   const href = useHref();
+  const tr = useT();
   const [q, setQ] = useState('');
   const [sel, setSel] = useState(0);
 
@@ -83,18 +84,18 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
 
   const items: Item[] = useMemo(() => {
     const query = q.trim().toLowerCase();
-    const pages: Item[] = PAGES.filter((p) => !query || (p.label + ' ' + p.kw).toLowerCase().includes(query)).map((p) => ({ id: 'p' + p.to, label: p.label, icon: p.icon, hint: 'Page', group: 'Pages' as const, run: go(p.to) }));
-    const actions: Item[] = [{ id: 'theme', label: 'Switch light / dark', icon: '🌗', hint: 'Action', group: 'Actions' as const, run: () => { onClose(); toggle(); } }].filter((a) => !query || 'theme dark light mode night switch'.includes(query) || a.label.toLowerCase().includes(query));
+    const pages: Item[] = PAGES.filter((p) => !query || (p.label + ' ' + tr(p.label) + ' ' + p.kw).toLowerCase().includes(query)).map((p) => ({ id: 'p' + p.to, label: tr(p.label), icon: p.icon, hint: tr('Page'), group: 'Pages' as const, run: go(p.to) }));
+    const actions: Item[] = [{ id: 'theme', label: tr('Switch light / dark'), icon: '🌗', hint: tr('Action'), group: 'Actions' as const, run: () => { onClose(); toggle(); } }].filter((a) => !query || 'theme dark light mode night switch'.includes(query) || a.label.toLowerCase().includes(query) || 'Switch light / dark'.toLowerCase().includes(query));
     const tools: Item[] = (query ? searchTools(query, 8) : READY.slice(0, 8)).map((tl) => ({
       id: 't' + tl.id,
-      label: tl.name,
+      label: tr(tl.name),
       icon: tl.icon,
-      hint: tl.status === 'ready' ? 'Tool' : 'Coming soon',
+      hint: tl.status === 'ready' ? tr('Tool') : tr('Coming soon'),
       group: 'Tools' as const,
       run: go(toolPath(tl.id)),
     }));
     return [...tools, ...pages, ...actions].slice(0, 14);
-  }, [q, go, onClose, toggle]);
+  }, [q, go, onClose, toggle, tr]);
 
   useEffect(() => setSel((s) => Math.min(s, Math.max(0, items.length - 1))), [items.length]);
 
@@ -112,7 +113,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
   let lastGroup = '';
   return (
     <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose}>
-      <Pressable accessibilityLabel="Close search" onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', paddingTop: '11%', paddingHorizontal: 14 }}>
+      <Pressable accessibilityLabel={tr('Close search')} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', paddingTop: '11%', paddingHorizontal: 14 }}>
         <Pressable onPress={() => {}} style={[{ width: '100%', maxWidth: 640, backgroundColor: t.card, borderWidth: 3, borderColor: t.line, borderRadius: 18, overflow: 'hidden' }, { boxShadow: '8px 8px 0px #000' } as any]}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 18, paddingVertical: 14, borderBottomWidth: 2, borderColor: t.line }}>
             <Text style={{ fontSize: 18 }}>🔍</Text>
@@ -125,7 +126,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
               }}
               onKeyPress={onKey}
               onSubmitEditing={() => items[sel]?.run()}
-              placeholder="Search tools, pages and actions…"
+              placeholder={tr('Search tools, pages and actions…')}
               placeholderTextColor={t.muted}
               style={[{ flex: 1, fontSize: 18, color: t.ink }, { outlineStyle: 'none' } as any]}
             />
@@ -133,7 +134,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
           </View>
           <ScrollView style={{ maxHeight: 420 }} keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 8 }}>
             {items.length === 0 ? (
-              <Text style={{ color: t.muted, padding: 16 }}>Nothing matches “{q}”. Try the helper from the sidebar.</Text>
+              <Text style={{ color: t.muted, padding: 16 }}>{tr('Nothing matches “{q}”. Try the helper from the sidebar.', { q })}</Text>
             ) : (
               items.map((it, i) => {
                 const header = it.group !== lastGroup ? it.group : '';
@@ -141,7 +142,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
                 const on = i === sel;
                 return (
                   <View key={it.id}>
-                    {header ? <Text style={{ color: t.muted, fontSize: 11, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 10, paddingTop: 8, paddingBottom: 3 }}>{header}</Text> : null}
+                    {header ? <Text style={{ color: t.muted, fontSize: 11, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 10, paddingTop: 8, paddingBottom: 3 }}>{tr(header)}</Text> : null}
                     <Pressable
                       onPress={it.run}
                       onHoverIn={() => setSel(i)}

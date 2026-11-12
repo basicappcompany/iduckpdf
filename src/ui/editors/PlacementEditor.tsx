@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../../lib/theme';
+import { useT } from '../../i18n/react';
 import type { PickedFile, Placement } from '../../engine/types';
 import { openPdfjs, renderPage } from '../../engine/render';
 
@@ -12,6 +13,7 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 
 export function PlacementEditor({ label, hint, file, signature, value, onChange }: { label: string; hint?: string; file?: PickedFile; signature: string; value: Placement; onChange: (v: Placement) => void }) {
   const { t } = useTheme();
+  const tr = useT();
   const [pages, setPages] = useState(0);
   const [img, setImg] = useState('');
   const [aspect, setAspect] = useState(0.707);
@@ -39,7 +41,7 @@ export function PlacementEditor({ label, hint, file, signature, value, onChange 
         doc.current = d;
         setPages(d.numPages);
       } catch (e: any) {
-        if (!dead) setError(e?.message || 'This PDF could not be shown.');
+        if (!dead) setError(e?.message || tr('This PDF could not be shown.'));
       }
     })();
     return () => { dead = true; };
@@ -60,7 +62,7 @@ export function PlacementEditor({ label, hint, file, signature, value, onChange 
         setAspect(r.canvas.width / r.canvas.height);
         setImg(r.canvas.toDataURL('image/jpeg', 0.85));
       } catch (e: any) {
-        if (!dead) setError(e?.message || 'This page could not be shown.');
+        if (!dead) setError(e?.message || tr('This page could not be shown.'));
       } finally {
         if (!dead) setBusy(false);
       }
@@ -129,26 +131,26 @@ export function PlacementEditor({ label, hint, file, signature, value, onChange 
     <div style={{ display: 'grid', gap: 10, fontFamily: FONT }}>
       <div style={{ color: t.ink, fontWeight: 800, fontSize: 14 }}>{label}</div>
       {hint ? <div style={{ color: t.muted, fontSize: 13 }}>{hint}</div> : null}
-      {!file ? <div style={{ color: t.muted, fontSize: 14 }}>Add your PDF above to see its pages here.</div> : null}
+      {!file ? <div style={{ color: t.muted, fontSize: 14 }}>{tr('Add your PDF above to see its pages here.')}</div> : null}
       {error ? <div role="alert" style={{ color: t.danger, fontWeight: 700, fontSize: 14 }}>{error}</div> : null}
       {file && !error ? (
         <>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <button type="button" style={{ ...btn, ...(page <= 1 ? off : null) }} disabled={page <= 1} onClick={() => set({ page: page - 1 })} aria-label="Previous page">‹ Prev</button>
-            <span style={{ color: t.ink, fontWeight: 800, fontSize: 14 }} aria-live="polite">Page {page} of {pages || '…'}</span>
-            <button type="button" style={{ ...btn, ...(page >= pages ? off : null) }} disabled={page >= pages} onClick={() => set({ page: page + 1 })} aria-label="Next page">Next ›</button>
+            <button type="button" style={{ ...btn, ...(page <= 1 ? off : null) }} disabled={page <= 1} onClick={() => set({ page: page - 1 })} aria-label={tr('Previous page')}>‹ {tr('Prev')}</button>
+            <span style={{ color: t.ink, fontWeight: 800, fontSize: 14 }} aria-live="polite">{tr('Page {n} of {total}', { n: page, total: pages || '…' })}</span>
+            <button type="button" style={{ ...btn, ...(page >= pages ? off : null) }} disabled={page >= pages} onClick={() => set({ page: page + 1 })} aria-label={tr('Next page')}>{tr('Next')} ›</button>
             <span style={{ flex: 1 }} />
-            <span role="group" aria-label="Quick positions" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              <button type="button" style={btn} onClick={preset(1, 1)} disabled={!signature}>Bottom right</button>
-              <button type="button" style={btn} onClick={preset(0, 1)} disabled={!signature}>Bottom left</button>
-              <button type="button" style={btn} onClick={preset(0.5, 0.5)} disabled={!signature}>Centre</button>
+            <span role="group" aria-label={tr('Quick positions')} style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <button type="button" style={btn} onClick={preset(1, 1)} disabled={!signature}>{tr('Bottom right')}</button>
+              <button type="button" style={btn} onClick={preset(0, 1)} disabled={!signature}>{tr('Bottom left')}</button>
+              <button type="button" style={btn} onClick={preset(0.5, 0.5)} disabled={!signature}>{tr('Centre')}</button>
             </span>
           </div>
 
           <div ref={box} style={{ position: 'relative', width: '100%', maxWidth: 640, aspectRatio: String(aspect), background: '#fff', border: `3px solid ${t.line}`, borderRadius: 6, overflow: 'hidden', touchAction: 'none', userSelect: 'none' }}>
-            {img ? <img src={img} alt={`Page ${page} of your PDF`} draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} /> : <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: '#666', fontSize: 14 }}>{busy ? 'Loading the page…' : ''}</div>}
+            {img ? <img src={img} alt={tr('Page {n} of your PDF', { n: page })} draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} /> : <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: '#666', fontSize: 14 }}>{busy ? 'Loading the page…' : ''}</div>}
             {signature && img ? (
-              <div role="img" aria-label="Your signature. Drag to move; arrow keys nudge it; plus and minus resize it." tabIndex={0} onPointerDown={onDown('move')} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onKeyDown={onKey}
+              <div role="img" aria-label={tr('Your signature. Drag to move; arrow keys nudge it; plus and minus resize it.')} tabIndex={0} onPointerDown={onDown('move')} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onKeyDown={onKey}
                 style={{ position: 'absolute', left: `${value.x * 100}%`, top: `${value.y * 100}%`, width: `${value.w * 100}%`, cursor: 'grab', outline: `2px dashed ${t.orange}`, outlineOffset: 2, touchAction: 'none' }}>
                 <img src={signature} alt="" draggable={false} style={{ width: '100%', display: 'block', pointerEvents: 'none' }} />
                 <div onPointerDown={onDown('size')} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} aria-hidden="true"
@@ -159,10 +161,10 @@ export function PlacementEditor({ label, hint, file, signature, value, onChange 
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, color: t.ink, fontSize: 14, fontWeight: 700 }}>
             Size
-            <input type="range" min={5} max={80} value={Math.round(value.w * 100)} disabled={!signature} aria-label="Signature size" onChange={(e) => set(fit(value.x, value.y, Number(e.target.value) / 100))} style={{ flex: 1, maxWidth: 320 }} />
+            <input type="range" min={5} max={80} value={Math.round(value.w * 100)} disabled={!signature} aria-label={tr('Signature size')} onChange={(e) => set(fit(value.x, value.y, Number(e.target.value) / 100))} style={{ flex: 1, maxWidth: 320 }} />
             <span style={{ color: t.muted, width: 40 }}>{Math.round(value.w * 100)}%</span>
           </label>
-          {!signature ? <div style={{ color: t.muted, fontSize: 13 }}>Create your signature above, then drag it into place on the page.</div> : null}
+          {!signature ? <div style={{ color: t.muted, fontSize: 13 }}>{tr('Create your signature above, then drag it into place on the page.')}</div> : null}
         </>
       ) : null}
     </div>

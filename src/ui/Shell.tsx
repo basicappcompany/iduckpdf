@@ -164,7 +164,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       {!wide && drawer ? (
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row', zIndex: 50 }}>
           <Sidebar />
-          <Pressable accessibilityLabel="Close menu" onPress={() => setDrawer(false)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
+          <Pressable accessibilityLabel={tr('Close menu')} onPress={() => setDrawer(false)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
         </View>
       ) : null}
     </View>

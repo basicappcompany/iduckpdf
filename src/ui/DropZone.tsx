@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useTheme } from '../lib/theme';
+import { useT } from '../i18n/react';
 import { acceptsFile, pickFiles, wrapFile } from '../engine/io';
 import type { PickedFile } from '../engine/types';
 
@@ -17,6 +18,7 @@ type Props = {
 // Web: a real DOM wrapper so drag-and-drop works.
 export function DropZone({ label, hint, accept, multiple, camera, onFiles, compact }: Props) {
   const { t } = useTheme();
+  const tr = useT();
   const [over, setOver] = useState(false);
   const kind = accept === 'pdf' ? 'PDF' : accept === 'image' ? 'image' : 'file';
   return (
@@ -48,13 +50,13 @@ export function DropZone({ label, hint, accept, multiple, camera, onFiles, compa
         style={{ width: '100%', alignItems: 'center', paddingVertical: compact ? 22 : 36, paddingHorizontal: 16, gap: 6 }}
       >
         <Text style={{ fontSize: compact ? 28 : 38 }}>{accept === 'image' ? '🖼️' : '📄'}</Text>
-        <Text style={{ color: over ? t.duckInk : t.ink, fontWeight: '900', fontSize: 17, textAlign: 'center' }}>{over ? 'Drop it!' : label}</Text>
+        <Text style={{ color: over ? t.duckInk : t.ink, fontWeight: '900', fontSize: 17, textAlign: 'center' }}>{over ? tr('Drop it!') : label}</Text>
         <Text style={{ color: over ? t.duckInk : t.muted, fontSize: 14, textAlign: 'center' }}>
-          Drag {multiple ? 'files' : 'a file'} here, or click to browse{camera ? ' / use the camera' : ''}
+          {multiple ? tr('Drag files here, or click to browse') : tr('Drag a file here, or click to browse')}{camera ? ' / ' + tr('use the camera') : ''}
         </Text>
         {hint ? <Text style={{ color: over ? t.duckInk : t.muted, fontSize: 13, textAlign: 'center' }}>{hint}</Text> : null}
         <View style={{ marginTop: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, backgroundColor: t.duck, paddingHorizontal: 18, paddingVertical: 7 }}>
-          <Text style={{ color: t.duckInk, fontWeight: '900' }}>{multiple ? 'Select files' : 'Select file'}</Text>
+          <Text style={{ color: t.duckInk, fontWeight: '900' }}>{multiple ? tr('Select files') : tr('Select file')}</Text>
         </View>
       </Pressable>
     </div>

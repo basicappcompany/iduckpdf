@@ -6,10 +6,12 @@ import { useTheme } from '../lib/theme';
 import type { ToolDef } from '../tools';
 import { Pill } from './kit';
 import { toolPath } from '../content/toolSlugs';
+import { useT } from '../i18n/react';
 
 export function ToolCard({ tool, compact, badge }: { tool: ToolDef; compact?: boolean; badge?: string }) {
   const { t } = useTheme();
   const nav = useNavPress();
+  const tr = useT();
   return (
     <Anchor to={toolPath(tool.id)}>
       <Pressable
@@ -34,10 +36,10 @@ export function ToolCard({ tool, compact, badge }: { tool: ToolDef; compact?: bo
           <>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <Text style={{ fontSize: compact ? 22 : 28 }}>{tool.icon}</Text>
-              <Text style={{ flex: 1, color: s.hovered ? t.duckInk : t.ink, fontWeight: '900', fontSize: compact ? 15 : 17 }}>{tool.name}</Text>
-              {tool.status === 'soon' ? <Pill>soon</Pill> : badge ? <Pill tone="duck">{badge}</Pill> : null}
+              <Text style={{ flex: 1, color: s.hovered ? t.duckInk : t.ink, fontWeight: '900', fontSize: compact ? 15 : 17 }}>{tr(tool.name)}</Text>
+              {tool.status === 'soon' ? <Pill>{tr('soon')}</Pill> : badge ? <Pill tone="duck">{badge}</Pill> : null}
             </View>
-            {!compact ? <Text style={{ color: s.hovered ? t.duckInk : t.muted, fontSize: 14, lineHeight: 19 }}>{tool.short}</Text> : null}
+            {!compact ? <Text style={{ color: s.hovered ? t.duckInk : t.muted, fontSize: 14, lineHeight: 19 }}>{tr(tool.short)}</Text> : null}
           </>
         )}
       </Pressable>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { GUIDES, guideBySlug } from '../../content/guides';
+import { GUIDES } from '../../content/guides';
+import { guideFor } from '../../i18n/guideContent';
+import { useLang, useT } from '../../i18n/react';
 import { byId } from '../../tools';
 import { toolPath } from '../../content/toolSlugs';
 import { Btn, Card, Chip, Screen, T } from '../../ui/kit';
@@ -15,13 +17,15 @@ export function generateStaticParams() {
 
 export default function GuidePage() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const g = guideBySlug(String(slug));
+  const tr = useT();
+  const lang = useLang();
+  const g = guideFor(lang, String(slug));
   if (!g) {
     return (
       <Screen narrow>
         <Seo path="/guides/not-found" />
-        <T v="h1">We could not find that guide</T>
-        <Btn label="All guides" to="/guides/" />
+        <T v="h1">{tr('We could not find that guide')}</T>
+        <Btn label={tr('All guides')} to="/guides/" />
       </Screen>
     );
   }
@@ -30,14 +34,14 @@ export default function GuidePage() {
   return (
     <Screen narrow>
       <Seo path={path} />
-      <T v="small" muted>Guide · updated {SITE.updated}</T>
+      <T v="small" muted>{tr('Guide · updated {date}', { date: SITE.updated })}</T>
       <T v="h1">{g.title}</T>
       <Card hot>
         <T color="#17160f" style={{ fontWeight: '700' }}>{g.intro}</T>
       </Card>
       {tool ? (
         <View style={{ alignSelf: 'flex-start' }}>
-          <Btn label={`Open ${tool.name}`} icon={tool.icon} to={toolPath(tool.id)} />
+          <Btn label={tr('Open {name}', { name: tr(tool.name) })} icon={tool.icon} to={toolPath(tool.id)} />
         </View>
       ) : null}
       {g.sections.map((s) => (
@@ -47,7 +51,7 @@ export default function GuidePage() {
         </View>
       ))}
       <View style={{ gap: 10 }}>
-        <T v="h2">Questions</T>
+        <T v="h2">{tr('Questions')}</T>
         {g.faq.map((f) => (
           <View key={f.q} style={{ gap: 4 }}>
             <T v="h3">{f.q}</T>
@@ -56,10 +60,10 @@ export default function GuidePage() {
         ))}
       </View>
       <View style={{ gap: 8 }}>
-        <T v="h3">Related tools</T>
+        <T v="h3">{tr('Related tools')}</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {g.related.map((id) => byId(id)).filter(Boolean).map((x) => <Chip key={x!.id} label={x!.name} icon={x!.icon} to={toolPath(x!.id)} />)}
-          <Chip label="All guides" to="/guides/" />
+          {g.related.map((id) => byId(id)).filter(Boolean).map((x) => <Chip key={x!.id} label={tr(x!.name)} icon={x!.icon} to={toolPath(x!.id)} />)}
+          <Chip label={tr('All guides')} to="/guides/" />
         </View>
       </View>
       <SiteFooter />

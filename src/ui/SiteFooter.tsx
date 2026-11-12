@@ -8,6 +8,8 @@ import { READY } from '../tools';
 import { GUIDE_INDEX as GUIDES } from '../content/guideIndex';
 import { SITE } from '../config';
 import { toolPath } from '../content/toolSlugs';
+import { useLang, useT } from '../i18n/react';
+import { guideCardFor } from '../i18n/content';
 
 function FooterLink({ to, label }: { to: string; label: string }) {
   const { t } = useTheme();
@@ -25,6 +27,8 @@ const POPULAR = ['merge', 'split', 'compress', 'images-to-pdf', 'rotate', 'remov
 
 export function SiteFooter() {
   const { t } = useTheme();
+  const tr = useT();
+  const lang = useLang();
   const tools = POPULAR.map((id) => READY.find((x) => x.id === id)).filter(Boolean) as typeof READY;
   const col = (title: string, children: React.ReactNode) => (
     <View style={{ flexGrow: 1, flexBasis: 200, gap: 2 }}>
@@ -35,25 +39,25 @@ export function SiteFooter() {
   return (
     <View accessibilityRole={'contentinfo' as any} style={{ borderTopWidth: 2, borderColor: t.line, marginTop: 36, paddingTop: 22, gap: 18 }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 22 }}>
-        {col('Popular tools', tools.map((x) => <FooterLink key={x.id} to={toolPath(x.id)} label={x.name} />))}
-        {col('Guides', GUIDES.slice(0, 6).map((g) => <FooterLink key={g.slug} to={`/guides/${g.slug}`} label={g.title.replace(/^How to /, 'How to ')} />))}
+        {col(tr('Popular tools'), tools.map((x) => <FooterLink key={x.id} to={toolPath(x.id)} label={tr(x.name)} />))}
+        {col(tr('Guides'), GUIDES.slice(0, 6).map((g) => <FooterLink key={g.slug} to={`/guides/${g.slug}`} label={guideCardFor(lang, g).title} />))}
         {col('iDuckPDF', (
           <>
-            <FooterLink to="/pdf-tools" label="All PDF tools" />
-            <FooterLink to="/guides/" label="All guides" />
-            <FooterLink to="/chat" label="Ask the helper" />
-            <FooterLink to="/roadmap" label="Roadmap" />
-            <FooterLink to="/about" label="About" />
-            <FooterLink to="/privacy" label="Privacy policy" />
-            <FooterLink to="/terms" label="Terms of use" />
-            <FooterLink to="/request" label="Request a feature" />
-            <FooterLink to="/feedback" label="Send feedback" />
-            <FooterLink to="/donate" label="Support us" />
+            <FooterLink to="/pdf-tools" label={tr('All PDF tools')} />
+            <FooterLink to="/guides/" label={tr('All guides')} />
+            <FooterLink to="/chat" label={tr('Ask the helper')} />
+            <FooterLink to="/roadmap" label={tr('Roadmap')} />
+            <FooterLink to="/about" label={tr('About')} />
+            <FooterLink to="/privacy" label={tr('Privacy policy')} />
+            <FooterLink to="/terms" label={tr('Terms of use')} />
+            <FooterLink to="/request" label={tr('Request a feature')} />
+            <FooterLink to="/feedback" label={tr('Send feedback')} />
+            <FooterLink to="/donate" label={tr('Support us')} />
           </>
         ))}
       </View>
       <T v="small" muted>
-        © {new Date(SITE.updated).getFullYear()} {SITE.operator} · {SITE.name} · {SITE.domain} · Free PDF tools that run in your browser. Last updated {SITE.updated}.
+        © {new Date(SITE.updated).getFullYear()} {SITE.operator} · {SITE.name} · {SITE.domain} · {tr('Free PDF tools that run in your browser.')} {tr('Last updated {date}.', { date: SITE.updated })}
       </T>
     </View>
   );

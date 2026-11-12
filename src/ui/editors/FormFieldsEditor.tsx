@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import type { PickedFile } from '../../engine/types';
 import { preloadEngine } from '../../tools';
+import { useT } from '../../i18n/react';
 import { Banner, Btn, Choice, Field, T, TextField, Toggle } from '../kit';
 
 type Field_ = Awaited<ReturnType<Awaited<ReturnType<typeof preloadEngine>>['listFormFields']>>[number];
 
 /** The fillable fields of the chosen PDF as ordinary inputs. The value maps each field's name to its text, tick or choice. */
 export function FormFieldsEditor({ label, file, value, onChange }: { label: string; file?: PickedFile; value: Record<string, any>; onChange: (v: Record<string, any>) => void }) {
+  const tr = useT();
   const [fields, setFields] = useState<Field_[] | null>(null);
   const [error, setError] = useState('');
 
@@ -26,7 +28,7 @@ export function FormFieldsEditor({ label, file, value, onChange }: { label: stri
         list.forEach((f) => (initial[f.name] = f.value));
         onChange(initial);
       } catch (e: any) {
-        if (!dead) setError(e?.message || 'This PDF could not be read. It may be damaged or password-protected.');
+        if (!dead) setError(e?.message || tr('This PDF could not be read. It may be damaged or password-protected.'));
       }
     })();
     return () => { dead = true; };
@@ -35,14 +37,14 @@ export function FormFieldsEditor({ label, file, value, onChange }: { label: stri
 
   const set = (name: string, v: any) => onChange({ ...value, [name]: v });
 
-  if (!file) return <T muted>Add your PDF above to see its form fields here.</T>;
+  if (!file) return <T muted>{tr('Add your PDF above to see its form fields here.')}</T>;
   if (error) return <Banner tone="error"><T v="small" color="#fff">{error}</T></Banner>;
-  if (!fields) return <T muted>Reading the form…</T>;
+  if (!fields) return <T muted>{tr('Reading the form…')}</T>;
   if (!fields.length) {
     return (
       <View style={{ gap: 8 }}>
-        <Banner tone="warn">This PDF has no fillable fields. It may be a picture of a form. You can still place text anywhere on a page.</Banner>
-        <View style={{ alignSelf: 'flex-start' }}><Btn label="Write on a PDF" icon="✍️" small variant="ghost" to="/add-text-to-pdf" /></View>
+        <Banner tone="warn">{tr('This PDF has no fillable fields. It may be a picture of a form. You can still place text anywhere on a page.')}</Banner>
+        <View style={{ alignSelf: 'flex-start' }}><Btn label={tr('Write on a PDF')} icon="✍️" small variant="ghost" to="/add-text-to-pdf" /></View>
       </View>
     );
   }

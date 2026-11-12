@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from '../../lib/theme';
+import { useT } from '../../i18n/react';
 
 /**
  * Create a signature three ways: draw it, type it, or upload a picture. The result is a PNG data URL with a transparent
@@ -48,6 +49,7 @@ function trimToPng(src: HTMLCanvasElement, margin = 12, maxWidth = 1000): string
 
 export function SignaturePad({ label, hint, value, onChange }: { label: string; hint?: string; value: string; onChange: (v: string) => void }) {
   const { t } = useTheme();
+  const tr = useT();
   const [mode, setMode] = useState<Mode>('draw');
   const [ink, setInk] = useState(INKS[0][1]);
   const [text, setText] = useState('');
@@ -197,15 +199,15 @@ export function SignaturePad({ label, hint, value, onChange }: { label: string; 
     <div style={{ display: 'grid', gap: 10, fontFamily: FONT }}>
       <div style={{ color: t.ink, fontWeight: 800, fontSize: 14 }}>{label}</div>
       {hint ? <div style={{ color: t.muted, fontSize: 13 }}>{hint}</div> : null}
-      <div role="group" aria-label="How to create your signature" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {([['draw', 'Draw'], ['type', 'Type'], ['upload', 'Upload']] as [Mode, string][]).map(([m, l]) => (
+      <div role="group" aria-label={tr('How to create your signature')} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {([['draw', tr('Draw')], ['type', tr('Type')], ['upload', tr('Upload')]] as [Mode, string][]).map(([m, l]) => (
           <button key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)} style={btn(mode === m)}>{l}</button>
         ))}
         <span style={{ flex: 1 }} />
         {mode !== 'upload' ? (
-          <span role="group" aria-label="Ink colour" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <span role="group" aria-label={tr('Ink colour')} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
             {INKS.map(([n, c]) => (
-              <button key={c} type="button" aria-label={`${n} ink`} aria-pressed={ink === c} onClick={() => setInk(c)}
+              <button key={c} type="button" aria-label={tr('{name} ink', { name: tr(n) })} aria-pressed={ink === c} onClick={() => setInk(c)}
                 style={{ width: 26, height: 26, borderRadius: 13, background: c, cursor: 'pointer', border: `3px solid ${ink === c ? t.duck : t.line}`, boxShadow: ink === c ? `0 0 0 2px ${t.line}` : 'none' }} />
             ))}
           </span>
@@ -214,42 +216,42 @@ export function SignaturePad({ label, hint, value, onChange }: { label: string; 
 
       {mode === 'draw' ? (
         <div>
-          <canvas ref={canvas} aria-label="Signature drawing area. Draw with your finger or mouse." onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
+          <canvas ref={canvas} aria-label={tr('Signature drawing area. Draw with your finger or mouse.')} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
             style={{ width: '100%', maxWidth: PAD_W, aspectRatio: `${PAD_W} / ${PAD_H}`, touchAction: 'none', cursor: 'crosshair', background: '#ffffff', border: `3px dashed ${t.line}`, borderRadius: 14, display: 'block' }} />
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-            <button type="button" onClick={undo} style={plain}>Undo</button>
-            <button type="button" onClick={clear} style={plain}>Clear</button>
+            <button type="button" onClick={undo} style={plain}>{tr('Undo')}</button>
+            <button type="button" onClick={clear} style={plain}>{tr('Clear')}</button>
           </div>
         </div>
       ) : null}
 
       {mode === 'type' ? (
         <div style={{ display: 'grid', gap: 8 }}>
-          <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your name" aria-label="Your signature as text" maxLength={60}
+          <input value={text} onChange={(e) => setText(e.target.value)} placeholder={tr('Type your name')} aria-label={tr('Your signature as text')} maxLength={60}
             style={{ fontFamily: 'inherit', border: `2px solid ${t.line}`, borderRadius: 12, padding: '10px 12px', fontSize: 18, background: t.card, color: t.ink, outline: 'none', width: '100%', boxSizing: 'border-box' }} />
-          <div role="group" aria-label="Signature style" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {FONTS.map(([n, f]) => <button key={n} type="button" aria-pressed={font === f} onClick={() => setFont(f)} style={{ ...btn(font === f), fontFamily: f, fontStyle: 'italic' }}>{n}</button>)}
+          <div role="group" aria-label={tr('Signature style')} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {FONTS.map(([n, f]) => <button key={n} type="button" aria-pressed={font === f} onClick={() => setFont(f)} style={{ ...btn(font === f), fontFamily: f, fontStyle: 'italic' }}>{tr(n)}</button>)}
           </div>
         </div>
       ) : null}
 
       {mode === 'upload' ? (
         <div style={{ display: 'grid', gap: 8 }}>
-          <input type="file" accept="image/*" aria-label="Choose a picture of your signature" onChange={(e) => onFile(e.target.files?.[0])} style={{ color: t.ink }} />
+          <input type="file" accept="image/*" aria-label={tr('Choose a picture of your signature')} onChange={(e) => onFile(e.target.files?.[0])} style={{ color: t.ink }} />
           <label style={{ display: 'flex', gap: 8, alignItems: 'center', color: t.ink, fontSize: 14, cursor: 'pointer' }}>
             <input type="checkbox" checked={removeBg} onChange={(e) => setRemoveBg(e.target.checked)} /> Remove the white background
           </label>
-          <div style={{ color: t.muted, fontSize: 13 }}>Sign on plain white paper, photograph it in even light, and upload the picture.</div>
+          <div style={{ color: t.muted, fontSize: 13 }}>{tr('Sign on plain white paper, photograph it in even light, and upload the picture.')}</div>
         </div>
       ) : null}
 
       <div aria-live="polite" style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 56 }}>
         {value ? (
           <>
-            <span style={{ color: t.muted, fontSize: 13, fontWeight: 700 }}>Your signature</span>
-            <img src={value} alt="Preview of your signature" style={{ maxHeight: 60, maxWidth: 220, background: 'repeating-conic-gradient(#d8d8d8 0% 25%, #ffffff 0% 50%) 50% / 12px 12px', border: `2px solid ${t.line}`, borderRadius: 8 }} />
+            <span style={{ color: t.muted, fontSize: 13, fontWeight: 700 }}>{tr('Your signature')}</span>
+            <img src={value} alt={tr('Preview of your signature')} style={{ maxHeight: 60, maxWidth: 220, background: 'repeating-conic-gradient(#d8d8d8 0% 25%, #ffffff 0% 50%) 50% / 12px 12px', border: `2px solid ${t.line}`, borderRadius: 8 }} />
           </>
-        ) : <span style={{ color: t.muted, fontSize: 13 }}>No signature yet.</span>}
+        ) : <span style={{ color: t.muted, fontSize: 13 }}>{tr('No signature yet.')}</span>}
       </div>
     </div>
   );
