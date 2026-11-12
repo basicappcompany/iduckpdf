@@ -10,7 +10,7 @@ export const SITE = {
     'Free PDF tools that run in your browser: merge, split, compress, sign, OCR, convert Word and Excel, protect and more. No sign-up, no watermark, no ads.',
   // TODO(docs/TODO.md): replace with the real inbox, or with a serverless endpoint.
   feedbackEmail: 'hello@iduckpdf.com',
-  updated: '2026-11-09', // bump when content changes; used in sitemap, schema and "last updated" lines
+  updated: '2026-11-12', // bump when content changes; used in sitemap, schema and "last updated" lines
   legalUpdated: '2026-11-12', // bump when the privacy policy or terms change
   ogImage: '/og.png',
 };
