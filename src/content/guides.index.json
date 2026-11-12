@@ -148,5 +148,161 @@
   "title": "How to extract data from a PDF with AI",
   "description": "Pull invoice lines, contract terms or dates and amounts out of a PDF into a spreadsheet, and when to use a table finder instead.",
   "tool": "ai-extract"
+ },
+ {
+  "slug": "how-to-merge-front-and-back-scans-into-one-pdf",
+  "title": "How to merge front and back scans into one PDF",
+  "description": "Scanned the fronts and the backs as two separate files? Weave them into one correctly ordered double-sided PDF in your browser.",
+  "tool": "weave"
+ },
+ {
+  "slug": "how-to-extract-pages-from-a-pdf",
+  "title": "How to extract pages from a PDF",
+  "description": "Keep only the pages you need: type the page numbers and get a new PDF with just those pages, in the order you typed them.",
+  "tool": "extract-pages"
+ },
+ {
+  "slug": "how-to-reorder-pages-in-a-pdf",
+  "title": "How to reorder pages in a PDF",
+  "description": "Rearrange the pages of a PDF by typing the new order, such as 3, 1, 2, 4-6. Repeat a page to duplicate it, leave one out to drop it.",
+  "tool": "reorder"
+ },
+ {
+  "slug": "how-to-reverse-the-page-order-of-a-pdf",
+  "title": "How to reverse the page order of a PDF",
+  "description": "Flip a PDF so the last page comes first. Fixes scans made back to front and prepares stacks for printing, in one click.",
+  "tool": "reverse"
+ },
+ {
+  "slug": "how-to-rotate-pages-in-a-pdf",
+  "title": "How to rotate pages in a PDF",
+  "description": "Fix sideways or upside-down pages: rotate every page or only the ones you name, then save the result so every viewer shows it right.",
+  "tool": "rotate"
+ },
+ {
+  "slug": "how-to-add-blank-pages-to-a-pdf",
+  "title": "How to add blank pages to a PDF",
+  "description": "Insert blank pages before or after the pages you choose, for double-sided printing, section breaks or room for notes.",
+  "tool": "insert-blank"
+ },
+ {
+  "slug": "how-to-change-the-page-size-of-a-pdf",
+  "title": "How to change the page size of a PDF",
+  "description": "Scale a PDF to A4, Letter, A3, A5 or Legal. Pages are shrunk or enlarged to fit and centred, never stretched.",
+  "tool": "resize"
+ },
+ {
+  "slug": "how-to-crop-a-pdf",
+  "title": "How to crop a PDF",
+  "description": "Cut a fixed amount off the top, right, bottom and left of the pages you choose, in millimetres, inches or points.",
+  "tool": "crop"
+ },
+ {
+  "slug": "how-to-print-multiple-pdf-pages-per-sheet",
+  "title": "How to print multiple PDF pages per sheet",
+  "description": "Tile 2, 4, 6 or 9 pages onto each sheet to make handouts and proofs and to save paper, with margins and optional borders.",
+  "tool": "n-up"
+ },
+ {
+  "slug": "how-to-repair-a-corrupted-pdf",
+  "title": "How to repair a corrupted PDF",
+  "description": "A PDF that will not open? Try to rescue every readable page and rebuild them into a clean new file, right in your browser.",
+  "tool": "repair"
+ },
+ {
+  "slug": "how-to-add-a-text-watermark-to-a-pdf",
+  "title": "How to add a text watermark to a PDF",
+  "description": "Stamp CONFIDENTIAL, DRAFT or your name across a PDF, centred or tiled, with your choice of size, angle, colour and transparency.",
+  "tool": "text-watermark"
+ },
+ {
+  "slug": "how-to-add-a-logo-or-image-to-a-pdf",
+  "title": "How to add a logo or image to a PDF",
+  "description": "Place a PNG or JPG such as a logo, stamp or scanned signature on your PDF pages, with adjustable size, position and transparency.",
+  "tool": "image-watermark"
+ },
+ {
+  "slug": "how-to-add-headers-and-footers-to-a-pdf",
+  "title": "How to add headers and footers to a PDF",
+  "description": "Put text in the header and footer of every page, left, centre or right, with automatic page numbers, dates and file names.",
+  "tool": "headers-footers"
+ },
+ {
+  "slug": "how-to-write-on-a-pdf",
+  "title": "How to write on a PDF",
+  "description": "Type a note, date or name and place it exactly where you want it on a PDF, using percentages from the top-left corner.",
+  "tool": "add-text"
+ },
+ {
+  "slug": "how-to-scan-a-document-to-pdf-with-your-phone",
+  "title": "How to scan a document to PDF with your phone",
+  "description": "Photograph paper pages and turn them into one tidy PDF with the shadows evened out. No app to install and nothing uploaded.",
+  "tool": "scan-to-pdf"
+ },
+ {
+  "slug": "how-to-convert-text-or-markdown-to-pdf",
+  "title": "How to convert text or Markdown to PDF",
+  "description": "Paste plain text or Markdown and get a clean, printable PDF with headings, lists, quotes and code blocks laid out for you.",
+  "tool": "text-to-pdf"
+ },
+ {
+  "slug": "how-to-convert-a-pdf-to-images",
+  "title": "How to convert a PDF to images",
+  "description": "Turn PDF pages into JPG or PNG pictures at 72 to 300 dpi, bundled in one ZIP, without uploading your file anywhere.",
+  "tool": "pdf-to-images"
+ },
+ {
+  "slug": "how-to-copy-text-from-a-pdf",
+  "title": "How to copy text from a PDF",
+  "description": "Pull the selectable text out of a PDF to copy it or save it as a .txt file. Scanned PDFs need OCR first.",
+  "tool": "extract-text"
+ },
+ {
+  "slug": "how-to-make-a-pdf-grayscale-or-dark-mode",
+  "title": "How to make a PDF grayscale or dark mode",
+  "description": "Recolour a PDF to save ink, read at night with inverted colours, or clean up a faint scan with high-contrast black and white.",
+  "tool": "restyle"
+ },
+ {
+  "slug": "how-to-flatten-a-pdf",
+  "title": "How to flatten a PDF",
+  "description": "Turn fillable form fields into plain page content so answers cannot be edited, and optionally strip comments, highlights and links.",
+  "tool": "flatten"
+ },
+ {
+  "slug": "how-to-compare-two-pdfs",
+  "title": "How to compare two PDFs",
+  "description": "Compare an old and a new version of a document and get a page-by-page list of lines that were removed or added.",
+  "tool": "compare"
+ },
+ {
+  "slug": "how-to-summarize-a-pdf-with-ai",
+  "title": "How to summarize a PDF with AI",
+  "description": "Get the gist of a long PDF in seconds with your own OpenAI, Anthropic or Google key. Your text goes straight to the provider, not to us.",
+  "tool": "summarize"
+ },
+ {
+  "slug": "how-to-ask-questions-about-a-pdf",
+  "title": "How to ask questions about a PDF",
+  "description": "Ask anything about a document and get an answer that points to the pages it came from, using your own AI key.",
+  "tool": "ask"
+ },
+ {
+  "slug": "how-to-combine-pdfs-and-images-into-one-pdf",
+  "title": "How to combine PDFs and images into one PDF",
+  "description": "Mix PDFs and pictures (JPG, PNG, WebP) in one list, put them in order and download a single PDF. Nothing is uploaded.",
+  "tool": "merge-pdf-images"
+ },
+ {
+  "slug": "how-to-convert-jpg-to-pdf",
+  "title": "How to convert JPG to PDF",
+  "description": "Turn one or many JPG photos into a single PDF with a page for each, on A4 or Letter pages or matching each photo.",
+  "tool": "jpg-to-pdf"
+ },
+ {
+  "slug": "how-to-convert-pdf-to-jpg",
+  "title": "How to convert PDF to JPG",
+  "description": "Turn the pages of a PDF into JPG images, one per page, bundled in a ZIP. Choose the sharpness and the file size.",
+  "tool": "pdf-to-jpg"
  }
 ]
