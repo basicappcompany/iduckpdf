@@ -1,0 +1,106 @@
+{
+ "ui": {
+  "Gray": "Grey",
+  "Clean grayscale (best for text)": "Clean greyscale (best for text)",
+  "Plain grayscale": "Plain greyscale",
+  "Grayscale & dark mode": "Greyscale & dark mode",
+  "Recolour a PDF: save ink with grayscale, read at night with an inverted version, or make a faint scan crisp and high-contrast.": "Recolour a PDF: save ink with greyscale, read at night with an inverted version, or make a faint scan crisp and high-contrast.",
+  "Grayscale": "Greyscale",
+  "Smaller files, grayscale, dark mode.": "Smaller files, greyscale, dark mode."
+ },
+ "seo": {},
+ "tools": {
+  "scan-to-pdf": {
+   "description": "Photograph paper pages and turn them into a clean PDF with evened-out lighting. Greyscale or black and white.",
+   "steps": [
+    "Add photos of your pages or take them with the camera.",
+    "Pick a look: clean greyscale, high-contrast black and white, plain greyscale or colour.",
+    "Press Make PDF and download scan.pdf."
+   ]
+  },
+  "restyle": {
+   "title": "Convert PDF to Greyscale or Dark Mode",
+   "answer": "To make a PDF greyscale or dark, choose a look (greyscale, inverted, sepia, high-contrast black and white, or scan clean-up) and press Restyle. Pages are redrawn with the new colours."
+  }
+ },
+ "guides": {
+  "how-to-turn-photos-into-a-pdf": {
+   "sections": [
+    {
+     "h": "Make the PDF",
+     "p": [
+      "Open “Photos to PDF” and add your pictures. JPG, PNG and WebP all work. Use the arrows to set the order.",
+      "Choose a page size: “Match each image” gives each page the picture’s own shape, while A4 or Letter centres each picture on a standard page with a margin."
+     ]
+    },
+    {
+     "h": "Scanning paper documents",
+     "p": [
+      "For photos of paper pages, use “Scan to PDF” instead. It evens out lighting and offers clean greyscale or high-contrast black and white, which keeps text readable and the file small."
+     ]
+    },
+    {
+     "h": "Keep the size down",
+     "p": [
+      "Leave “Shrink very large photos” on. Phone photos are often 10 MB each; limiting the longest side to 2200 pixels cuts that dramatically with no visible difference on screen."
+     ]
+    }
+   ]
+  },
+  "how-to-scan-a-document-to-pdf-with-your-phone": {
+   "sections": [
+    {
+     "h": "Scan in three steps",
+     "p": [
+      "Open Scan to PDF and add photos of your pages. On a phone, the button opens the camera; on a computer, choose the image files.",
+      "Pick a look: Clean greyscale (best for text), High-contrast black and white, Plain greyscale or Keep colour. Choose the page size: match each image, A4 or Letter.",
+      "Press Make PDF and download scan.pdf."
+     ]
+    },
+    {
+     "h": "Get a good photo",
+     "p": [
+      "Lay the page flat on a plain, dark surface, in even light, with no shadow of your hand or phone. Fill the frame with the page and keep the camera straight above it. The tool does not straighten or crop the page, so a square-on photo gives the best result."
+     ]
+    },
+    {
+     "h": "Make the text searchable",
+     "p": [
+      "A scan is a picture of text. To search it or copy words from it, run the finished PDF through Read scans (OCR). To shrink a large scan for email, use Make it smaller."
+     ]
+    }
+   ]
+  },
+  "how-to-make-a-pdf-grayscale-or-dark-mode": {
+   "title": "How to make a PDF greyscale or dark mode",
+   "seoTitle": "How to Make a PDF Greyscale, Sepia or Dark Mode",
+   "intro": "To make a PDF greyscale or dark, open Greyscale & dark mode, choose a look (greyscale, inverted, sepia, high-contrast black and white or scan clean-up) and press Restyle now. Pages are redrawn with the new colours.",
+   "sections": [
+    {
+     "h": "Restyle in three steps",
+     "p": [
+      "Add your PDF to Greyscale & dark mode.",
+      "Pick the look and the quality (Smaller 110 dpi, Good 150 dpi or Sharp 200 dpi), and optionally the pages.",
+      "Press Restyle now and download the file."
+     ]
+    },
+    {
+     "h": "Which look for which job",
+     "p": [
+      "Greyscale saves colour ink when printing. Inverted (dark mode) is easier on the eyes at night. Sepia gives a warm, paper-like tone. High-contrast black and white suits faint photocopies, and Scan clean-up stretches the contrast of a washed-out scan."
+     ]
+    },
+    {
+     "h": "The trade-off",
+     "p": [
+      "The result is made of page images, so text in it is no longer selectable and the file can be larger. Keep your original, and run OCR on the result if you need searchable text."
+     ]
+    }
+   ]
+  },
+  "how-to-summarize-a-pdf-with-ai": {
+   "title": "How to summarise a PDF with AI",
+   "seoTitle": "How to Summarise a PDF with AI Using Your Own API Key"
+  }
+ }
+}

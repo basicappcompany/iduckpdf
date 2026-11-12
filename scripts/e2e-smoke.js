@@ -157,7 +157,7 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.waitForURL(/\/es\/?$/, { timeout: 10000 }).catch(() => {});
   ok('language picker opens the Spanish page', /\/es\/?$/.test(page.url()) && (await page.evaluate(() => document.documentElement.lang)) === 'es');
   await page.getByRole('button', { name: /Cambiar idioma/i }).click().catch(() => {});
-  await page.getByText('English', { exact: true }).click().catch(() => {});
+  await page.getByText('English (US)', { exact: true }).click().catch(() => {});
   await page.waitForURL((u) => !u.pathname.startsWith('/es'), { timeout: 10000 }).catch(() => {});
   ok('language picker returns to English', !new URL(page.url()).pathname.startsWith('/es'));
 

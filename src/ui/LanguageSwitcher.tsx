@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 import { Anchor } from './Anchor';
+import { Flag } from './Flag';
 import { useNavPress } from './nav';
 import { useTheme } from '../lib/theme';
 import { KEYS, getItem, setItem } from '../lib/storage';
@@ -47,11 +48,11 @@ export function LanguageSwitcher() {
         accessibilityState={{ expanded: open }}
         style={[{ flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}
       >
-        <Text style={{ fontSize: 15 }}>🌐</Text>
-        <Text style={{ color: t.ink, fontWeight: '800' }}>{here.hreflang.split('-')[0].toUpperCase()}</Text>
+        <Flag code={here.flag} />
+        <Text style={{ color: t.ink, fontWeight: '800' }}>{here.short}</Text>
       </Pressable>
       {open ? (
-        <View style={[{ position: 'absolute', top: 44, right: 0, minWidth: 190, padding: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, backgroundColor: t.card }, t.shadow(4)]}>
+        <View style={[{ position: 'absolute', top: 44, right: 0, minWidth: 210, maxHeight: 440, padding: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, backgroundColor: t.card, overflow: 'auto' as any }, t.shadow(4)]}>
           {live.map((l) => {
             const to = target(path, l.code);
             const active = l.code === lang;
@@ -64,8 +65,9 @@ export function LanguageSwitcher() {
                     if (Platform.OS === 'web') return goTo(to, e); // a real page load, so the language's catalog comes with its page
                     nav(to, true)(e);
                   }}
-                  style={((s: any) => ({ paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, backgroundColor: active ? t.duck : s.hovered ? t.soft : 'transparent' })) as any}
+                  style={((s: any) => ({ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, backgroundColor: active ? t.duck : s.hovered ? t.soft : 'transparent' })) as any}
                 >
+                  <Flag code={l.flag} />
                   <Text style={{ color: active ? t.duckInk : t.ink, fontWeight: active ? '900' : '700' }}>{l.native}</Text>
                 </Pressable>
               </Anchor>

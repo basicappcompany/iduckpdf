@@ -13,7 +13,7 @@ export function LegalPage({ path, doc }: { path: string; doc: LegalDoc }) {
   return (
     <Screen narrow>
       <Seo path={path} />
-      {lang !== 'en' ? <T v="small" muted>{tr('This legal text is available in English only.')}</T> : null}
+      {lang !== 'en' && lang !== 'en-gb' ? <T v="small" muted>{tr('This legal text is available in English only.')}</T> : null}
       <T v="small" muted>{tr('Last updated {date}.', { date: SITE.legalUpdated })}</T>
       <T v="h1">{doc.title}</T>
       <Card hot>

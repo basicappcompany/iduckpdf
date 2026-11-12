@@ -59,6 +59,7 @@ public/llms-full.txt
 public/i18n/
 src/app/bn/
 src/app/de/
+src/app/en-gb/
 src/app/es/
 src/app/fr/
 src/app/hi/

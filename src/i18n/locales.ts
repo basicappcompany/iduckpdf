@@ -4,7 +4,7 @@
  * A language is switched on (`live: true`) only when its catalog in src/i18n/catalogs/<code>.json covers the whole site, so
  * visitors and search engines never see a half-translated page. scripts/i18n-check.ts enforces that.
  */
-export type Lang = 'en' | 'bn' | 'de' | 'es' | 'fr' | 'hi' | 'id' | 'pt-br' | 'ru' | 'tr';
+export type Lang = 'en' | 'en-gb' | 'bn' | 'de' | 'es' | 'fr' | 'hi' | 'id' | 'pt-br' | 'ru' | 'tr';
 
 export type Locale = {
   code: Lang;
@@ -13,21 +13,25 @@ export type Locale = {
   hreflang: string; // BCP 47 tag for <link rel="alternate" hreflang> and <html lang>
   og: string; // Open Graph locale
   live: boolean;
+  flag: string; // ISO 3166 country code of the flag shown next to the name in the switcher (see ui/Flag.tsx)
+  short: string; // the short label on the switcher button
+  overlay?: boolean; // a variant of English (en-GB): its catalog holds only the strings that differ, so it is exempt from the completeness check
 };
 
 export const DEFAULT_LANG: Lang = 'en';
 
 export const LOCALES: Locale[] = [
-  { code: 'en', name: 'English', native: 'English', hreflang: 'en', og: 'en_US', live: true },
-  { code: 'bn', name: 'Bengali', native: 'বাংলা', hreflang: 'bn', og: 'bn_BD', live: false },
-  { code: 'de', name: 'German', native: 'Deutsch', hreflang: 'de', og: 'de_DE', live: false },
-  { code: 'es', name: 'Spanish', native: 'Español', hreflang: 'es', og: 'es_ES', live: true },
-  { code: 'fr', name: 'French', native: 'Français', hreflang: 'fr', og: 'fr_FR', live: false },
-  { code: 'hi', name: 'Hindi', native: 'हिन्दी', hreflang: 'hi', og: 'hi_IN', live: false },
-  { code: 'id', name: 'Indonesian', native: 'Bahasa Indonesia', hreflang: 'id', og: 'id_ID', live: false },
-  { code: 'pt-br', name: 'Portuguese (Brazil)', native: 'Português (Brasil)', hreflang: 'pt-BR', og: 'pt_BR', live: false },
-  { code: 'ru', name: 'Russian', native: 'Русский', hreflang: 'ru', og: 'ru_RU', live: false },
-  { code: 'tr', name: 'Turkish', native: 'Türkçe', hreflang: 'tr', og: 'tr_TR', live: false },
+  { code: 'en', name: 'English (US)', native: 'English (US)', hreflang: 'en-US', og: 'en_US', live: true, flag: 'us', short: 'EN-US' },
+  { code: 'en-gb', name: 'English (UK)', native: 'English (UK)', hreflang: 'en-GB', og: 'en_GB', live: true, flag: 'gb', short: 'EN-GB', overlay: true },
+  { code: 'bn', name: 'Bengali', native: 'বাংলা', hreflang: 'bn', og: 'bn_BD', live: true, flag: 'bd', short: 'BN' },
+  { code: 'de', name: 'German', native: 'Deutsch', hreflang: 'de', og: 'de_DE', live: true, flag: 'de', short: 'DE' },
+  { code: 'es', name: 'Spanish', native: 'Español', hreflang: 'es', og: 'es_ES', live: true, flag: 'es', short: 'ES' },
+  { code: 'fr', name: 'French', native: 'Français', hreflang: 'fr', og: 'fr_FR', live: true, flag: 'fr', short: 'FR' },
+  { code: 'hi', name: 'Hindi', native: 'हिन्दी', hreflang: 'hi', og: 'hi_IN', live: true, flag: 'in', short: 'HI' },
+  { code: 'id', name: 'Indonesian', native: 'Bahasa Indonesia', hreflang: 'id', og: 'id_ID', live: true, flag: 'id', short: 'ID' },
+  { code: 'pt-br', name: 'Portuguese (Brazil)', native: 'Português (Brasil)', hreflang: 'pt-BR', og: 'pt_BR', live: true, flag: 'br', short: 'PT-BR' },
+  { code: 'ru', name: 'Russian', native: 'Русский', hreflang: 'ru', og: 'ru_RU', live: true, flag: 'ru', short: 'RU' },
+  { code: 'tr', name: 'Turkish', native: 'Türkçe', hreflang: 'tr', og: 'tr_TR', live: true, flag: 'tr', short: 'TR' },
 ];
 
 export const localeOf = (lang: Lang): Locale => LOCALES.find((l) => l.code === lang) ?? LOCALES[0];

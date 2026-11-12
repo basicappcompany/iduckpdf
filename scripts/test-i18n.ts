@@ -4,12 +4,14 @@
  * so nothing here depends on a real translation existing.
  * Run:  npx tsx scripts/test-i18n.ts
  */
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { DEFAULT_LANG, LOCALES, ENGLISH_ONLY_PATHS, isLang, localeOf, localePath, localizeLink, splitPath } from '../src/i18n/locales';
 import { setCatalog, translate, type Catalog } from '../src/i18n/catalog';
 import { abs, headHtml, seoForPath } from '../src/lib/seoData';
 import { problemsFor, sourceStrings } from './i18n-check';
+import { ukify } from './gen-en-gb';
+import { parsePages } from '../src/engine/util';
 import { READY } from '../src/tools';
 import { TOOL_SEO } from '../src/content/toolSeo';
 import { GUIDES } from '../src/content/guides';
@@ -25,7 +27,9 @@ function check(name: string, ok: boolean, extra = '') {
 }
 
 /* ---- locales ---- */
-check('ten languages, English first, codes unique', LOCALES.length === 10 && LOCALES[0].code === 'en' && new Set(LOCALES.map((l) => l.code)).size === 10);
+check('eleven locales (English US and UK plus nine languages), English first, codes unique', LOCALES.length === 11 && LOCALES[0].code === 'en' && new Set(LOCALES.map((l) => l.code)).size === 11);
+check('every locale has a flag with a drawing in Flag.tsx and a short label', LOCALES.every((l) => l.flag.length === 2 && l.short.length >= 2) && LOCALES.every((l) => new RegExp(`\\b${l.flag}:`).test(readFileSync(join(__dirname, '..', 'src', 'ui', 'Flag.tsx'), 'utf8'))));
+check('English (UK) is en-GB, an overlay of English', localeOf('en-gb').hreflang === 'en-GB' && localeOf('en-gb').overlay === true && localeOf('en').hreflang === 'en-US' && splitPath('/en-gb/merge-pdf').lang === 'en-gb');
 check('the nine target languages are the leaflockpdf list', ['bn', 'de', 'es', 'fr', 'hi', 'id', 'pt-br', 'ru', 'tr'].every(isLang));
 check('Brazilian Portuguese is hreflang pt-BR with an og locale', localeOf('pt-br').hreflang === 'pt-BR' && localeOf('pt-br').og === 'pt_BR');
 check('a language is live only when its catalog file exists', LOCALES.filter((l) => l.live && l.code !== 'en').every((l) => existsSync(join(__dirname, '..', 'src', 'i18n', 'catalogs', l.code + '.json'))));
@@ -56,6 +60,11 @@ check('translate: known string, missing string, placeholder, English', translate
 // run-time messages built by the tools ("Rotated 3 pages.") are translated by pattern, with singular and plural forms
 setCatalog('es', { ...spanish(), patterns: [['^Rotated (\\d+) pages?\\.$', '{p1:Página girada|Páginas giradas}: $1.'], ['^Page (\\d+) of (\\d+)$', 'Página $1 de $2']] });
 check('patterns: plural and singular forms', translate('es', 'Rotated 3 pages.') === 'Páginas giradas: 3.' && translate('es', 'Rotated 1 page.') === 'Página girada: 1.' && translate('es', 'Page 2 of 9') === 'Página 2 de 9');
+setCatalog('ru', { ui: {}, seo: {}, tools: {}, guides: {}, patterns: [['^(\\d+) files?$', '$1 {p1:файл|файла|файлов}']] });
+check('patterns: Russian uses three plural forms', translate('ru', '1 file') === '1 файл' && translate('ru', '3 files') === '3 файла' && translate('ru', '5 files') === '5 файлов' && translate('ru', '21 files') === '21 файл');
+setCatalog('ru', null);
+check('en-GB spelling rules', ukify('Gray colors, organize and summarize') === 'Grey colours, organise and summarise' && ukify('Resize the size') === 'Resize the size' && ukify('The center') === 'The centre');
+check('page words work in other languages', parsePages('impares', 4).join() === '0,2' && parsePages('нечётные', 4).join() === '0,2' && parsePages('सम', 4).join() === '1,3' && parsePages('pares', 4).join() === '1,3' && parsePages('última', 4).join() === '3' && parsePages('odd', 4).join() === '0,2');
 check('patterns: an unknown message stays English', translate('es', 'Something else entirely') === 'Something else entirely');
 setCatalog('es', spanish());
 
@@ -71,7 +80,7 @@ es.live = true;
 const eS = seoForPath('/es/merge-pdf');
 check('es tool page: self-referencing canonical, indexable, lang es', eS.canonical === 'https://iduckpdf.com/es/merge-pdf' && !eS.noindex && eS.lang === 'es');
 check('es tool page: translated title and description from the catalog', eS.title === 'Unir archivos PDF gratis | iDuckPDF' && eS.description.startsWith('Combina varios PDF'));
-check('es tool page: hreflang en, es and x-default', JSON.stringify(eS.alternates) === JSON.stringify([{ hreflang: 'en', href: 'https://iduckpdf.com/merge-pdf' }, { hreflang: 'es', href: 'https://iduckpdf.com/es/merge-pdf' }, { hreflang: 'x-default', href: 'https://iduckpdf.com/merge-pdf' }]));
+check('es tool page: hreflang en-US, es and x-default', JSON.stringify(eS.alternates) === JSON.stringify([{ hreflang: 'en-US', href: 'https://iduckpdf.com/merge-pdf' }, { hreflang: 'es', href: 'https://iduckpdf.com/es/merge-pdf' }, { hreflang: 'x-default', href: 'https://iduckpdf.com/merge-pdf' }]));
 check('the English page lists the same cluster and is its own x-default', JSON.stringify(seoForPath('/merge-pdf').alternates) === JSON.stringify(eS.alternates));
 const ld = JSON.stringify(eS.jsonLd);
 check('es structured data: language, localized URLs, translated how-to', ld.includes('"inLanguage":"es"') && ld.includes('https://iduckpdf.com/es/merge-pdf') && ld.includes('Cómo usar Unir PDF') && !ld.includes('"url":"https://iduckpdf.com/merge-pdf"'));
