@@ -11,15 +11,17 @@ Tick items off and update `TRACKER.md` when done.
 ## 2. Donate button (Dodo Payments)
 Code is done; it stays **off** until the steps below are complete.
 - [ ] Create a Dodo Payments account and use **test mode** first.
-- [ ] In the dashboard, create a **one-time product with Pay What You Want enabled** (USD, minimum $1). Copy its id (`pdt_…`).
+- [x] Test mode (2026-11-12): created **iDuckPDF Tip** (one-time, Pay What You Want, USD, $1 minimum, $5 suggested) and **iDuckPDF Monthly Tip** (subscription, $1 per month) under the Basicapp business. A monthly tip of $N is the monthly product with quantity N. Copy both ids (`pdt_…`) from the Products page.
+- [ ] For **live mode**, create the same two products again under the separate iDuckPDF business (Dodo lets you keep businesses apart in live mode), plus a live API key.
 - [ ] Create an API key (Developer → API Keys).
 - [ ] On the host (Cloudflare Pages → Settings → Environment variables) set:
   - `DODO_PAYMENTS_API_KEY`: secret key (never commit it, never put it in `src/`)
-  - `DODO_DONATION_PRODUCT_ID`: the `pdt_…` id
+  - `DODO_DONATION_PRODUCT_ID`: the one-time product's `pdt_…` id
+  - `DODO_MONTHLY_PRODUCT_ID`: the monthly product's `pdt_…` id (optional: without it, monthly tips answer 503 and one-time tips still work)
   - `DODO_API_BASE`: optional; `https://test.dodopayments.com` (default). Use the live base URL when going live; confirm it in Dodo’s docs.
   - `SITE_URL`: optional; default `https://iduckpdf.com`
 - [ ] Set `DONATE.enabled = true` in `src/config.ts` and redeploy.
-- [ ] Test end to end with Dodo’s test card, confirm the `?thanks=1` return page shows.
+- [ ] Test end to end with Dodo’s test card (one-time and monthly), confirm the `?thanks=1` return page shows, and cancel the test subscription in Dodo's customer portal. The page offers $5, $10, $25, $50 and $100, or any amount up to $500 (whole dollars for monthly).
 - [ ] Go live: live API key + live product, switch `DODO_API_BASE`, re-test with a small real payment.
 - [ ] Add rate limiting on `/api/donate` (Cloudflare WAF rule) so nobody can spam checkout sessions.
 - [ ] Check Dodo’s requirements for the site (privacy policy, terms, refund wording) before taking real money. See item 4.
@@ -29,7 +31,7 @@ Code is done; it stays **off** until the steps below are complete.
 - [x] Code is on GitHub: `basicappcompany/iduckpdf` (private). Make it public when you are ready (Settings → Danger zone); that also helps the SEO plan in §8.
 - [x] **`iduckpdf.com` is live** (2026-11-08). GoDaddy nameservers now point at Cloudflare (`bob.ns.cloudflare.com`, `deb.ns.cloudflare.com`), the apex and `www` are Pages custom domains, HTTPS works.
 - [x] `www.iduckpdf.com/*` 301-redirects to `https://iduckpdf.com/$1` (Cloudflare Redirect Rule, query string kept; done 2026-11-09). SSL/TLS mode is Full (strict) and Always Use HTTPS is on.
-- [x] **Automatic deploys are on** (9 Nov): the Cloudflare API token is a GitHub secret. Every pull request builds, tests (226 Node checks), audits and runs the browser tests (34 site + 96 tool checks); merging to `main` deploys. Branch protection would add a hard gate, but GitHub only offers it on private repos with a paid plan or on a public repo.
+- [x] **Automatic deploys are on** (9 Nov): the Cloudflare API token is a GitHub secret. Every pull request builds, tests (248 Node checks), audits and runs the browser tests (34 site + 96 tool checks); merging to `main` deploys. Branch protection would add a hard gate, but GitHub only offers it on private repos with a paid plan or on a public repo.
 - [ ] Manual deploy any time: `npm run export:web`, then `npx wrangler pages deploy dist --project-name iduckpdf --branch main`.
 - [ ] **Lockfile caveat:** this machine's npm uses a private company registry, which writes its URLs into `package-lock.json` when you add packages. GitHub's runners can't reach it. If CI starts failing at `npm ci`, replace those URLs with `https://registry.npmjs.org/` (scoped packages use `.../@scope/name/-/name-x.y.z.tgz`).
 - `functions/` is deployed with the site (Pages Functions); pages are pre-rendered, so no rewrite rule is needed. Unknown URLs get `404.html` with a real 404 status. `public/_headers` sets caching and security headers.
@@ -68,7 +70,7 @@ Ideas, not promises: more OCR languages (non-Latin scripts need larger fonts), c
 - [ ] Set up EAS Build and store listings.
 
 ## 8. SEO & GEO: what is done, and what only you can do
-Done in code (see `TRACKER.md`): every page pre-rendered to real HTML, unique titles/descriptions/canonicals, structured data (WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, Organization, WebSite), sitemap, `robots.txt` that welcomes search and AI crawlers, `llms.txt` / `llms-full.txt`, Open Graph card, manifest, icons, crawlable links, 20 guides.
+Done in code (see `TRACKER.md`): every page pre-rendered to real HTML, unique titles/descriptions/canonicals, structured data (WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, Organization, WebSite), sitemap, `robots.txt` that welcomes search and AI crawlers, `llms.txt` / `llms-full.txt`, Open Graph card, manifest, icons, crawlable links, a how-to guide for every tool (51 guides).
 
 No code can guarantee a ranking. These steps, which need your accounts, are what actually move it:
 - [ ] **Deploy on the real domain** and confirm `SITE.url` in `src/config.ts` matches the final address exactly (apex `https://iduckpdf.com` vs `www`). The www redirect and forced HTTPS are done (see §3).
@@ -94,4 +96,12 @@ No code can guarantee a ranking. These steps, which need your accounts, are what
 - **Content-Security-Policy.** `scripts/gen-csp.ts` writes it into `dist/_headers` on every build. Scripts: same origin, WebAssembly (OCR), the two constant inline scripts by SHA-256 hash, and Cloudflare's analytics beacon. Connections: same origin, the three AI providers, Cloudflare analytics. Styles allow inline (the web UI toolkit needs it). If a future change adds an inline script or a new outside host, the browser tests report a "Refused to ..." message: extend the policy there, never by adding `unsafe-inline` to scripts (the audit forbids it).
 - **HSTS** (tell browsers to use https only) is a Cloudflare setting, SSL/TLS, Edge Certificates, HTTP Strict Transport Security. Optional; turn it on once you are sure the domain will stay on https (max-age 6 months, include subdomains off at first). *Yours: I do not change security settings.*
 - **Dependency audit (2026-11-09).** `npm audit` reports pdfjs-dist <= 4.1.392 (high, arbitrary script via a crafted font). We ship 3.11 and have the documented mitigation in place (`isEvalSupported: false` in `src/engine/render.ts`, the only place a PDF is opened for display). The Node tests and the browser use the same major version. Upgrading to pdf.js 4+ changes the build files (ES modules) and the viewer glue: a separate, tested piece of work. The critical `tar` and moderate `glob`/`minimatch` findings come from build tooling (Expo CLI, an optional native `canvas` module) that never reaches visitors; fixing them means upgrading Expo.
-- **Live health check:** `node scripts/health-check.js` (add a URL argument to point elsewhere). To run it on a schedule you need to approve creating the schedule (status page 9.9).
+- **Live health check:** `node scripts/health-check.js` (add a URL argument to point elsewhere). It runs daily at 06:17 UTC as a GitHub Actions workflow (`.github/workflows/health-check.yml`, set up 2026-11-12; also runnable by hand with `gh workflow run health-check.yml`). A failed run emails the repo owner.
+
+## 10. Languages (live since 2026-11-13)
+- [x] English (US), English (UK), Bengali, German, Spanish, French, Hindi, Indonesian, Brazilian Portuguese, Russian and Turkish are live under `/{code}/`, with a flag menu (README, "Languages").
+- [ ] **Native-speaker review.** The translations are machine-made. For each language, have someone read the home page, the top five tool pages (Merge, Split, Compress, Sign, Word to PDF) and one guide; send fixes as edits to `src/i18n/catalogs/<code>.json`. Bengali, Hindi and Russian were written by the smaller model and need the most attention. *You, or a friend per language.*
+- [ ] **Search Console and Bing:** the sitemap now lists about 1,190 URLs with hreflang alternates. Resubmit `https://iduckpdf.com/sitemap.xml` and watch the International targeting / indexing reports for hreflang errors. *You.*
+- [ ] The helper chat (`/chat`) understands English keywords only; search matches English keywords plus the translated tool names.
+- [ ] Some error details that the engines assemble from file names and numbers stay English.
+- [ ] Adding copy: every new `tr('...')` string needs an entry in all nine catalogs (the check fails otherwise); run `npm run i18n:gb` after changing English text.

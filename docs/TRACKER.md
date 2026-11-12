@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-11 · Status key: ✅ built and checked · 🟡 built, only partly checked · ⏳ stubbed / waiting · 🗺️ planned
 
-**Totals:** 51 tools built (46 checked end to end; the 5 AI tools are checked against a fake provider, in Node and in a browser, but never against a real one) · 0 on the roadmap: every announced tool is built · 25 guides · 91 pages built (84 indexable, 7 noindex) · 226 Node tests and 130 browser checks, all run in CI.
+**Totals:** 51 tools built (46 checked end to end; the 5 AI tools are checked against a fake provider, in Node and in a browser, but never against a real one) · 0 on the roadmap: every announced tool is built · 51 guides (a how-to for every tool) · 1,256 pages built (1,190 indexable, 66 noindex) in 11 locales · 248 Node tests, 44 i18n tests and 132 browser checks, all run in CI.
 
 For the same picture as one visual page, with what is pending from the owner and what Claude can do alone, open `docs/status.html`.
 
@@ -24,6 +24,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | Settings (theme, own AI key) | 🟡 | saving a key stores it and it survives reload; no provider call tried |
 | Donate page + Dodo checkout function | ⏳ | page shows a friendly "not open yet" message; function written but **off** until keys exist, see TODO §2 |
 | About page, privacy policy, terms of use | ✅ | operator named (Basic App Company); analytics and OCR download disclosed |
+| Languages: English (US), English (UK), Bengali, German, Spanish, French, Hindi, Indonesian, Brazilian Portuguese, Russian, Turkish, with a flag menu | 🟡 | whole site translated (1,014 UI strings, 51 tools, 51 guides, FAQ, run-time messages per language); machine translation, no native-speaker review yet (TODO §10); legal pages stay English; the helper chat still matches English keywords only |
 | Android / iOS apps | 🗺️ | future scope; native stubs in place, TODO §7 |
 
 ## Deployment
@@ -34,7 +35,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | `pages.dev` kept out of search results | ✅ | `X-Robots-Tag: noindex` via `public/_headers` |
 | GoDaddy nameservers → Cloudflare, custom domain `iduckpdf.com` | ✅ | live over HTTPS, indexable, canonical correct |
 | `www` → apex 301 redirect, SSL Full (strict), Always Use HTTPS | ✅ | Cloudflare Redirect Rule; verified live 9 Nov |
-| CI on every pull request: typecheck, 226 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 34 site checks and 96 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
+| CI on every pull request: typecheck, 248 Node tests, build, SEO audit, browser tests | ✅ | the browser tests install Chromium and run 36 site checks and 96 tool checks, under the real Content-Security-Policy; actions are on their Node 24 releases (checkout 7, setup-node 7, wrangler-action 4) |
 | Automatic deploy on merge to `main` | ✅ | Cloudflare token stored as a GitHub secret; a pull request never deploys |
 | `hello@iduckpdf.com` receives mail | ✅ | Cloudflare Email Routing to the business Gmail; a Gmail filter keeps it out of Spam (first test landed in Spam); fresh inbox test pending; replying from it is TODO §1 |
 | Cloudflare Web Analytics | ✅ | cookie-free page views, disclosed in the privacy policy |
@@ -130,7 +131,7 @@ Known limits (stated on each tool page): the Office conversions run in the brows
 Nothing is queued: every announced tool is built. Ideas on the list (not promises): more OCR languages (needs larger fonts), closer Word/Excel/PowerPoint conversions, Android and iPhone apps.
 
 ## How the checks were done
-- `npm run test:engine`: 226 checks in Node: 73 on the PDF engine, signing geometry and every non-canvas tool, 70 on the Office and web conversions (Word, HTML, Excel, PowerPoint, PDF to Word, PDF to Excel) using hand-built files read back with pdf.js, and 26 on the picture tools (extraction is checked pixel for pixel and byte for byte; the PowerPoint writer is read back by the PowerPoint to PDF reader), and 57 on the AI tools against a fake provider (what is sent and to which host, the page and size limits, partial results when the provider fails part-way, JSON parsing, the workbook and CSV that come out).
+- `npm run test:engine`: 248 checks in Node: 73 on the PDF engine, signing geometry and every non-canvas tool, 70 on the Office and web conversions (Word, HTML, Excel, PowerPoint, PDF to Word, PDF to Excel) using hand-built files read back with pdf.js, and 26 on the picture tools (extraction is checked pixel for pixel and byte for byte; the PowerPoint writer is read back by the PowerPoint to PDF reader), and 57 on the AI tools against a fake provider, and 22 on the donate function against a fake Dodo (what is sent and to which host, the page and size limits, partial results when the provider fails part-way, JSON parsing, the workbook and CSV that come out).
 - `npm run audit`: crawler-style audit of the built site (91 pages, 84 indexable). All checks pass.
 - `scripts/e2e-smoke.js` (headless Chromium via Playwright): 28 checks: crawler view with JavaScript off, hydration, no layout shift or theme flash, the PDF engine loads only after interaction, navigation, palette, a real merge, saved theme, phone drawer.
 - `scripts/e2e-tools.js`: 96 checks in a real browser (13 for the picture tools and PDF to PowerPoint, 11 for the AI tools with the provider URL intercepted, on 11 Nov), including the older tools (Photos to PDF, Scan to PDF, Grayscale, Redact, Compare, Logo stamp) and a check that the Content-Security-Policy blocks an injected script: password protect and unlock, draw/type/upload a signature and drag it (position read back from the downloaded PDF, normal and rotated page), fill a form, OCR of a scan and of a picture (searchable PDF re-read by the site's own text tool, rotated page), and every conversion with the downloads opened and checked.

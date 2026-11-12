@@ -16,14 +16,23 @@ npm run export:web           # production build: clean -> tool metadata -> seo f
 npm run audit                # crawler-style SEO audit of dist/ (run after export:web)
 npm run typecheck            # also regenerates src/tools/meta.generated.json and src/content/guides.index.json
 npm run meta                 # regenerate those light indexes and the tool table in docs/status.html (run after editing src/tools/ or src/content/guides.ts)
-npm run test:engine          # 226 Node tests: the PDF engine, signing geometry, every Office/web conversion, the picture tools, and the AI tools (against a fake provider)
+npm run test:engine          # 248 Node tests: the PDF engine, signing geometry, every Office/web conversion, the picture tools, and the AI tools (against a fake provider)
 npm run serve:dist           # serve dist/ on http://localhost:8080 (gzip, extensionless pages, 404.html)
-npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 34 site checks + 96 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
+npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 36 site checks + 96 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
 node scripts/health-check.js # live-site health check: every sitemap URL, redirects, headers, canonicals (default https://iduckpdf.com)
 npm run indexnow -- --all # IndexNow: tell Bing and others about the sitemap URLs (CI does this after each deploy to main)
 npm run icons                # regenerate the duck icons and social card (outputs are committed)
 ```
 Do **not** preview `dist/` with `serve -s` (single-page fallback): it answers every URL with the home page and hides the per-page HTML; use `npm run serve:dist`. Set `BASE_URL` to run the browser tests against another address (for example the live site).
+
+### Languages
+The site is offered in 11 locales: English (US) at the root, English (UK) under `/en-gb/`, and Bengali, German, Spanish, French, Hindi, Indonesian, Brazilian Portuguese, Russian and Turkish under `/{code}/` (`bn de es fr hi id pt-br ru tr`). Everything is translated, including tool labels, tool pages, guides, FAQs and run-time messages; the word "PDF" stays "PDF", and the privacy and terms pages stay English (under a language prefix they are `noindex` and point at the English page).
+- `src/i18n/locales.ts` lists the locales; a language is switched on only with `live: true`, and only when `src/i18n/catalogs/<code>.json` covers the whole site (`npm run i18n:check`, part of `test:engine`, enforces it).
+- A catalog is `{ ui, seo, homeFaq, tools, guides, patterns }`. `ui` is keyed by the English string, so new `tr('...')` text needs an entry in every catalog or the check fails. `scripts/gen-i18n.ts` (runs before start, typecheck and build) generates the `/{code}/...` route files and `public/i18n/<code>.js`; both are git-ignored. Catalogs are never in the English bundle: a localized page loads its own `/i18n/<code>.js`.
+- English (UK) is an overlay: `npm run i18n:gb` rebuilds `en-gb.json` from the English text (British spellings), and the check fails when it is stale.
+- The translations are machine-made (Spanish by Claude Sonnet; the other eight by Claude Haiku, with a validator that checks structure, placeholders, "PDF" and length limits). Have a native speaker read the home page and the top tool pages of each language before promoting it.
+- SEO: every page has a self-referencing canonical plus hreflang for all live locales and `x-default` (English), localized JSON-LD and `og:locale`; the sitemap has `xhtml:link` alternates; the audit checks hreflang reciprocity.
+- The language menu (`src/ui/LanguageSwitcher.tsx`) draws SVG flags (`src/ui/Flag.tsx`; Windows has no flag emoji). Switching is a full page load, remembered in `localStorage`; nobody is redirected automatically.
 
 ### How SEO works here
 - `output: "static"` pre-renders every route (tools and guides via `generateStaticParams`).
