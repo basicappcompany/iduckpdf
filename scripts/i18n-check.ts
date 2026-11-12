@@ -112,7 +112,7 @@ export function problemsFor(lang: string, cat: any): string[] {
 
 if (require.main === module) {
   let failures = 0;
-  const live = LOCALES.filter((l) => l.live && l.code !== DEFAULT_LANG);
+  const live = LOCALES.filter((l) => l.live && l.code !== DEFAULT_LANG && !l.overlay); // overlay locales (English UK) hold only the differences; gen-en-gb.ts --check covers them
   for (const l of live) {
     const file = join(root, 'src', 'i18n', 'catalogs', `${l.code}.json`);
     if (!existsSync(file)) {

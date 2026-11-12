@@ -30,8 +30,21 @@ export async function save(doc: PDFDocument): Promise<Uint8Array> {
   return doc.save({ useObjectStreams: true });
 }
 
+const fold = (w: string) => w.normalize('NFD').replace(/[̀-ͯ]/g, '');
+/** The page words (odd, even, first, last) in every language the site is offered in, so someone using the Spanish or Hindi page can type them in their own language. */
+const PAGE_WORDS = new Map<string, string>(
+  (
+    [
+      ['odd', 'odd impar impares ungerade impair impaires विषम ganjil нечётные нечётный нечетные нечетный tek বিজোড়'],
+      ['even', 'even par pares gerade pair paires सम genap чётные чётный четные четный çift জোড়'],
+      ['first', 'first primera primero primeira erste erster erstes premiere premier पहला पहली pertama первая первый первое ilk প্রথম'],
+      ['last', 'last ultima ultimo letzte letzter derniere dernier आखिरी अंतिम terakhir последняя последний последнее son শেষ'],
+    ] as [string, string][]
+  ).flatMap(([en, words]) => words.split(' ').map((w) => [fold(w), en] as [string, string])),
+);
+
 /**
- * Parse page specs like "1-3, 5, 8-", "odd", "even", "last" into 0-based indices.
+ * Parse page specs like "1-3, 5, 8-", "odd", "even", "last" into 0-based indices (the words also work in the site's other languages).
  * blank: what an empty spec means.
  */
 export function parsePages(
@@ -45,7 +58,8 @@ export function parsePages(
     return Array.from({ length: total }, (_, i) => i);
   }
   const out: number[] = [];
-  for (const raw of s.split(/[,;\s]+/).filter(Boolean)) {
+  for (const word of s.split(/[,;\s]+/).filter(Boolean)) {
+    const raw = PAGE_WORDS.get(fold(word)) ?? word;
     const tok = raw.replace(/last/g, String(total)).replace(/first/g, '1');
     if (tok === 'all') {
       for (let i = 0; i < total; i++) out.push(i);

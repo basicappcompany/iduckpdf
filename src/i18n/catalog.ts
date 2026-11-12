@@ -10,7 +10,7 @@
  * from /i18n/<code>.js (a script the build puts in the page <head>, which sets window.__I18N before the app starts, so
  * the first paint is already translated). The static renderer and the build scripts read the JSON file directly.
  */
-import { DEFAULT_LANG, type Lang } from './locales';
+import { DEFAULT_LANG, localeOf, type Lang } from './locales';
 
 export type Catalog = {
   ui: Record<string, string>;
@@ -53,13 +53,24 @@ export function setCatalog(lang: Lang, c: Catalog | null) {
 
 const compiled: Partial<Record<Lang, [RegExp, string][]>> = {};
 
+/** One of a template's forms for a number, by the language's plural rules: [one|many], or [one|few|many] for Russian; a single form is used as is. */
+function pick(lang: Lang, n: number, forms: string[]): string {
+  if (forms.length < 2) return forms[0] ?? '';
+  let cat = n === 1 ? 'one' : 'other';
+  try {
+    cat = new Intl.PluralRules(localeOf(lang).hreflang).select(n);
+  } catch {}
+  if (forms.length >= 3) return cat === 'one' ? forms[0] : cat === 'few' ? forms[1] : forms[2];
+  return cat === 'one' ? forms[0] : forms[1];
+}
+
 function viaPattern(lang: Lang, text: string): string | null {
   const c = getCatalog(lang);
   if (!c?.patterns?.length) return null;
   const list = (compiled[lang] ??= c.patterns.map(([re, to]) => [new RegExp(re), to] as [RegExp, string]));
   for (const [re, to] of list) {
     const m = text.match(re);
-    if (m) return to.replace(/\{p(\d):([^|}]*)\|([^}]*)\}/g, (_: string, i: string, one: string, many: string) => (m[Number(i)] === '1' ? one : many)).replace(/\$(\d)/g, (_: string, i: string) => m[Number(i)] ?? '');
+    if (m) return to.replace(/\{p(\d):([^}]*)\}/g, (_: string, i: string, forms: string) => pick(lang, Number(m[Number(i)]), forms.split('|'))).replace(/\$(\d)/g, (_: string, i: string) => m[Number(i)] ?? '');
   }
   return null;
 }

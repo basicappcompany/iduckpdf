@@ -113,8 +113,10 @@ for (const pg of pages) {
   } else if (altsOf.size) fail('hreflang', 'alternates present although only one language is live');
 }
 
-for (const [t, ps] of titles) if (ps.length > 1) fail(ps.join(', '), `duplicate title "${t}"`);
-for (const [d, ps] of descs) if (ps.length > 1) fail(ps.join(', '), `duplicate description "${d.slice(0, 50)}…"`);
+// English (UK) repeats the US text wherever the spelling is the same; that is what hreflang en-GB / en-US is for, so a page and its en-GB twin do not count as duplicates
+const distinct = (ps: string[]) => [...new Set(ps.map((p) => p.replace(/^\/en-gb(?=\/|$)/, '') || '/'))];
+for (const [t, ps] of titles) if (distinct(ps).length > 1) fail(ps.join(', '), `duplicate title "${t}"`);
+for (const [d, ps] of descs) if (distinct(ps).length > 1) fail(ps.join(', '), `duplicate description "${d.slice(0, 50)}…"`);
 
 // sitemap <-> files
 const sm = readFileSync(join(dist, 'sitemap.xml'), 'utf8');
