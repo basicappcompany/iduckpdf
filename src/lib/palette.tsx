@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useHref } from '../i18n/react';
 import { useTheme } from './theme';
 import { READY, searchTools } from '../tools';
 import { toolPath } from '../content/toolSlugs';
@@ -61,6 +62,7 @@ export function PaletteProvider({ children }: { children: React.ReactNode }) {
 function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { t, toggle } = useTheme();
   const router = useRouter();
+  const href = useHref();
   const [q, setQ] = useState('');
   const [sel, setSel] = useState(0);
 
@@ -74,9 +76,9 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
   const go = useCallback(
     (to: string) => () => {
       onClose();
-      router.push(to as any);
+      router.push(href(to) as any);
     },
-    [onClose, router],
+    [onClose, router, href],
   );
 
   const items: Item[] = useMemo(() => {

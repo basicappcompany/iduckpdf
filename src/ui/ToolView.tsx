@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useHref } from '../i18n/react';
 import { useTheme } from '../lib/theme';
 import { KEYS, getJSON, setJSON } from '../lib/storage';
 import { setHandoff, takeHandoff } from '../lib/handoff';
@@ -82,6 +83,7 @@ function OptionControl({ o, value, onChange, file, opts }: { o: Option; value: a
 export function ToolView({ tool }: { tool: ToolDef }) {
   const { t } = useTheme();
   const router = useRouter();
+  const href = useHref();
   const [files, setFiles] = useState<Record<string, PickedFile[]>>(() => {
     const h = takeHandoff();
     const first = tool.inputs[0];
@@ -175,7 +177,7 @@ export function ToolView({ tool }: { tool: ToolDef }) {
 
   const sendOn = (out: OutFile, to: string) => {
     setHandoff([{ name: out.name, size: out.bytes.length, type: out.mime, bytes: async () => out.bytes }]);
-    router.push(toolPath(to) as any);
+    router.push(href(toolPath(to)) as any);
   };
 
   const seo = TOOL_SEO[tool.id];

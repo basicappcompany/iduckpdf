@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
+import { useLang } from '../i18n/react';
+import { localePath } from '../i18n/locales';
 
 /**
  * Keeps the browser tab title and the head tags in step with the page while people click around.
@@ -15,7 +17,9 @@ let pages: Promise<Record<string, { title: string; description: string }>> | nul
 type PageMap = Record<string, { title: string; description: string }>;
 const loadPages = (): Promise<PageMap> => (pages ??= fetch('/seo-pages.json').then((r): Promise<PageMap> => (r.ok ? r.json() : Promise.resolve({}))).catch((): PageMap => ({})));
 
-export function Seo({ path }: { path: string }) {
+export function Seo({ path: englishPath }: { path: string }) {
+  const lang = useLang();
+  const path = localePath(englishPath, lang); // pages pass their English path; the address that matters is the localized one
   useEffect(() => {
     if (Platform.OS !== 'web' || typeof document === 'undefined') return;
     if (firstPage) {

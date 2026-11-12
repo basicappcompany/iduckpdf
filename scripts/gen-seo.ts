@@ -14,7 +14,8 @@ import { TOOLS } from '../src/tools';
 const pub = join(__dirname, '..', 'public');
 mkdirSync(pub, { recursive: true });
 
-const abs = (p: string) => SITE.url + (p === '/guides' ? '/guides/' : p); // the host serves the guides index at /guides/
+import { abs } from '../src/lib/seoData'; // the host serves the guides index at /guides/ and a language home at /es/
+import { DEFAULT_LANG, ENGLISH_ONLY_PATHS, liveLocales, localePath } from '../src/i18n/locales';
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /* ---------------- sitemap.xml ---------------- */
@@ -30,9 +31,21 @@ const pages: { path: string; prio: string; freq: string }[] = [
   { path: '/privacy', prio: '0.3', freq: 'yearly' },
   { path: '/terms', prio: '0.3', freq: 'yearly' },
 ];
+// One <url> per language version of each page. Each carries xhtml:link alternates for every version plus x-default (English), the
+// same set the page itself declares in its <head>, so search engines get the language cluster from either place.
+const live = liveLocales();
+const entries = pages.flatMap((p) => {
+  const multi = live.length > 1 && !ENGLISH_ONLY_PATHS.includes(p.path);
+  const versions = multi ? live : live.filter((l) => l.code === DEFAULT_LANG);
+  const alt = multi ? [...live.map((l) => ({ hreflang: l.hreflang, href: abs(localePath(p.path, l.code)) })), { hreflang: 'x-default', href: abs(p.path) }] : [];
+  return versions.map((l) => {
+    const links = alt.map((a) => `<xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${esc(a.href)}"/>`).join('');
+    return `  <url><loc>${esc(abs(localePath(p.path, l.code)))}</loc><lastmod>${SITE.updated}</lastmod><changefreq>${p.freq}</changefreq><priority>${p.prio}</priority>${links}</url>`;
+  });
+});
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages.map((p) => `  <url><loc>${esc(abs(p.path))}</loc><lastmod>${SITE.updated}</lastmod><changefreq>${p.freq}</changefreq><priority>${p.prio}</priority></url>`).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${entries.join('\n')}
 </urlset>
 `;
 writeFileSync(join(pub, 'sitemap.xml'), sitemap);
@@ -59,7 +72,7 @@ ${READY.map((t) => `- [${t.name}](${abs(toolPath(t.id))}): ${TOOL_SEO[t.id]?.ans
 ## Guides
 ${GUIDES.map((g) => `- [${g.title}](${abs('/guides/' + g.slug)}): ${g.description}`).join('\n')}
 
-## Optional
+${live.length > 1 ? `## Languages\nThe whole site is also available in:\n${live.filter((l) => l.code !== DEFAULT_LANG).map((l) => `- [${l.name} (${l.native})](${abs(localePath('/', l.code))})`).join('\n')}\n\n` : ''}## Optional
 - [All PDF tools](${abs(HUB_PATH)}): the full list, grouped by task
 - [About and privacy](${abs('/about')}): what happens to files and how the site is built
 - [Privacy policy](${abs('/privacy')}): what is and is not collected
@@ -100,7 +113,7 @@ ${g.faq.map((f) => `Q: ${f.q}\nA: ${f.a}`).join('\n\n')}
 ).join('\n');
 writeFileSync(join(pub, 'llms-full.txt'), `# ${SITE.name}: full content\n\n${SITE.description}\n\nLast updated: ${SITE.updated}\n\n# Tools\n\n${toolText}\n# Guides\n\n${guideText}`);
 
-console.log(`[gen-seo] sitemap: ${pages.length} URLs · llms.txt · llms-full.txt (${READY.length} tools, ${GUIDES.length} guides)`);
+console.log(`[gen-seo] sitemap: ${entries.length} URLs (${live.length} language${live.length === 1 ? '' : 's'}) · llms.txt · llms-full.txt (${READY.length} tools, ${GUIDES.length} guides)`);
 
 /* ---------------- _redirects: old addresses keep working (301) ---------------- */
 // Cloudflare Pages reads public/_redirects. Every old /tool/<id> goes to the new keyword URL, and /tools to the new hub.
