@@ -58,4 +58,5 @@ export const KEYS = {
   ai: 'duck.ai', // { provider, key, model }
   recent: 'duck.recent', // string[] of tool ids
   votes: 'duck.votes', // string[] of tool ids
+  lang: 'duck.lang', // language code the visitor last chose in the language menu
 };

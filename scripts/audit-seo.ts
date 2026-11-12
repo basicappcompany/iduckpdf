@@ -5,6 +5,7 @@
  */
 import { readdirSync, readFileSync, statSync, existsSync } from 'fs';
 import { join, relative, sep } from 'path';
+import { splitPath, localeOf, localePath, liveLocales, ENGLISH_ONLY_PATHS, DEFAULT_LANG } from '../src/i18n/locales';
 
 const dist = join(__dirname, '..', 'dist');
 const SITE = 'https://iduckpdf.com';
@@ -23,6 +24,9 @@ const fail = (p: string, m: string) => fails.push(`${p}: ${m}`);
 const warn = (p: string, m: string) => warns.push(`${p}: ${m}`);
 const one = (html: string, re: RegExp) => (html.match(re) || [])[1];
 
+const canonOf = new Map<string, string>();
+const altsOf = new Map<string, { hreflang: string; href: string }[]>();
+const langOf = new Map<string, string>();
 const titles = new Map<string, string[]>();
 const descs = new Map<string, string[]>();
 let indexable = 0;
@@ -52,11 +56,18 @@ for (const pg of pages) {
   }
 
   const canon = one(html, /<link[^>]*rel="canonical" href="([^"]*)"/);
-  if (canon !== SITE + (path === '/' ? '/' : path === '/guides' ? '/guides/' : path)) fail(path, `canonical is ${canon}`);
+  const { lang, path: enPath } = splitPath(path);
+  const slashed = enPath === '/guides' || (lang !== DEFAULT_LANG && enPath === '/'); // /guides/ and /es/ are folders on the host
+  const expectCanon = SITE + (slashed ? localePath(enPath, lang).replace(/\/?$/, '/') : path);
+  if (canon !== expectCanon) fail(path, `canonical is ${canon}, expected ${expectCanon}`);
+  canonOf.set(path, canon || '');
+  const alts = [...html.matchAll(/<link rel="alternate" hreflang="([^"]*)" href="([^"]*)"/g)].map((m) => ({ hreflang: m[1], href: m[2] }));
+  if (alts.length) altsOf.set(canon || path, alts);
+  langOf.set(canon || path, lang);
 
   const h1 = (html.match(/<h1[ >]/g) || []).length;
   if (h1 !== 1) fail(path, `${h1} <h1> tags`);
-  if (!/<html lang="en"/.test(html)) fail(path, 'no html lang');
+  if (!html.includes(`<html lang="${localeOf(lang).hreflang}"`)) fail(path, `html lang should be ${localeOf(lang).hreflang}`);
   if (!html.includes('property="og:title"') || !html.includes('property="og:image"')) fail(path, 'missing Open Graph tags');
 
   const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
@@ -76,6 +87,32 @@ for (const pg of pages) {
   if (words < 150) warn(path, `thin content: ${words} words`);
 }
 
+// hreflang: every language version lists the same cluster, includes itself and x-default, and each member points back (reciprocity)
+{
+  const multi = liveLocales().length > 1;
+  for (const [self, alts] of altsOf) {
+    if (!alts.some((a) => a.href === self)) fail(self, 'hreflang set does not include the page itself');
+    if (!alts.some((a) => a.hreflang === 'x-default')) fail(self, 'hreflang set has no x-default');
+    const live = liveLocales().length;
+    if (alts.length !== live + 1) fail(self, `hreflang set has ${alts.length} entries, expected ${live + 1}`);
+    for (const a of alts) {
+      if (a.hreflang === 'x-default') continue;
+      const back = altsOf.get(a.href);
+      if (!back) fail(self, `hreflang ${a.hreflang} points at ${a.href}, which is not an indexable page with alternates`);
+      else if (!back.some((b) => b.href === self)) fail(self, `hreflang ${a.hreflang} (${a.href}) does not point back`);
+      else if (JSON.stringify([...back].sort((x, y) => x.hreflang.localeCompare(y.hreflang))) !== JSON.stringify([...alts].sort((x, y) => x.hreflang.localeCompare(y.hreflang)))) fail(self, `hreflang set differs from ${a.href}`);
+    }
+  }
+  if (multi) {
+    for (const [self, lang] of langOf) {
+      const path = self.replace(SITE, '');
+      if (ENGLISH_ONLY_PATHS.includes(splitPath(path).path)) continue;
+      if (!altsOf.has(self)) fail(self, 'a multi-language site: this page declares no hreflang alternates');
+      void lang;
+    }
+  } else if (altsOf.size) fail('hreflang', 'alternates present although only one language is live');
+}
+
 for (const [t, ps] of titles) if (ps.length > 1) fail(ps.join(', '), `duplicate title "${t}"`);
 for (const [d, ps] of descs) if (ps.length > 1) fail(ps.join(', '), `duplicate description "${d.slice(0, 50)}…"`);
 
@@ -83,8 +120,8 @@ for (const [d, ps] of descs) if (ps.length > 1) fail(ps.join(', '), `duplicate d
 const sm = readFileSync(join(dist, 'sitemap.xml'), 'utf8');
 const urls = [...sm.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1].replace(SITE, '') || '/');
 for (const u of urls) {
-  const base = u.replace(/^\//, '');
-  const ok = u === '/' ? existsSync(join(dist, 'index.html')) : existsSync(join(dist, base + '.html')) || existsSync(join(dist, base, 'index.html'));
+  const base = u.replace(/^\//, '').replace(/\/$/, '');
+  const ok = u === '/' || base === '' ? existsSync(join(dist, 'index.html')) : existsSync(join(dist, base + '.html')) || existsSync(join(dist, base, 'index.html'));
   if (!ok) fail('sitemap', `${u} has no page`);
 }
 if (urls.length !== indexable) fail('sitemap', `${urls.length} URLs in the sitemap but ${indexable} indexable pages`);

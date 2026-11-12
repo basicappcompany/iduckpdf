@@ -7,6 +7,7 @@
 import { readdirSync, readFileSync, writeFileSync, statSync, rmSync, copyFileSync, existsSync } from 'fs';
 import { join, relative, sep } from 'path';
 import { seoForPath, headHtml } from '../src/lib/seoData';
+import { localeOf } from '../src/i18n/locales';
 
 const dist = join(__dirname, '..', 'dist');
 
@@ -25,7 +26,7 @@ const problems: string[] = [];
 for (const file of walk(dist)) {
   const rel = relative(dist, file).split(sep).join('/');
   // Template placeholders produced for dynamic routes: not real pages, drop them.
-  if (rel === 'guides/[slug].html' || rel === '[slug].html') {
+  if (rel.endsWith('[slug].html')) {
     rmSync(file);
     continue;
   }
@@ -37,8 +38,8 @@ for (const file of walk(dist)) {
     problems.push(`${rel}: no </head>`);
     continue;
   }
-  html = html.replace('</head>', headHtml(d) + '</head>');
-  if (!d.noindex) pages[d.path] = { title: d.title, description: d.description };
+  html = html.replace('</head>', headHtml(d) + '</head>').replace(/<html lang="[^"]*"/, `<html lang="${localeOf(d.lang).hreflang}"`);
+  if (!d.noindex) pages[d.path.length > 1 ? d.path.replace(/\/$/, '') : d.path] = { title: d.title, description: d.description };
   writeFileSync(file, html);
   done++;
   if (d.noindex) hidden++;
