@@ -148,6 +148,19 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   ok('merge finishes', (await page.getByText('Done!').count()) > 0);
   ok('merge reports 2 files into 6 pages', (await page.getByText(/2 files merged into 6 pages/).count()) > 0);
 
+  // the language picker really switches language (a full page load to /es/ and back)
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto(BASE + '/');
+  await page.waitForFunction(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')), null, { timeout: 20000 }).catch(() => {});
+  await page.getByRole('button', { name: /Change language/i }).click();
+  await page.getByText('Español', { exact: true }).click();
+  await page.waitForURL(/\/es\/?$/, { timeout: 10000 }).catch(() => {});
+  ok('language picker opens the Spanish page', /\/es\/?$/.test(page.url()) && (await page.evaluate(() => document.documentElement.lang)) === 'es');
+  await page.getByRole('button', { name: /Cambiar idioma/i }).click().catch(() => {});
+  await page.getByText('English', { exact: true }).click().catch(() => {});
+  await page.waitForURL((u) => !u.pathname.startsWith('/es'), { timeout: 10000 }).catch(() => {});
+  ok('language picker returns to English', !new URL(page.url()).pathname.startsWith('/es'));
+
   // dark theme persists across reloads, no hydration complaints
   await page.evaluate(() => localStorage.setItem('duck.theme', 'dark'));
   problems.length = 0;

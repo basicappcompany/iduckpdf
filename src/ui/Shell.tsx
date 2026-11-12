@@ -124,7 +124,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <View style={{ flex: 1, flexDirection: 'row', backgroundColor: t.bg }}>
       {!ready || wide ? <View {...ds('sidebar')} style={{ height: '100%' }}><Sidebar /></View> : null}
       <View style={{ flex: 1, minWidth: 0 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 2, borderColor: t.line, backgroundColor: t.bg }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 2, borderColor: t.line, backgroundColor: t.bg, position: 'relative', zIndex: 30 }}>
           {!ready || !wide ? (
             <View {...ds('narrow')}>
             <Pressable onPress={() => setDrawer(true)} accessibilityRole="button" accessibilityLabel={tr('Open menu')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>

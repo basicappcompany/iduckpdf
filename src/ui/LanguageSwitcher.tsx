@@ -16,6 +16,16 @@ function remember(lang: Lang) {
 }
 
 /**
+ * Web: go to the other language's page with a real page load. react-native-web's Pressable stops the click from reaching the wrapping
+ * <a>, so the browser would never follow the link by itself; this does it (and opens a new tab for ctrl/cmd/middle-style clicks).
+ */
+function goTo(to: string, e?: any) {
+  if (typeof window === 'undefined') return;
+  if (e && (e.metaKey || e.ctrlKey || e.shiftKey)) window.open(to, '_blank');
+  else window.location.assign(to);
+}
+
+/**
  * The language menu in the top bar. Hidden until a second language is live. Choosing a language remembers it; nobody is redirected
  * automatically (that would hide pages from crawlers and surprise people who shared a link), see LanguageHint for the gentle nudge.
  */
@@ -51,7 +61,7 @@ export function LanguageSwitcher() {
                   accessibilityRole="link"
                   onPress={(e: any) => {
                     remember(l.code);
-                    if (Platform.OS === 'web') return; // a real page load, so the language's catalog comes with its page
+                    if (Platform.OS === 'web') return goTo(to, e); // a real page load, so the language's catalog comes with its page
                     nav(to, true)(e);
                   }}
                   style={((s: any) => ({ paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, backgroundColor: active ? t.duck : s.hovered ? t.soft : 'transparent' })) as any}
@@ -91,7 +101,7 @@ export function LanguageHint() {
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: t.soft, borderBottomWidth: 2, borderColor: t.line }}>
       <Text style={{ flex: 1, color: t.ink }}>{translate(pref, 'This page is also available in your language.')}</Text>
       <Anchor to={target(path, pref)} exact lang={l.hreflang}>
-        <Pressable accessibilityRole="link" style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 4, backgroundColor: t.duck }, t.shadow(2)]}>
+        <Pressable accessibilityRole="link" onPress={(e: any) => goTo(target(path, pref), e)} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 4, backgroundColor: t.duck }, t.shadow(2)]}>
           <Text style={{ color: t.duckInk, fontWeight: '900' }}>{l.native}</Text>
         </Pressable>
       </Anchor>
