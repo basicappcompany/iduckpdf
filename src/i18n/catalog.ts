@@ -18,6 +18,8 @@ export type Catalog = {
   tools: Record<string, any>;
   guides: Record<string, any>;
   homeFaq?: { q: string; a: string }[];
+  /** [regex over the English message, translated template] for messages the tools build at run time ("Rotated 3 pages."). In the template $1 is a captured group and {p1:one|many} picks by whether group 1 is 1. */
+  patterns?: [string, string][];
 };
 
 const cache: Partial<Record<Lang, Catalog | null>> = {};
@@ -46,10 +48,24 @@ export function getCatalog(lang: Lang): Catalog | null {
 /** Test hook: install a catalog without a file. */
 export function setCatalog(lang: Lang, c: Catalog | null) {
   cache[lang] = c;
+  delete compiled[lang];
+}
+
+const compiled: Partial<Record<Lang, [RegExp, string][]>> = {};
+
+function viaPattern(lang: Lang, text: string): string | null {
+  const c = getCatalog(lang);
+  if (!c?.patterns?.length) return null;
+  const list = (compiled[lang] ??= c.patterns.map(([re, to]) => [new RegExp(re), to] as [RegExp, string]));
+  for (const [re, to] of list) {
+    const m = text.match(re);
+    if (m) return to.replace(/\{p(\d):([^|}]*)\|([^}]*)\}/g, (_: string, i: string, one: string, many: string) => (m[Number(i)] === '1' ? one : many)).replace(/\$(\d)/g, (_: string, i: string) => m[Number(i)] ?? '');
+  }
+  return null;
 }
 
 /** Translate one English string. Falls back to the English text, so a missing entry never breaks a page. `{name}` placeholders are filled from vars. */
 export function translate(lang: Lang, text: string, vars?: Record<string, string | number>): string {
-  const out = getCatalog(lang)?.ui[text] ?? text;
+  const out = getCatalog(lang)?.ui[text] ?? viaPattern(lang, text) ?? text;
   return vars ? out.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m)) : out;
 }

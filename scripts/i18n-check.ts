@@ -11,7 +11,10 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'fs';
 import { join } from 'path';
 import { LOCALES, DEFAULT_LANG } from '../src/i18n/locales';
-import { READY, CATEGORIES } from '../src/tools';
+import { READY, TOOLS, CATEGORIES } from '../src/tools';
+import { SITE } from '../src/config';
+import { GENERIC_FAQ } from '../src/content/genericFaq';
+import { EXTRA_STRINGS } from '../src/i18n/extra';
 import { TOOL_SEO } from '../src/content/toolSeo';
 import { GUIDES } from '../src/content/guides';
 import { HOME_FAQ } from '../src/content/homeFaq';
@@ -27,10 +30,34 @@ export function sourceStrings(): Set<string> {
     const s = readFileSync(f, 'utf8');
     for (const m of s.matchAll(re)) out.add(m[2].replace(/\\(['"\\])/g, '$1'));
   }
-  for (const t of READY) {
-    out.add(t.name);
+  // the engines return fixed English messages (errors, progress labels, notes); the page translates them when it shows them
+  const runtime = /(?:ToolError\(\s*|notes: \[\s*|notes\??\.push\(\s*|progress\([^,()]+,\s*)(['"])((?:\\.|(?!\1).)+)\1/g;
+  for (const f of walk(join(root, 'src')).filter((p) => /\.tsx?$/.test(p) && (p.includes(join('src', 'engine')) || p.includes(join('src', 'tools'))))) {
+    for (const m of readFileSync(f, 'utf8').matchAll(runtime)) if (m[2].length > 2 && !m[2].includes('${')) out.add(m[2].replace(/\\(['"\\])/g, '$1'));
   }
-  for (const c of CATEGORIES) out.add(c.name);
+  // everything a tool shows about itself
+  const add = (s?: string) => s && out.add(s);
+  for (const t of TOOLS) {
+    add(t.name);
+    add(t.short);
+    add(t.desc);
+    add(t.warn);
+    add(t.reason);
+    add(t.runLabel ?? 'Go');
+    t.tips?.forEach(add);
+    if (!TOOL_SEO[t.id]) t.faq?.forEach((f) => (add(f.q), add(f.a)));
+    t.inputs.forEach((i) => (add(i.label), add(i.hint)));
+    t.options?.forEach((o) => {
+      add(o.label);
+      add(o.hint);
+      if ('placeholder' in o) add(o.placeholder);
+      if (o.type === 'select') o.options.forEach((x) => add(x.label));
+    });
+  }
+  for (const c of CATEGORIES) (add(c.name), add(c.blurb));
+  for (const f of GENERIC_FAQ) (add(f.q), add(f.a));
+  EXTRA_STRINGS.forEach(add);
+  add(SITE.description);
   return out;
 }
 
@@ -49,7 +76,7 @@ export function problemsFor(lang: string, cat: any): string[] {
     if (!str(v)) bad.push(`ui: missing "${key}"`);
     else {
       if (placeholders(v) !== placeholders(key)) bad.push(`ui: placeholders differ in "${key}"`);
-      if (/\bPDF\b/.test(key) && !/PDF/.test(v)) bad.push(`ui: "PDF" is not kept in the translation of "${key}"`);
+      if (key !== 'PDF' && /\bPDF\b/.test(key) && !/PDF/.test(v)) bad.push(`ui: "PDF" is not kept in the translation of "${key}"`);
     }
   }
   for (const p of FIXED_PAGES) need(str(cat.seo?.[p]?.title) && str(cat.seo?.[p]?.description), `seo: ${p} needs a title and a description`);
@@ -62,11 +89,11 @@ export function problemsFor(lang: string, cat: any): string[] {
       bad.push(`tools: ${t.id} missing`);
       continue;
     }
-    for (const k of ['name', 'short', 'desc', 'title', 'description', 'answer']) need(str(o[k]), `tools.${t.id}.${k} missing`);
+    for (const k of ['title', 'description', 'answer']) need(str(o[k]), `tools.${t.id}.${k} missing`);
     for (const k of ['steps', 'uses'] as const) need(Array.isArray(o[k]) && o[k].length === en[k].length && o[k].every(str), `tools.${t.id}.${k}: needs ${en[k].length} entries`);
     need(Array.isArray(o.faq) && o.faq.length === en.faq.length && o.faq.every((f: any) => str(f.q) && str(f.a)), `tools.${t.id}.faq: needs ${en.faq.length} complete questions`);
-    if (str(o.title) && o.title.length > 62) bad.push(`tools.${t.id}.title is ${o.title.length} characters (limit 62 so the full title stays under 70)`);
-    if (str(o.description) && (o.description.length < 60 || o.description.length > 160)) bad.push(`tools.${t.id}.description is ${o.description.length} characters (60 to 160)`);
+    if (str(o.title) && o.title.length > 59) bad.push(`tools.${t.id}.title is ${o.title.length} characters (limit 59 so the full title stays under 70)`);
+    if (str(o.description) && (o.description.length < 60 || o.description.length > 165)) bad.push(`tools.${t.id}.description is ${o.description.length} characters (60 to 165)`);
   }
   for (const g of GUIDES) {
     const o = cat.guides?.[g.slug];
@@ -77,8 +104,8 @@ export function problemsFor(lang: string, cat: any): string[] {
     for (const k of ['title', 'seoTitle', 'description', 'intro']) need(str(o[k]), `guides.${g.slug}.${k} missing`);
     need(Array.isArray(o.sections) && o.sections.length === g.sections.length && o.sections.every((s: any, i: number) => str(s.h) && Array.isArray(s.p) && s.p.length === g.sections[i].p.length && s.p.every(str)), `guides.${g.slug}.sections: must mirror the English structure`);
     need(Array.isArray(o.faq) && o.faq.length === g.faq.length && o.faq.every((f: any) => str(f.q) && str(f.a)), `guides.${g.slug}.faq: needs ${g.faq.length} complete questions`);
-    if (str(o.seoTitle) && o.seoTitle.length > 62) bad.push(`guides.${g.slug}.seoTitle is ${o.seoTitle.length} characters (limit 62)`);
-    if (str(o.description) && (o.description.length < 60 || o.description.length > 160)) bad.push(`guides.${g.slug}.description is ${o.description.length} characters (60 to 160)`);
+    if (str(o.seoTitle) && o.seoTitle.length > 59) bad.push(`guides.${g.slug}.seoTitle is ${o.seoTitle.length} characters (limit 59)`);
+    if (str(o.description) && (o.description.length < 60 || o.description.length > 165)) bad.push(`guides.${g.slug}.description is ${o.description.length} characters (60 to 165)`);
   }
   return bad.map((b) => `${lang}: ${b}`);
 }

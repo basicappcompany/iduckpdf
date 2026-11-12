@@ -1,35 +1,7 @@
-/**
- * Translated versions of the structured content (tool copy and guides). Each helper returns the English object when a language has
- * no entry, and otherwise the English object overlaid with the translated fields, so a translator only has to supply what changes.
- */
-import { getCatalog, translate } from './catalog';
+/** Small content helpers shared by the pages and the build. Tool copy is in toolContent.ts and guides in guideContent.ts so the app only loads what a page needs. */
+import { getCatalog } from './catalog';
 import type { Lang } from './locales';
-import { TOOL_SEO, type ToolSeo } from '../content/toolSeo';
-import { GUIDES, guideBySlug, type Guide } from '../content/guides';
 import { HOME_FAQ } from '../content/homeFaq';
-import { byId } from '../tools';
-
-export type ToolText = { name: string; short: string; desc: string };
-
-export function toolTextFor(lang: Lang, id: string): ToolText {
-  const t = byId(id);
-  const o = getCatalog(lang)?.tools?.[id];
-  return { name: o?.name ?? t?.name ?? id, short: o?.short ?? t?.short ?? '', desc: o?.desc ?? t?.desc ?? '' };
-}
-
-export function toolSeoFor(lang: Lang, id: string): ToolSeo | undefined {
-  const en = TOOL_SEO[id];
-  const o = getCatalog(lang)?.tools?.[id];
-  return en && o ? { ...en, ...o } : en;
-}
-
-export function guideFor(lang: Lang, slug: string): Guide | undefined {
-  const en = guideBySlug(slug);
-  const o = getCatalog(lang)?.guides?.[slug];
-  return en && o ? { ...en, ...o } : en;
-}
-
-export const guidesFor = (lang: Lang): Guide[] => GUIDES.map((g) => guideFor(lang, g.slug)!);
 
 export function homeFaqFor(lang: Lang): { q: string; a: string }[] {
   return getCatalog(lang)?.homeFaq ?? HOME_FAQ;
@@ -40,4 +12,8 @@ export function pageSeoFor(lang: Lang, path: string, en: { title: string; descri
   return getCatalog(lang)?.seo?.[path] ?? en;
 }
 
-export { translate };
+/** A guide's title and description for a card (the lightweight guide index has no body text). */
+export function guideCardFor<T extends { slug: string; title: string; description: string }>(lang: Lang, g: T): T {
+  const o = getCatalog(lang)?.guides?.[g.slug];
+  return o ? { ...g, title: o.title ?? g.title, description: o.description ?? g.description } : g;
+}
