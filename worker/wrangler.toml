@@ -1,0 +1,7 @@
+name = "iduckpdf-mailer"
+main = "mailer.ts"
+compatibility_date = "2026-11-01"
+workers_dev = false # no public address: only the Pages site reaches it, through a service binding
+
+[[send_email]]
+name = "EMAIL"

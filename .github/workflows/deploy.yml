@@ -47,6 +47,15 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=iduckpdf --branch=main
+      - name: Deploy the mailer Worker (sends feedback emails)
+        if: env.CLOUDFLARE_API_TOKEN != '' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true # the token may lack Workers permission: never fail the site deploy over it
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          command: deploy
       - name: Tell IndexNow engines (Bing and others) about the deploy
         if: env.CLOUDFLARE_API_TOKEN != '' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         continue-on-error: true # a failed ping must never fail a deploy
