@@ -49,7 +49,7 @@ export default function Home() {
           style={((s: any) => [{ width: '100%', maxWidth: 620, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderColor: t.line, borderRadius: 16, paddingHorizontal: 18, paddingVertical: 15, backgroundColor: t.card, marginTop: 6 }, t.shadow(4), s.hovered ? { transform: [{ translateX: -2 }, { translateY: -2 }] } : null]) as any}
         >
           <Text style={{ fontSize: 18 }}>🔍</Text>
-          <Text numberOfLines={1} style={{ flex: 1, minWidth: 0, color: t.muted, fontSize: 17 }}>{tr('What do you want to do with your PDF?')}</Text>
+          <Text numberOfLines={1} style={{ flex: 1, minWidth: 0, color: t.muted, fontSize: 17 }}>{tr('Search PDF tools…')}</Text>
           <Text {...ds('w560')} style={{ color: t.muted, fontSize: 12, fontWeight: '800', borderWidth: 1.5, borderColor: t.muted, borderRadius: 6, paddingHorizontal: 6 }}>Ctrl K</Text>
         </Pressable>
       </View>
