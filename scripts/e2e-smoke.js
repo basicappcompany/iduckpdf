@@ -197,6 +197,19 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.getByRole('button', { name: /Open menu/i }).click().catch(() => {});
   ok('menu button opens the drawer', (await page.locator('a[href="/merge-pdf"]').count()) > 0 && await page.getByText('All PDF tools').first().isVisible().catch(() => false));
 
+  // phones: nothing scrolls sideways, in English and in the languages with the longest words, at 390 and 360 px; the header shows only a flag for the language
+  for (const w of [390, 360]) {
+    await page.setViewportSize({ width: w, height: 800 });
+    const wide = [];
+    for (const p of ['/', '/de/', '/ru/merge-pdf', '/hi/chat', '/bn/guides/']) {
+      await page.goto(BASE + p);
+      await page.waitForTimeout(1200);
+      if ((await page.evaluate(() => document.documentElement.scrollWidth)) > w) wide.push(p);
+    }
+    ok(`no sideways scrolling at ${w}px wide`, wide.length === 0, wide.join(' '));
+  }
+  ok('the phone header shows the flag without the language code', !(await page.getByText('EN-US', { exact: true }).first().isVisible().catch(() => false)));
+
   await browser.close();
   const failed = results.filter((r) => !r.pass);
   console.log(`\n${results.length - failed.length}/${results.length} passed`);

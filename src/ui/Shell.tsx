@@ -124,10 +124,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <View style={{ flex: 1, flexDirection: 'row', backgroundColor: t.bg }}>
       {!ready || wide ? <View {...ds('sidebar')} style={{ height: '100%' }}><Sidebar /></View> : null}
       <View style={{ flex: 1, minWidth: 0 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 2, borderColor: t.line, backgroundColor: t.bg, position: 'relative', zIndex: 30 }}>
+        <View {...ds('bar')} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 2, borderColor: t.line, backgroundColor: t.bg, position: 'relative', zIndex: 30 }}>
           {!ready || !wide ? (
             <View {...ds('narrow')}>
-            <Pressable onPress={() => setDrawer(true)} accessibilityRole="button" accessibilityLabel={tr('Open menu')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
+            <Pressable {...ds('btn')} onPress={() => setDrawer(true)} accessibilityRole="button" accessibilityLabel={tr('Open menu')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
               <Text style={{ color: t.ink, fontWeight: '900', fontSize: 16 }}>☰</Text>
             </Pressable>
             </View>
@@ -143,16 +143,16 @@ export function Shell({ children }: { children: React.ReactNode }) {
             </View>
           ) : null}
           <View style={{ flex: 1 }} />
-          <Pressable onPress={open} accessibilityRole="button" accessibilityLabel={tr('Search')} style={[{ flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
+          <Pressable {...ds('btn')} onPress={open} accessibilityRole="button" accessibilityLabel={tr('Search')} style={[{ flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
             <Text>🔍</Text>
             <Text {...ds('w560')} style={{ color: t.muted, fontWeight: '700' }}>{tr('Search')} · Ctrl K</Text>
           </Pressable>
           <LanguageSwitcher />
-          <Pressable onPress={toggle} accessibilityRole="button" accessibilityLabel={tr('Switch light or dark mode')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
+          <Pressable {...ds('btn')} onPress={toggle} accessibilityRole="button" accessibilityLabel={tr('Switch light or dark mode')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}>
             <Text style={{ fontSize: 16 }}><Text {...ds('moon')}>🌙</Text><Text {...ds('sun')}>☀️</Text></Text>
           </Pressable>
           <Anchor to="/donate" label={tr('Support iDuckPDF')}>
-            <Pressable accessibilityRole="link" onPress={nav('/donate')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.duck }, t.shadow(3)]}>
+            <Pressable {...ds('btn')} accessibilityRole="link" onPress={nav('/donate')} style={[{ borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: t.duck }, t.shadow(3)]}>
               <Text style={{ color: t.duckInk, fontWeight: '900' }}>💛<Text {...ds('w520')}> {tr('Support')}</Text></Text>
             </Pressable>
           </Anchor>
