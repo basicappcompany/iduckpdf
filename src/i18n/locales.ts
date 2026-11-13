@@ -1,3 +1,4 @@
+import { LANDING_SLUG_LIST } from '../content/landingSlugs';
 /**
  * The languages iDuckPDF is offered in. Pure data and path helpers, no React, so it runs in the app, in the build scripts and in tests.
  * English lives at the root (/merge-pdf); every other language lives under its own prefix (/es/merge-pdf).
@@ -40,7 +41,7 @@ export const liveLocales = (): Locale[] => LOCALES.filter((l) => l.live);
 export const isLive = (lang: Lang) => localeOf(lang).live;
 
 /** Legal pages stay in English. Under /<lang>/ they keep the translated page chrome and point their canonical at the English page. */
-export const ENGLISH_ONLY_PATHS = ['/privacy', '/terms'];
+export const ENGLISH_ONLY_PATHS = ['/privacy', '/terms', ...LANDING_SLUG_LIST.map((s) => '/' + s)];
 
 /** '/es/merge-pdf' -> { lang: 'es', path: '/merge-pdf' };  '/merge-pdf' -> { lang: 'en', path: '/merge-pdf' };  '/es' -> { lang: 'es', path: '/' } */
 export function splitPath(raw: string): { lang: Lang; path: string } {
@@ -61,6 +62,7 @@ export function localePath(path: string, lang: Lang): string {
 /** Internal links only: leaves external URLs, mailto:, #anchors and already-prefixed paths alone. */
 export function localizeLink(to: string, lang: Lang): string {
   if (lang === DEFAULT_LANG || !to.startsWith('/') || to.startsWith('//')) return to;
+  if (LANDING_SLUG_LIST.includes(to.slice(1).split(/[?#/]/)[0])) return to; // English-only landing pages have no language versions
   if (splitPath(to).lang !== DEFAULT_LANG) return to;
   return localePath(to, lang);
 }

@@ -12,6 +12,7 @@ import { homeFaqFor, pageSeoFor } from '../i18n/content';
 import { guideFor, guidesFor } from '../i18n/guideContent';
 import { toolSeoFor, toolTextFor } from '../i18n/toolContent';
 import { translate } from '../i18n/catalog';
+import { landingBySlug } from '../content/landing';
 import { DEFAULT_LANG, ENGLISH_ONLY_PATHS, isLive, liveLocales, localeOf, localePath, splitPath, type Lang } from '../i18n/locales';
 import { RESPONSIVE_CSS } from './responsive';
 import { THEME_CSS, THEME_INIT_SCRIPT } from './themeColors';
@@ -72,7 +73,7 @@ export function seoForPath(raw: string): PageSeo {
     url: L(path),
     inLanguage: localeOf(lang).hreflang,
     applicationCategory: 'UtilitiesApplication',
-    operatingSystem: 'Any (runs in a web browser)',
+    operatingSystem: 'Any',
     browserRequirements: 'Requires JavaScript',
     isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -187,6 +188,23 @@ export function seoForPath(raw: string): PageSeo {
   } else if (path === '/chat') {
     const p = pageSeoFor(lang, path, { title: 'Ask the PDF Helper: Find the Right Tool', description: 'Describe your PDF job in plain words and the iDuckPDF helper points you to the right free tool.' });
     seo = page({ title: full(p.title), description: p.description, jsonLd: [breadcrumbLd([home, { name: tr('Ask the helper'), path }])] });
+  } else if (lang === DEFAULT_LANG && landingBySlug(path.slice(1))) {
+    const l = landingBySlug(path.slice(1))!;
+    const lt = l.tool ? byId(l.tool) : undefined;
+    seo = page({
+      title: full(l.title),
+      description: l.description,
+      type: l.kind === 'compare' || l.kind === 'info' ? 'article' : 'website',
+      jsonLd: [
+        ...(l.kind === 'compare' || l.kind === 'info'
+          ? [{ '@context': 'https://schema.org', '@type': 'Article', headline: l.h1, description: l.description, url: L(path), inLanguage: 'en', datePublished: l.reviewed, dateModified: l.reviewed, author: { '@type': 'Organization', name: SITE.operator, url: SITE.url }, publisher: { '@id': `${SITE.url}/#org` } }]
+          : [{ '@context': 'https://schema.org', '@type': 'WebPage', name: l.h1, description: l.description, url: L(path), inLanguage: 'en', dateModified: l.reviewed }]),
+        ...(lt ? [appLd(l.h1, l.description)] : []),
+        ...(l.steps?.length ? [howToLd(l.h1, l.answer, l.steps)] : []),
+        faqLd(l.faq),
+        breadcrumbLd([home, ...(l.kind === 'size' || l.kind === 'job' ? [hub] : []), { name: l.h1, path }]),
+      ],
+    });
   } else if (path === '/settings') seo = hidden('Settings');
   else if (path === '/feedback') seo = hidden('Send feedback');
   else if (path === '/request') seo = hidden('Request a feature');
@@ -214,7 +232,8 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').repl
 const orgLd = {
   '@context': 'https://schema.org',
   '@graph': [
-    { '@type': 'Organization', '@id': `${SITE.url}/#org`, name: SITE.name, url: SITE.url, logo: `${SITE.url}/icons/icon-512.png`, description: SITE.description, parentOrganization: { '@type': 'Organization', name: SITE.operator }, email: SITE.feedbackEmail },
+    { '@type': 'Organization', '@id': `${SITE.url}/#org`, name: SITE.name, url: SITE.url, logo: `${SITE.url}/icons/icon-512.png`, description: SITE.description, parentOrganization: { '@id': `${SITE.url}/#operator` }, email: SITE.feedbackEmail },
+    { '@type': 'Organization', '@id': `${SITE.url}/#operator`, name: SITE.operator, email: SITE.feedbackEmail, sameAs: ['https://iduckimg.com/', 'https://iduckcalculator.com/', 'https://iduckconvert.com/'] },
     {
       '@type': 'WebSite',
       '@id': `${SITE.url}/#website`,

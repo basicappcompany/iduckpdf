@@ -55,6 +55,7 @@ export default function Settings() {
         <Field label={tr('API key')} hint={tr('Starts like sk-… for OpenAI or Anthropic, or AIza… for Google.')}>
           <TextField value={key} onChange={(v) => { setKey(v); setSaved(null); }} secure placeholder={tr('Paste your key')} />
         </Field>
+        <Banner tone="warn">{tr('Shared computer? Remove your key when you are done.')}</Banner>
         <Field label={tr('Model (optional)')} hint={tr('Leave blank to use {model}. Providers rename models often, so change this if a request fails.', { model: def.model })}>
           <TextField value={model} onChange={(v) => { setModel(v); setSaved(null); }} placeholder={def.model} />
         </Field>

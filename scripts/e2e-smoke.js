@@ -115,7 +115,7 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.waitForURL('**/split-pdf');
   ok('sidebar link navigates in-app (no full reload)', (await page.evaluate(() => window.__marker)) === 'alive');
   await page.waitForFunction(() => /Split a PDF/.test(document.title), null, { timeout: 8000 }).catch(() => {});
-  ok('tab title follows the page', /Split a PDF/.test(await page.title()), await page.title());
+  ok('tab title follows the page', /Split PDF/.test(await page.title()), await page.title());
   ok('canonical path follows the page', ((await page.locator('link[rel=canonical]').getAttribute('href')) || '').endsWith('/split-pdf'));
 
   // palette

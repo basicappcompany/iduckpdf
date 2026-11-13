@@ -19,8 +19,11 @@
    ]
   },
   "restyle": {
-   "title": "Convert PDF to Greyscale or Dark Mode",
+   "title": "Greyscale PDF and Dark Mode PDF, Free",
    "answer": "To make a PDF greyscale or dark, choose a look (greyscale, inverted, sepia, high-contrast black and white, or scan clean-up) and press Restyle. Pages are redrawn with the new colours."
+  },
+  "summarize": {
+   "title": "Summarise PDF with AI (Your Own Key)"
   }
  },
  "guides": {

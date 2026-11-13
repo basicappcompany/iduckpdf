@@ -72,7 +72,7 @@ setCatalog('es', spanish());
 
 /* ---- SEO with only English live ---- */
 const en0 = seoForPath('/merge-pdf');
-check('English only: no alternates, canonical unchanged, lang en', en0.alternates.length === 0 && en0.canonical === 'https://iduckpdf.com/merge-pdf' && en0.lang === 'en' && en0.title === 'Merge PDF Files Online, Free | iDuckPDF');
+check('English only: no alternates, canonical unchanged, lang en', en0.alternates.length === 0 && en0.canonical === 'https://iduckpdf.com/merge-pdf' && en0.lang === 'en' && en0.title === 'Merge PDF: Combine PDF Files Online, Free | iDuckPDF');
 check('English only: guides index canonical keeps its slash', seoForPath('/guides').canonical === 'https://iduckpdf.com/guides/');
 check('a language that is not live has no pages (noindex)', seoForPath('/de/merge-pdf').noindex === true && seoForPath('/es/merge-pdf').noindex === true);
 check('English head has no hreflang and no catalog script', !/hreflang|\/i18n\//.test(headHtml(en0)) && headHtml(en0).includes('og:locale" content="en_US"'));
@@ -92,7 +92,7 @@ check('es head: catalog script before the app, og:locale es_ES, alternate og loc
 check('es home: folder canonical /es/ and a translated title', seoForPath('/es').canonical === 'https://iduckpdf.com/es/' && seoForPath('/es/').title.startsWith('iDuckPDF: herramientas'));
 check('es home: FAQ comes from the catalog', JSON.stringify(seoForPath('/es/').jsonLd).includes('¿Es gratis?'));
 check('es guides index keeps the slash under the prefix', seoForPath('/es/guides').canonical === 'https://iduckpdf.com/es/guides/' && abs('/es/guides') === 'https://iduckpdf.com/es/guides/');
-check('legal pages stay English: noindex under /es, canonical on the English page, no alternates', ENGLISH_ONLY_PATHS.every((p) => { const s = seoForPath('/es' + p); return s.noindex && s.canonical === 'https://iduckpdf.com' + p && s.alternates.length === 0; }));
+check('legal pages stay English: noindex under /es, canonical on the English page, no alternates', ENGLISH_ONLY_PATHS.filter((p) => p === '/privacy' || p === '/terms').every((p) => { const s = seoForPath('/es' + p); return s.noindex && s.canonical === 'https://iduckpdf.com' + p && s.alternates.length === 0; }));
 check('the English legal page has no alternates and stays indexable', ENGLISH_ONLY_PATHS.every((p) => { const s = seoForPath(p); return !s.noindex && s.alternates.length === 0; }));
 check('utility pages stay noindex in every language', ['/es/settings', '/es/donate', '/es/feedback', '/es/request'].every((p) => seoForPath(p).noindex));
 check('a tool that has no translation falls back to the English text', seoForPath('/es/split-pdf').title === seoForPath('/split-pdf').title);

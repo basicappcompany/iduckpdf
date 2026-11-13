@@ -185,6 +185,8 @@ export function ToolView({ tool }: { tool: ToolDef }) {
 
   const seo = toolSeoFor(lang, tool.id);
   const toolName = tr(tool.name);
+  // English pages lead with the phrase people search ("Compress PDF"); the friendly name stays as the card label and a tag above
+  const h1 = (lang === 'en' || lang === 'en-gb') && seo?.h1 ? seo.h1 : '';
   const related = inCategory(tool.category).filter((x) => x.id !== tool.id && x.status === 'ready').slice(0, 4);
   const cat = CATEGORIES.find((c) => c.id === tool.category);
 
@@ -217,8 +219,8 @@ export function ToolView({ tool }: { tool: ToolDef }) {
   return (
     <Screen narrow>
       <View style={{ gap: 8 }}>
-        <T v="small" muted>{cat?.icon} {cat ? tr(cat.name) : ''}</T>
-        <T v="h1">{tool.icon} {toolName}</T>
+        <T v="small" muted>{cat?.icon} {cat ? tr(cat.name) : ''}{h1 ? ` · ${tool.icon} ${toolName}` : ''}</T>
+        <T v="h1">{h1 ? h1 : `${tool.icon} ${toolName}`}</T>
         <T muted>{tr(tool.desc)}</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 2 }}>
           <Pill tone="ok">{tool.warn ? tr('Uses your AI key') : tr('Runs in your browser')}</Pill>
@@ -338,8 +340,13 @@ export function ToolView({ tool }: { tool: ToolDef }) {
             </Card>
           ))}
         </CardGrid>
-        {tool.tips?.map((x, i) => <T key={i} muted>• {tr(x)}</T>)}
       </View>
+      {tool.tips?.length ? (
+        <View style={{ gap: 6 }}>
+          <T v="h2">{tr('Good to know')}</T>
+          {tool.tips.map((x, i) => <T key={i} muted>• {tr(x)}</T>)}
+        </View>
+      ) : null}
 
       {seo ? (
         <View style={{ gap: 8 }}>
@@ -351,7 +358,7 @@ export function ToolView({ tool }: { tool: ToolDef }) {
       <View style={{ gap: 10 }}>
         <T v="h2">{tr('Frequently asked questions')}</T>
         {[...(seo?.faq || (tool.faq || []).map((f) => ({ q: tr(f.q), a: tr(f.a) }))), ...GENERIC_FAQ.map((f) => ({ q: tr(f.q), a: tr(f.a) }))].map((f) => <Faq key={f.q} q={f.q} a={f.a} />)}
-        <T v="small" muted>{tr('Last updated {date}.', { date: SITE.updated })}</T>
+        <T v="small" muted>{tr('Last reviewed {date}.', { date: SITE.updated })}</T>
       </View>
 
       {related.length ? (

@@ -130,7 +130,7 @@ if (urls.length !== indexable) fail('sitemap', `${urls.length} URLs in the sitem
 
 // every tool page URL contains "pdf" (a ranking requirement), and every 301 redirect points at a page that exists
 {
-  const toolPages = urls.filter((u) => /^\/[a-z0-9-]+$/.test(u) && !['/about', '/chat', '/privacy', '/terms', '/roadmap', '/guides', '/pdf-tools'].includes(u));
+  const toolPages = urls.filter((u) => /^\/[a-z0-9-]+$/.test(u) && !['/about', '/chat', '/privacy', '/terms', '/roadmap', '/guides', '/pdf-tools', ...require('../src/content/landingSlugs').LANDING_SLUG_LIST.map((x: string) => '/' + x)].includes(u));
   for (const u of toolPages) if (!u.includes('pdf')) fail('sitemap', `tool URL ${u} does not contain "pdf"`);
   if (toolPages.length < 30) fail('sitemap', `only ${toolPages.length} tool URLs found`);
   if (!existsSync(join(dist, '_redirects'))) fail('_redirects', 'missing: old /tool/<id> URLs would 404');
@@ -180,6 +180,28 @@ if (!/Sitemap: https:\/\/iduckpdf\.com\/sitemap\.xml/.test(readFileSync(join(dis
   }
 }
 
+// English tool and landing pages: the searched phrase must be in <title> and <h1>, and the length limits are hard failures.
+{
+  const { TOOL_SLUGS } = require('../src/content/toolSlugs');
+  const { LANDINGS } = require('../src/content/landing');
+  const { LANDING_SLUG_LIST } = require('../src/content/landingSlugs');
+  if (JSON.stringify([...LANDING_SLUG_LIST].sort()) !== JSON.stringify(LANDINGS.map((l: any) => l.slug).sort())) fail('landing', 'src/content/landingSlugs.ts does not match src/content/landing.ts');
+  const seenT = new Set<string>();
+  const seenD = new Set<string>();
+  for (const slug of [...Object.values(TOOL_SLUGS), ...LANDINGS.map((l: any) => l.slug)] as string[]) {
+    const pg = pages.find((x) => x.path === '/' + slug);
+    if (!pg) { fail('/' + slug, 'page missing'); continue; }
+    const t = (one(pg.html, /<title[^>]*>([^<]*)<\/title>/) || '').replace(/&amp;/g, '&');
+    const d = (one(pg.html, /<meta[^>]*name="description" content="([^"]*)"/) || '').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+    const h1 = (one(pg.html, /<h1[^>]*>([\s\S]*?)<\/h1>/) || '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&');
+    if (t.length > 60) fail('/' + slug, `title is ${t.length} chars (limit 60): ${t}`);
+    if (d.length > 155) fail('/' + slug, `description is ${d.length} chars (limit 155)`);
+    if (seenT.has(t)) fail('/' + slug, 'duplicate title'); seenT.add(t);
+    if (seenD.has(d)) fail('/' + slug, 'duplicate description'); seenD.add(d);
+    if (!h1 || /^\p{Extended_Pictographic}/u.test(h1.trim())) fail('/' + slug, `h1 should lead with the searched phrase, not the friendly name: "${h1}"`);
+    if (slug !== 'how-it-works' && !/<ol|Step 1|1\. /.test(pg.html)) warn('/' + slug, 'no visible steps in the raw HTML');
+  }
+}
 console.log(`Audited ${pages.length} pages (${indexable} indexable). Sitemap lists ${urls.length}.`);
 if (warns.length) console.log(`\n${warns.length} warning(s):\n  - ${warns.join('\n  - ')}`);
 if (fails.length) {

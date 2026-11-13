@@ -6,10 +6,16 @@ import { ToolView } from '../ui/ToolView';
 import { Btn, Screen, T } from '../ui/kit';
 import { Seo } from '../lib/seo';
 import { useT } from '../i18n/react';
+import { LANDINGS, landingBySlug } from '../content/landing';
+import { LandingView } from '../ui/LandingView';
 
 // Pre-render one HTML page per tool at build time, at /<keyword>-pdf (see content/toolSlugs.ts).
-export function generateStaticParams() {
+// Language versions (/es/merge-pdf) get the tool pages only; the English-only landing pages exist at the root.
+export function toolParams() {
   return TOOLS.map((t) => ({ slug: TOOL_SLUGS[t.id] }));
+}
+export function generateStaticParams() {
+  return [...toolParams(), ...LANDINGS.map((l) => ({ slug: l.slug }))];
 }
 
 export default function ToolPage() {
@@ -17,6 +23,8 @@ export default function ToolPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const id = idForSlug(String(slug));
   const tool = id ? byId(id) : undefined;
+  const landing = !tool ? landingBySlug(String(slug)) : undefined;
+  if (landing) return <LandingView landing={landing} />;
   if (!tool) {
     return (
       <Screen narrow>

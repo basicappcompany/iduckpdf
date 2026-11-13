@@ -1,7 +1,8 @@
 // Search/AI-facing copy for every built tool. Written for people first: a direct answer, real steps,
 // real use cases and honest FAQs. Keep it factual: it must match what the tool actually does.
 export type ToolSeo = {
-  title: string; // <title> without the site name (≈ 50 chars)
+  title: string; // <title> without the site name (≈ 50 chars); leads with the phrase people search
+  h1?: string; // English page heading: the searched phrase (the friendly tool name stays the card label)
   description: string; // meta description (≈ 150 chars)
   answer: string; // answer-first summary (also quoted by AI assistants)
   steps: string[];
@@ -11,7 +12,8 @@ export type ToolSeo = {
 
 export const TOOL_SEO: Record<string, ToolSeo> = {
   merge: {
-    title: 'Merge PDF Files Online, Free',
+    title: 'Merge PDF: Combine PDF Files Online, Free',
+    h1: 'Merge PDF',
     description: 'Combine several PDFs into one file in your browser. Reorder with arrows, no sign-up, no watermark. Works on any device.',
     answer: 'To merge PDFs, add two or more files, put them in order with the arrows, and press Merge. You download one combined PDF, built in your browser tab.',
     steps: ['Add your PDFs by dragging them in or choosing Select files.', 'Use the up and down arrows to put the files in the order you want.', 'Press Merge now and download merged.pdf.'],
@@ -23,7 +25,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   weave: {
-    title: 'Interleave Two PDFs (Double-Sided Scans)',
+    title: 'Interleave PDF: Merge Two PDFs Page by Page',
+    h1: 'Interleave PDF',
     description: 'Weave pages from two PDFs together (A1, B1, A2, B2…). The fix for fronts and backs scanned as separate files.',
     answer: 'Weaving alternates pages from two PDFs: page 1 of the first, page 1 of the second, page 2 of the first, and so on. It rebuilds a double-sided document scanned as two separate files.',
     steps: ['Add the front-sides PDF and the back-sides PDF.', 'Keep “Second file is in reverse order” on if your scanner gave you the backs last-to-first.', 'Press Weave now and download woven.pdf.'],
@@ -34,7 +37,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   split: {
-    title: 'Split a PDF into Separate Files',
+    title: 'Split PDF: Separate Pages into Files, Free',
+    h1: 'Split PDF',
     description: 'Split a PDF by page range, every N pages, or one file per page. Download everything as a ZIP. Free, in your browser.',
     answer: 'To split a PDF, choose how to cut it (by ranges, every N pages, or one file per page), then press Split. Each piece becomes its own PDF, and you can download them all as a ZIP.',
     steps: ['Add the PDF you want to split.', 'Pick a mode. For ranges, type something like 1-3, 4, 5-.', 'Press Split now, then download the files or the ZIP.'],
@@ -45,7 +49,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'extract-pages': {
-    title: 'Extract Pages from a PDF',
+    title: 'Extract Pages from PDF Online, Free',
+    h1: 'Extract pages from PDF',
     description: 'Keep only the pages you pick and save them as a new PDF. Type ranges like 2, 4-6 or last. Free and private.',
     answer: 'To extract pages from a PDF, type the pages you want to keep (for example 2, 4-6, last) and press Extract. You get a new PDF with only those pages, in the order you typed them.',
     steps: ['Add your PDF.', 'Type the pages to keep. Words like odd, even, first and last also work.', 'Press Extract now and download the new file.'],
@@ -56,7 +61,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'remove-pages': {
-    title: 'Delete Pages from a PDF',
+    title: 'Delete Pages from PDF Online, Free',
+    h1: 'Delete pages from PDF',
     description: 'Remove unwanted pages from a PDF and keep the rest. Type pages like 2, 5-7 or last. Free, fast, no sign-up.',
     answer: 'To delete pages from a PDF, type the pages to remove (for example 2, 5-7) and press Delete. The tool returns the PDF without those pages. At least one page must remain.',
     steps: ['Add your PDF.', 'Type the pages to delete, such as 2, 5-7 or last.', 'Press Delete now and download the trimmed PDF.'],
@@ -67,7 +73,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   reorder: {
-    title: 'Reorder PDF Pages',
+    title: 'Reorder PDF Pages Online, Free',
+    h1: 'Reorder PDF pages',
     description: 'Rearrange PDF pages by typing the new order, like 3, 1, 2. Duplicate or drop pages at the same time. Free online.',
     answer: 'To reorder PDF pages, type the pages in the order you want (for example 3, 1, 2, 4-6). Pages you leave out are dropped and pages you repeat are duplicated.',
     steps: ['Add your PDF.', 'Type the new order, such as 3, 1, 2, 4-6.', 'Press Reorder now and download the result.'],
@@ -78,7 +85,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   reverse: {
-    title: 'Reverse PDF Page Order',
+    title: 'Reverse PDF Page Order Online, Free',
+    h1: 'Reverse PDF page order',
     description: 'Flip a PDF so the last page comes first. One click, free, runs in your browser with no upload to us.',
     answer: 'To reverse a PDF, add it and press Flip. The last page becomes the first, the second-last becomes the second, and so on.',
     steps: ['Add your PDF.', 'Press Flip now.', 'Download the reversed PDF.'],
@@ -86,7 +94,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Does it affect page content?', a: 'No. Only the order changes. Every page is copied exactly as it was.' }],
   },
   rotate: {
-    title: 'Rotate PDF Pages Online',
+    title: 'Rotate PDF Pages Online, Free',
+    h1: 'Rotate PDF',
     description: 'Rotate all or selected PDF pages by 90, 180 or 270 degrees and save the result. Free, no sign-up, no watermark.',
     answer: 'To rotate a PDF, choose 90° clockwise, 180° or 90° counter-clockwise, optionally list which pages, and press Rotate. The new PDF opens with those pages turned.',
     steps: ['Add your PDF.', 'Choose the angle and, if needed, the pages (blank means all).', 'Press Rotate now and download.'],
@@ -97,7 +106,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'insert-blank': {
-    title: 'Insert Blank Pages into a PDF',
+    title: 'Add Blank Page to PDF Online, Free',
+    h1: 'Add blank page to PDF',
     description: 'Add one or more blank pages before or after chosen pages of a PDF. Handy for duplex printing and notes. Free.',
     answer: 'To insert blank pages into a PDF, choose the pages to insert next to, whether before or after, and how many blank pages. The new PDF includes them at those positions.',
     steps: ['Add your PDF.', 'Enter the pages to insert next to (blank means every page) and pick before or after.', 'Press Insert now and download.'],
@@ -105,7 +115,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'What size are the blank pages?', a: 'By default they match the neighbouring page. You can also pick A4, Letter, A3, A5 or Legal.' }],
   },
   resize: {
-    title: 'Resize PDF Pages to A4 or Letter',
+    title: 'Resize PDF Pages to A4 or Letter, Free',
+    h1: 'Resize PDF',
     description: 'Scale every PDF page to A4, Letter, A3, A5 or Legal. Content is fitted and centred, never stretched. Free online.',
     answer: 'To resize a PDF, pick a target paper size and press Resize. Each page is scaled to fit and centred on the new size without distortion; landscape pages stay landscape.',
     steps: ['Add your PDF.', 'Choose the new page size (A4, Letter, A3, A5 or Legal).', 'Press Resize now and download.'],
@@ -113,7 +124,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Will text get blurry?', a: 'No. The page is scaled as vector content, so text and lines stay sharp.' }],
   },
   crop: {
-    title: 'Crop PDF Margins',
+    title: 'Crop PDF Margins Online, Free',
+    h1: 'Crop PDF',
     description: 'Trim white margins off PDF pages by setting top, right, bottom and left amounts in mm, inches or points. Free.',
     answer: 'To crop a PDF, enter how much to cut from the top, right, bottom and left (in millimetres, inches or points), choose the pages, and press Trim. The visible page area shrinks accordingly.',
     steps: ['Add your PDF.', 'Set the unit and the four margin amounts.', 'Press Trim now and download the cropped PDF.'],
@@ -121,7 +133,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Is the cut-off content deleted?', a: 'It is hidden by the new page box, not rewritten. If you need content gone for good, use the redaction tool.' }],
   },
   'n-up': {
-    title: 'Print Multiple PDF Pages Per Sheet',
+    title: 'Multiple Pages per Sheet PDF (N-up), Free',
+    h1: 'Multiple pages per sheet PDF',
     description: 'Put 2, 4, 6 or 9 PDF pages on one sheet for handouts and proofs. Adjustable margins and borders. Free online.',
     answer: 'N-up printing places several PDF pages on a single sheet. Choose 2, 4, 6 or 9 per sheet, set margins, and press Build to get a handout-style PDF that saves paper.',
     steps: ['Add your PDF.', 'Pick pages per sheet, sheet size, margins and whether to draw borders.', 'Press Build sheets and download.'],
@@ -129,7 +142,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Which layouts are available?', a: '2 across, 2 by 2, 3 by 2 and 3 by 3, on A4 or Letter. Wide layouts switch the sheet to landscape.' }],
   },
   repair: {
-    title: 'Repair a Damaged PDF',
+    title: 'Repair PDF: Fix a Damaged File, Free',
+    h1: 'Repair PDF',
     description: 'Try to rescue the readable pages of a corrupted PDF and save them into a clean new file. Free, in your browser.',
     answer: 'The repair tool reads as much of a damaged PDF as it can and copies every readable page into a fresh file. It cannot bring back pages that are truly destroyed.',
     steps: ['Add the damaged PDF.', 'Press Repair now.', 'Download the rebuilt file and check the page count in the notes.'],
@@ -137,7 +151,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Will it always work?', a: 'No. It succeeds when the page data is intact but the file structure is broken. Fully corrupted pages cannot be recovered.' }],
   },
   'page-numbers': {
-    title: 'Add Page Numbers to a PDF',
+    title: 'Add Page Numbers to PDF Online, Free',
+    h1: 'Add page numbers to PDF',
     description: 'Number the pages of a PDF anywhere on the page, with custom formats like Page 3 of 12. Free, no sign-up.',
     answer: 'To add page numbers to a PDF, choose a position, a format such as “Page {n} of {total}”, the first number, and which pages to number, then press Add numbers.',
     steps: ['Add your PDF.', 'Choose the position, format, first number and colour.', 'Press Add numbers and download the numbered PDF.'],
@@ -148,7 +163,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'text-watermark': {
-    title: 'Add a Text Watermark to a PDF',
+    title: 'Add Watermark to PDF Online, Free',
+    h1: 'Add watermark to PDF',
     description: 'Stamp DRAFT, CONFIDENTIAL or any text across PDF pages, centred or tiled. Choose angle, colour and opacity. Free.',
     answer: 'To watermark a PDF with text, type the text, choose size, angle, colour and opacity, pick centred or tiled, and press Stamp. The watermark is added to every page you choose.',
     steps: ['Add your PDF.', 'Type the watermark text and choose its look.', 'Press Stamp now and download.'],
@@ -156,7 +172,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Can the watermark be removed?', a: 'It is drawn onto the page, so it is not trivial to remove, but a determined person with editing software could. Treat it as a label, not security.' }],
   },
   'image-watermark': {
-    title: 'Add a Logo or Image to a PDF',
+    title: 'Add Logo or Image to PDF, Free',
+    h1: 'Add logo to PDF',
     description: 'Place a PNG or JPG logo, stamp or signature image on PDF pages with size, position and transparency. Free.',
     answer: 'To add an image to a PDF, choose the PDF and the image, set its width as a percentage of the page, choose position and opacity, and press Place.',
     steps: ['Add the PDF and the image (PNG or JPG).', 'Set width, position and opacity.', 'Press Place now and download.'],
@@ -164,7 +181,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Does a transparent PNG stay transparent?', a: 'Yes. Transparent areas of a PNG let the page show through.' }],
   },
   'headers-footers': {
-    title: 'Add Headers and Footers to a PDF',
+    title: 'Add Header and Footer to PDF, Free',
+    h1: 'Add header and footer to PDF',
     description: 'Add repeating left, centre and right text to PDF headers and footers, with page numbers, dates and file name. Free.',
     answer: 'To add headers and footers to a PDF, fill in any of the six boxes (left, centre or right, top or bottom). Placeholders {n}, {total}, {date} and {file} fill in automatically on each page.',
     steps: ['Add your PDF.', 'Fill in the header and footer boxes and pick size and colour.', 'Press Apply now and download.'],
@@ -172,7 +190,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Which characters are supported?', a: 'Standard Latin characters. Other scripts and emoji appear as question marks.' }],
   },
   'add-text': {
-    title: 'Write Text on a PDF',
+    title: 'Add Text to PDF Online, Free',
+    h1: 'Add text to PDF',
     description: 'Type text anywhere on a PDF page: dates, names, notes. Position it by percentage and choose size and colour.',
     answer: 'To write on a PDF, type your text, set how far from the left and top it should sit (in percent), choose size and colour, and pick the pages. The text is added on top of the page.',
     steps: ['Add your PDF.', 'Type the text and set its position, size and colour.', 'Enter the pages (or all) and press Write it.'],
@@ -180,7 +199,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Can I edit the text that is already in the PDF?', a: 'No. This tool adds new text on top. It does not change existing text.' }],
   },
   'images-to-pdf': {
-    title: 'Convert Images to PDF (JPG, PNG, WebP)',
+    title: 'Image to PDF: JPG, PNG, WebP, Free',
+    h1: 'Image to PDF',
     description: 'Turn photos and images into one PDF. Reorder, choose page size, and shrink huge phone photos. Free, no sign-up.',
     answer: 'To convert images to PDF, add your JPG, PNG or WebP files, order them, choose a page size, and press Make PDF. Each image becomes one page.',
     steps: ['Add your images and put them in order.', 'Choose page size (match each image, A4 or Letter), orientation and margin.', 'Press Make PDF and download images.pdf.'],
@@ -191,7 +211,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'scan-to-pdf': {
-    title: 'Scan Documents to PDF with Your Phone',
+    title: 'Scan to PDF with Your Phone Camera',
+    h1: 'Scan to PDF',
     description: 'Photograph paper pages and turn them into a clean PDF with evened-out lighting. Grayscale or black and white.',
     answer: 'To scan a document to PDF, take photos of each page (on a phone this opens the camera), choose a clean-up style, and press Make PDF. The tool evens out shadows and builds one PDF.',
     steps: ['Add photos of your pages or take them with the camera.', 'Pick a look: clean grayscale, high-contrast black and white, plain grayscale or colour.', 'Press Make PDF and download scan.pdf.'],
@@ -199,7 +220,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Does it straighten or crop the page?', a: 'Not yet. For best results, photograph the page flat, in even light, filling the frame.' }],
   },
   'text-to-pdf': {
-    title: 'Convert Text or Markdown to PDF',
+    title: 'Text to PDF and Markdown to PDF, Free',
+    h1: 'Text to PDF',
     description: 'Paste plain text or Markdown and download a neat PDF. Supports headings, lists, quotes, code blocks and rules.',
     answer: 'To turn text or Markdown into a PDF, paste it, choose Markdown or plain text, pick font and page size, and press Make PDF. Headings, bullet lists, quotes and code blocks are laid out automatically.',
     steps: ['Paste or type your text.', 'Choose format, font, page size, font size and margin.', 'Press Make PDF and download document.pdf.'],
@@ -207,7 +229,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Does it support emoji or non-Latin text?', a: 'Not yet. Standard PDF fonts cover Latin characters, so other characters show as question marks.' }],
   },
   'pdf-to-images': {
-    title: 'Convert PDF to JPG or PNG Images',
+    title: 'PDF to Image: Save Pages as JPG or PNG',
+    h1: 'PDF to image',
     description: 'Save every page of a PDF as a JPG or PNG at up to 300 dpi, bundled in a ZIP. Free, in your browser.',
     answer: 'To convert a PDF to images, choose JPG or PNG, a resolution (72 to 300 dpi) and the pages, then press Convert. Multiple images are bundled into one ZIP.',
     steps: ['Add your PDF.', 'Pick the format, resolution and pages.', 'Press Convert now and download the images or the ZIP.'],
@@ -218,7 +241,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'extract-text': {
-    title: 'Extract Text from a PDF',
+    title: 'PDF to Text: Extract Text from PDF, Free',
+    h1: 'PDF to text',
     description: 'Copy all the selectable text out of a PDF or save it as a .txt file. Free, runs in your browser.',
     answer: 'To extract text from a PDF, add the file and press Extract. The tool reads the PDF’s text layer and gives you the words to copy or download as a .txt file. Scanned PDFs have no text layer.',
     steps: ['Add your PDF.', 'Optionally limit the pages and choose whether to mark page starts.', 'Press Extract now, then copy or download the text.'],
@@ -226,7 +250,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Why did I get no text?', a: 'Your PDF is probably a scan, which is a picture of text. Run it through Read scans (OCR) first, then copy the text.' }],
   },
   compress: {
-    title: 'Compress a PDF to a Smaller Size',
+    title: 'Compress PDF: Reduce File Size Online, Free',
+    h1: 'Compress PDF',
     description: 'Reduce PDF file size for email and uploads. Choose a gentle clean-up or stronger picture compression. Free.',
     answer: 'To compress a PDF, choose a level and press Shrink. Gentle mode tidies the file and keeps text selectable. Stronger levels turn pages into compressed pictures for bigger savings on scans and photo-heavy files.',
     steps: ['Add your PDF.', 'Pick a level. Start with Gentle, then try Balanced or Strong if you need it smaller.', 'Press Shrink now and compare the before and after sizes.'],
@@ -237,7 +262,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   restyle: {
-    title: 'Convert PDF to Grayscale or Dark Mode',
+    title: 'Grayscale PDF and Dark Mode PDF, Free',
+    h1: 'Grayscale PDF',
     description: 'Turn a PDF black and white to save ink, invert it for night reading, or clean up a faded scan. Free online.',
     answer: 'To make a PDF grayscale or dark, choose a look (grayscale, inverted, sepia, high-contrast black and white, or scan clean-up) and press Restyle. Pages are redrawn with the new colours.',
     steps: ['Add your PDF.', 'Pick the look and quality, and optionally the pages.', 'Press Restyle now and download.'],
@@ -245,7 +271,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Can I still select text afterwards?', a: 'No. The result is made of page images, so text is no longer selectable.' }],
   },
   inspect: {
-    title: 'Inspect a PDF: Metadata and Privacy Check',
+    title: 'Inspect PDF: Metadata and Privacy Check',
+    h1: 'Inspect PDF',
     description: 'See a PDF’s page sizes, properties, hidden metadata, annotations and form fields before you share it. Free.',
     answer: 'The inspector reports a PDF’s page count and sizes, its properties (title, author, software, dates), whether hidden XMP metadata, annotations or form fields are present, and what to clean before sharing.',
     steps: ['Add your PDF.', 'Press Inspect now.', 'Read the report and copy or download it.'],
@@ -253,7 +280,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Does inspecting change my file?', a: 'No. It only reads the file and shows a report.' }],
   },
   properties: {
-    title: 'Remove Metadata from a PDF or Edit Properties',
+    title: 'Edit PDF Metadata or Remove It, Free',
+    h1: 'Edit PDF metadata',
     description: 'Strip author, title, software and hidden metadata from a PDF, or edit its title and author. Free, in your browser.',
     answer: 'To remove metadata from a PDF, turn on “Remove all metadata” and press Apply. The title, author, subject, keywords, software and dates are cleared and hidden XMP data is removed.',
     steps: ['Add your PDF.', 'Choose Remove all metadata, or turn it off to edit title, author, subject and keywords.', 'Press Apply now and download.'],
@@ -261,7 +289,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Does this remove everything identifying?', a: 'It removes document properties and XMP metadata. Names written in the visible content, and some tool-specific data, are not touched.' }],
   },
   flatten: {
-    title: 'Flatten PDF Forms and Remove Annotations',
+    title: 'Flatten PDF: Lock Forms, Remove Annotations',
+    h1: 'Flatten PDF',
     description: 'Lock fillable form answers into the page and optionally remove comments and highlights from a PDF. Free.',
     answer: 'Flattening turns fillable form fields into ordinary page content so the answers can no longer be edited. You can also strip comments, highlights and links.',
     steps: ['Add your PDF.', 'Choose whether to flatten forms and whether to remove annotations.', 'Press Flatten now and download.'],
@@ -269,7 +298,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Can I undo flattening?', a: 'Not in the new file. Keep your original if you may need editable fields again.' }],
   },
   redact: {
-    title: 'Redact a PDF: Black Out Text Permanently',
+    title: 'Redact PDF: Black Out Text Permanently',
+    h1: 'Redact PDF',
     description: 'Type the words or patterns to hide and get a PDF with black boxes and no recoverable text underneath. Free.',
     answer: 'To redact a PDF, list the words or patterns to hide, one per line, and press Redact. Matching text is covered with black boxes and every page is saved as an image, so the hidden text cannot be copied out.',
     steps: ['Add your PDF.', 'Type the text to black out (or use patterns), one per line.', 'Press Redact now, then open the result and check every page.'],
@@ -280,7 +310,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   compare: {
-    title: 'Compare Two PDFs: See What Changed',
+    title: 'Compare PDF: See What Changed',
+    h1: 'Compare PDF',
     description: 'Compare the text of two PDF versions and get a page-by-page list of added and removed lines. Free online.',
     answer: 'To compare two PDFs, add the original and the new version and press Compare. You get a page-by-page list showing lines removed from the old version and lines added in the new one.',
     steps: ['Add the original PDF and the new PDF.', 'Press Compare now.', 'Read, copy or download the list of changes.'],
@@ -288,7 +319,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     faq: [{ q: 'Does it compare images and layout?', a: 'No. It compares the text only. Image and layout changes are not detected.' }],
   },
   summarize: {
-    title: 'Summarise a PDF with AI (Bring Your Own Key)',
+    title: 'Summarize PDF with AI (Your Own Key)',
+    h1: 'Summarize PDF with AI',
     description: 'Get a short summary of a long PDF using your own OpenAI, Anthropic or Google key. Nothing passes through our servers.',
     answer: 'To summarise a PDF with AI, add your own API key in Settings once, choose a length, and press Summarise. The text of your PDF is sent directly from your browser to the AI provider you picked.',
     steps: ['Add your API key in Settings (OpenAI, Anthropic or Google).', 'Add your PDF and choose the length and language.', 'Press Summarise and read or copy the result.'],
@@ -299,7 +331,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   ask: {
-    title: 'Ask Questions About a PDF with AI',
+    title: 'Chat with PDF: Ask Questions with AI',
+    h1: 'Chat with PDF',
     description: 'Ask anything about a PDF and get an answer with page references, using your own AI key. Private by design.',
     answer: 'To ask a question about a PDF, add your own API key in Settings, add the PDF, type your question, and press Ask. The answer cites page numbers and says so when the document does not contain the answer.',
     steps: ['Add your API key in Settings.', 'Add your PDF and type your question.', 'Press Ask and read the answer with page references.'],
@@ -310,7 +343,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   lock: {
-    title: 'Password Protect a PDF (AES-256), Free',
+    title: 'Password Protect PDF (AES-256), Free',
+    h1: 'Password protect PDF',
     description: 'Add a password to a PDF with AES-256 encryption, in your browser. Optionally block printing and copying. Free, no upload, no sign-up.',
     answer: 'To password protect a PDF, add the file, type a password twice, choose what viewers may do (print, copy, edit) and press Add password. The PDF is encrypted with AES-256 inside your browser tab, and you download a new, protected copy.',
     steps: ['Add the PDF you want to protect.', 'Type a password twice and tick what people may do: print, copy, edit.', 'Press Add password and download the protected copy. Keep the original and the password safe.'],
@@ -323,7 +357,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   unlock: {
-    title: 'Remove a PDF Password (If You Know It), Free',
+    title: 'Unlock PDF: Remove a Password You Know',
+    h1: 'Unlock PDF',
     description: 'Unlock a password-protected PDF you own by entering its password. Also lifts print and copy restrictions. Runs in your browser, nothing is uploaded.',
     answer: 'To remove a password from a PDF, add the file, type its password and press Remove password. You download a copy that opens without a password. This works only when you know the password: the tool cannot guess or break one.',
     steps: ['Add the protected PDF.', 'Type its password. Leave it empty if the file opens but blocks printing or copying.', 'Press Remove password and download the unlocked copy.'],
@@ -336,7 +371,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   sign: {
-    title: 'Sign a PDF Online: Draw, Type or Upload, Free',
+    title: 'Sign PDF Online: Draw, Type or Upload',
+    h1: 'Sign PDF',
     description: 'Add your signature to a PDF: draw it, type it or upload a picture, then drag it into place. Free, private, no sign-up, nothing is uploaded.',
     answer: 'To sign a PDF, add the file, draw, type or upload your signature, drag it to the right spot on the page, and press Sign now. Your signature is placed as an image inside your browser, and you download the signed copy.',
     steps: ['Add the PDF you want to sign.', 'Draw your signature with a finger or mouse, type it, or upload a picture of it.', 'Drag it into place and resize it, choose which pages it goes on, then press Sign now and download.'],
@@ -349,7 +385,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   fill: {
-    title: 'Fill in a PDF Form Online, Free',
+    title: 'Fill PDF Form Online, Free',
+    h1: 'Fill PDF form',
     description: 'Fill in the text boxes, check boxes, drop-downs and radio buttons of a PDF form and save the result. Free and private: nothing leaves your browser.',
     answer: 'To fill in a PDF form, add the file, complete the fields the tool lists (text boxes, check boxes, drop-downs and radio buttons), choose whether to make the answers permanent, and press Fill form. You download a completed copy.',
     steps: ['Add a PDF form that has fillable fields.', 'Complete the fields that appear below the file.', 'Optionally tick “Make the answers permanent”, press Fill form and download.'],
@@ -362,7 +399,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   ocr: {
-    title: 'OCR a PDF: Make Scans Searchable, Free',
+    title: 'OCR PDF: Make Scans Searchable, Free',
+    h1: 'OCR PDF',
     description: 'Turn a scanned PDF or photos of pages into a searchable PDF or plain text with OCR. Runs in your browser, so the scan is never uploaded.',
     answer: 'To OCR a scanned PDF, add the file, choose the language of the text and press Read the text. The tool recognises the words in your browser and gives you a PDF that looks identical but is searchable and copyable, and/or a plain text file.',
     steps: ['Add a scanned PDF, or photos of pages (JPG, PNG, WebP).', 'Choose the language of the document and what you want back: a searchable PDF, a text file, or both.', 'Press Read the text, wait while each page is read, then download.'],
@@ -377,6 +415,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
   },
   'word-to-pdf': {
     title: 'Word to PDF Converter (.docx), Free',
+    h1: 'Word to PDF',
     description: 'Convert a Word .docx document to PDF in your browser: headings, lists, tables, pictures and links. Nothing is uploaded. No sign-up.',
     answer: 'To convert Word to PDF, add your .docx file and press Convert to PDF. The tool reads the document in your browser and builds a PDF with the same text, headings, lists, tables, pictures and links, using the document’s own page size. The layout is simplified, so check the result.',
     steps: ['Add a Word document (.docx).', 'Keep the page size as in the document, or pick A4 or Letter.', 'Press Convert to PDF and download the result.'],
@@ -390,6 +429,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
   },
   'html-to-pdf': {
     title: 'HTML to PDF: Convert a Web Page, Free',
+    h1: 'HTML to PDF',
     description: 'Convert a saved web page or pasted HTML to a PDF in your browser: headings, lists, tables, links and embedded pictures. Nothing is uploaded.',
     answer: 'To convert a web page to PDF, save the page from your browser (Ctrl+S, “Webpage, HTML only”) and add the file, or paste its HTML, then press Convert to PDF. You get a clean PDF of the text, headings, lists, tables and links. Style sheets and scripts are ignored.',
     steps: ['Save the page with Ctrl+S and add the .html file, or paste the HTML into the box.', 'Choose the page size and text size.', 'Press Convert to PDF and download the result.'],
@@ -403,6 +443,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
   },
   'excel-to-pdf': {
     title: 'Excel to PDF Converter (.xlsx, CSV), Free',
+    h1: 'Excel to PDF',
     description: 'Convert an Excel workbook or CSV file to PDF in your browser: every sheet as a clean table with dates, percents and numbers formatted. Nothing is uploaded.',
     answer: 'To convert Excel to PDF, add your .xlsx or CSV file and press Convert to PDF. Every sheet becomes a neatly laid-out table with the number, date and percent formats Excel shows. Wide sheets are scaled to fit, and the header row repeats on each page.',
     steps: ['Add an Excel workbook (.xlsx) or a CSV file.', 'Choose which sheets, the page size and orientation, and whether the first row is a header.', 'Press Convert to PDF and download the result.'],
@@ -416,7 +457,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'pdf-to-excel': {
-    title: 'PDF to Excel Converter: Extract Tables, Free',
+    title: 'PDF to Excel Converter: Extract Tables',
+    h1: 'PDF to Excel',
     description: 'Extract tables and text from a PDF into an Excel .xlsx workbook, in your browser. Columns are detected and numbers become real numbers. Not uploaded.',
     answer: 'To convert a PDF to Excel, add the PDF and press Convert to Excel. The tool finds columns from where the text sits on each page and builds an .xlsx workbook, with numbers stored as real numbers. It works on PDFs with a text layer; scanned PDFs need OCR first.',
     steps: ['Add a PDF that contains tables, such as a statement or an invoice.', 'Choose whether to find columns or keep one line per row, and one sheet per page or one sheet in total.', 'Press Convert to Excel and download the workbook, then check it against the PDF.'],
@@ -431,6 +473,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
   },
   'pdf-to-word': {
     title: 'PDF to Word Converter (.docx), Free',
+    h1: 'PDF to Word',
     description: 'Convert a PDF to an editable Word .docx in your browser: text in reading order, headings, lists and tables. Nothing is uploaded. No sign-up.',
     answer: 'To convert a PDF to Word, add the PDF and press Convert to Word. The tool reads the text and its positions in your browser and builds a .docx with headings, paragraphs, lists and simple tables. It works on PDFs with selectable text and is a clean starting point rather than a pixel-perfect copy.',
     steps: ['Add a PDF that has selectable text.', 'Choose whether to turn tables into Word tables.', 'Press Convert to Word, download the .docx and open it in Word.'],
@@ -445,6 +488,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
   },
   'pptx-to-pdf': {
     title: 'PowerPoint to PDF Converter (.pptx), Free',
+    h1: 'PowerPoint to PDF',
     description: 'Convert a PowerPoint .pptx to PDF in your browser: one page per slide with shapes, pictures, tables and text. Nothing is uploaded. No sign-up.',
     answer: 'To convert PowerPoint to PDF, add your .pptx file and press Convert to PDF. Each slide becomes a page of the same size, with shapes, pictures, tables and text drawn where they sit. Charts, SmartArt and effects are not reproduced, so check the result.',
     steps: ['Add a PowerPoint presentation (.pptx).', 'Press Convert to PDF.', 'Download the PDF and flip through it to check the slides.'],
@@ -457,7 +501,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'extract-images': {
-    title: 'Extract Images from a PDF, Free',
+    title: 'Extract Images from PDF, Free',
+    h1: 'Extract images from PDF',
     description: 'Save the photos and graphics stored inside a PDF. JPEGs come out unchanged, others as PNG. Runs in your browser, nothing is uploaded.',
     answer: 'To extract images from a PDF, add the file and press Extract pictures. The tool saves every embedded picture: JPEGs exactly as stored, and other pictures as PNG with transparency kept. You get them in one ZIP.',
     steps: ['Add your PDF.', 'Optionally limit the pages, or change the smallest size to keep.', 'Press Extract pictures and download the ZIP.'],
@@ -470,7 +515,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'pdf-to-pptx': {
-    title: 'Convert PDF to PowerPoint (PPTX), Free',
+    title: 'PDF to PowerPoint Converter (PPTX), Free',
+    h1: 'PDF to PowerPoint',
     description: 'Turn a PDF into a PowerPoint with one slide per page: exact-look pictures or editable text boxes. Runs in your browser. No sign-up.',
     answer: 'To convert a PDF to PowerPoint, add the file, choose Exact look or Editable text, and press Convert. Each page becomes a slide. Exact look keeps the design perfectly; Editable text places the words in boxes you can change.',
     steps: ['Add your PDF.', 'Pick Exact look (a picture per slide) or Editable text (text boxes).', 'Press Convert to PowerPoint and download the .pptx.'],
@@ -484,6 +530,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
   },
   'merge-pdf-images': {
     title: 'Merge PDF and Images into One PDF',
+    h1: 'Merge PDF and images',
     description: 'Combine PDFs with JPG, PNG or WebP pictures into a single PDF. Reorder with arrows, choose the page size. Free, in your browser.',
     answer: 'To merge PDFs and pictures, add them all to one list, put them in order, and press Merge. Each picture becomes a page on A4, Letter or its own size, and each PDF keeps its pages as they are.',
     steps: ['Add your PDFs and pictures together.', 'Use the arrows to set the order, and pick the page size for the pictures.', 'Press Merge now and download merged.pdf.'],
@@ -495,7 +542,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'jpg-to-pdf': {
-    title: 'Convert JPG to PDF, Free',
+    title: 'JPG to PDF Converter, Free',
+    h1: 'JPG to PDF',
     description: 'Turn one or many JPG photos into a PDF. A4 pages with margins, or match each photo. Nothing is uploaded, no sign-up.',
     answer: 'To convert JPG to PDF, add your photos, put them in order, choose a page size, and press Make PDF. Each JPG becomes one page, and the photos are not recompressed unless they are very large.',
     steps: ['Add your JPG photos.', 'Order them with the arrows and choose the page size.', 'Press Make PDF and download the file.'],
@@ -507,7 +555,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'pdf-to-jpg': {
-    title: 'Convert PDF to JPG, Free',
+    title: 'PDF to JPG Converter, Free',
+    h1: 'PDF to JPG',
     description: 'Save every page of a PDF as a JPG at up to 300 dpi, in a ZIP. Choose the quality. Runs in your browser, no sign-up.',
     answer: 'To convert a PDF to JPG, choose a resolution and quality, then press Convert. Every page becomes a JPG image, bundled in one ZIP.',
     steps: ['Add your PDF.', 'Pick the resolution, quality and pages.', 'Press Convert to JPG and download the images or the ZIP.'],
@@ -519,8 +568,9 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   translate: {
-    title: 'Translate a PDF with Your Own AI Key',
-    description: 'Translate the text of a PDF into Spanish, French, German, Chinese and more. Uses your own OpenAI, Anthropic or Google key; nothing goes through our servers.',
+    title: 'Translate PDF with Your Own AI Key',
+    h1: 'Translate PDF',
+    description: 'Translate the text of a PDF into Spanish, French, German, Chinese and more. Uses your own OpenAI, Anthropic or Google key, not our servers.',
     answer: 'To translate a PDF, add the file, choose the language and press Translate. The text is read in your browser and sent straight to the AI provider you set up in Settings, using your own key. You get the translated text as a file and, for Western European languages, a plain PDF.',
     steps: ['Add a PDF that has selectable text, and add your AI key in Settings once.', 'Choose the language and, for a long document, the pages.', 'Press Translate and download the text or PDF.'],
     uses: ['Read a foreign-language contract, manual or letter', 'Translate lecture notes or a paper', 'Get the gist of a document before paying for a professional translation'],
@@ -532,7 +582,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   flashcards: {
-    title: 'Make Flashcards or a Quiz from a PDF',
+    title: 'PDF to Flashcards and Quiz with AI',
+    h1: 'PDF to flashcards',
     description: 'Turn a PDF into flashcards or a multiple-choice quiz with answers. Download a CSV for Anki, Quizlet or Excel. Uses your own AI key.',
     answer: 'To make flashcards from a PDF, add the file, choose flashcards or a quiz and how many, then press Make study material. The text is sent straight from your browser to your own AI provider, and you download a CSV that imports into Anki, Quizlet, Excel or Google Sheets.',
     steps: ['Add a PDF with selectable text, and add your AI key in Settings once.', 'Choose flashcards or a quiz, how many, and optionally the pages.', 'Press Make study material, skim the result, and download the CSV.'],
@@ -544,7 +595,8 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     ],
   },
   'ai-extract': {
-    title: 'Pull Data from a PDF into Excel with AI',
+    title: 'Extract Data from PDF to Excel with AI',
+    h1: 'Extract data from PDF',
     description: 'Describe what you need (invoice lines, contract terms, dates and amounts) and get an Excel file. Uses your own AI key; nothing goes through our servers.',
     answer: 'To pull data from a PDF into Excel, add the file, pick what to extract or describe it, and press Pull out the data. An AI reads the text, using your own key, and you download an Excel workbook. Check the numbers against the PDF, because an AI can misread.',
     steps: ['Add a PDF with selectable text, and add your AI key in Settings once.', 'Choose a preset such as invoice lines, or describe what you need.', 'Press Pull out the data, check the rows, and download the workbook.'],

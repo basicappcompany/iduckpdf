@@ -4,6 +4,7 @@ import { useLocation, useT } from '../i18n/react';
 import { LanguageHint, LanguageSwitcher } from './LanguageSwitcher';
 import { useNavPress } from './nav';
 import { Anchor } from './Anchor';
+import { FamilyLinks } from './Family';
 import { useWidthState } from '../lib/useWidth';
 import { ds } from '../lib/responsive';
 import { useTheme } from '../lib/theme';
@@ -104,6 +105,8 @@ export function Sidebar() {
         <NavItem to="/donate" icon="💛" label={tr('Support iDuckPDF')} active={path === '/donate'} />
         <NavItem to="/settings" icon="⚙️" label={tr('Settings')} active={path === '/settings'} />
         <NavItem to="/about" icon="🦆" label={tr('About')} active={path === '/about'} />
+        <NavItem to="/how-it-works" icon="🔍" label={tr('How it works')} active={path === '/how-it-works'} />
+        <FamilyLinks compact />
       </ScrollView>
     </View>
   );
