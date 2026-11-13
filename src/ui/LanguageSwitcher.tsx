@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 import { Anchor } from './Anchor';
+import { ds } from '../lib/responsive';
 import { Flag } from './Flag';
 import { useNavPress } from './nav';
 import { useTheme } from '../lib/theme';
@@ -41,7 +42,7 @@ export function LanguageSwitcher() {
   const here = localeOf(lang);
   return (
     <View style={{ position: 'relative', zIndex: 20 }}>
-      <Pressable
+      <Pressable {...ds('btn')}
         onPress={() => setOpen((o) => !o)}
         accessibilityRole="button"
         accessibilityLabel={tr('Change language')}
@@ -49,7 +50,7 @@ export function LanguageSwitcher() {
         style={[{ flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, paddingHorizontal: 11, paddingVertical: 6, backgroundColor: t.card }, t.shadow(3)]}
       >
         <Flag code={here.flag} />
-        <Text style={{ color: t.ink, fontWeight: '800' }}>{here.short}</Text>
+        <Text {...ds('w520')} style={{ color: t.ink, fontWeight: '800' }}>{here.short}</Text>
       </Pressable>
       {open ? (
         <View style={[{ position: 'absolute', top: 44, right: 0, minWidth: 210, maxHeight: 440, padding: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, backgroundColor: t.card, overflow: 'auto' as any }, t.shadow(4)]}>

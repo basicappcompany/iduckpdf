@@ -64,7 +64,7 @@ export default function Helper() {
       <Seo path="/chat" />
       <View {...ds('chatpad')} style={{ flex: 1, width: '100%', maxWidth: 780, paddingHorizontal: width < 600 ? 12 : 20 }}>
         <View style={{ paddingTop: 16 }}>
-          <T v="h1" style={{ fontSize: 26, lineHeight: 30, letterSpacing: -0.5 }}>{tr('Ask the PDF helper')}</T>
+          <T v="h1" style={{ fontSize: 26, lineHeight: 36, letterSpacing: -0.5 }}>{tr('Ask the PDF helper')}</T>
           <T v="small" muted>{tr('Describe your PDF job in plain words and get pointed to the right free tool.')}</T>
         </View>
         <ScrollView ref={scroller} style={{ flex: 1 }} contentContainerStyle={{ paddingVertical: 20, gap: 14 }} keyboardShouldPersistTaps="handled">
