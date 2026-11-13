@@ -17,7 +17,8 @@ export default function Request() {
   const [title, setTitle] = useState('');
   const [why, setWhy] = useState('');
   const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<'' | 'sent' | 'fallback'>('');
+  const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const chosen = which === 'new' ? null : byId(which);
@@ -53,10 +54,11 @@ export default function Request() {
           <TextField value={email} onChange={setEmail} placeholder="you@example.com" />
         </Field>
         <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-          <Btn label={tr('Send request')} icon="💡" disabled={!ok} onPress={() => { sendMail(subject, body()); setSent(true); }} />
+          <Btn label={tr('Send request')} icon="💡" disabled={!ok || busy} onPress={async () => { setBusy(true); setSent(await sendMail(subject, body(), email.trim())); setBusy(false); }} />
           <Btn label={copied ? tr('Copied!') : tr('Copy instead')} variant="ghost" disabled={!ok} onPress={async () => { setCopied(await copyText(`To: ${SITE.feedbackEmail}\nSubject: ${subject}\n\n${body()}`)); setTimeout(() => setCopied(false), 1500); }} />
         </View>
-        {sent ? <Banner tone="ok">{tr('Your mail app should have opened with the request ready to send. If nothing happened, use “Copy instead” and email {email}.', { email: SITE.feedbackEmail })}</Banner> : null}
+        {sent === 'sent' ? <Banner tone="ok">{tr('Thank you! Your request has been sent.')}</Banner> : null}
+        {sent === 'fallback' ? <Banner tone="ok">{tr('Your mail app should have opened with the request ready to send. If nothing happened, use “Copy instead” and email {email}.', { email: SITE.feedbackEmail })}</Banner> : null}
       </Card>
     </Screen>
   );

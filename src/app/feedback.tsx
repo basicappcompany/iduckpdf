@@ -22,7 +22,8 @@ export default function Feedback() {
   const [kind, setKind] = useState('Bug');
   const [msg, setMsg] = useState('');
   const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<'' | 'sent' | 'fallback'>('');
+  const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const body = () => `${msg.trim()}\n\n— — —\nType: ${kind}${t ? `\nTool: ${t.name}` : ''}${email.trim() ? `\nReply to: ${email.trim()}` : ''}\nFrom: iDuckPDF web`;
@@ -49,15 +50,17 @@ export default function Feedback() {
           <Btn
             label={tr('Send feedback')}
             icon="📮"
-            disabled={!msg.trim()}
-            onPress={() => {
-              sendMail(subject, body());
-              setSent(true);
+            disabled={!msg.trim() || busy}
+            onPress={async () => {
+              setBusy(true);
+              setSent(await sendMail(subject, body(), email.trim()));
+              setBusy(false);
             }}
           />
           <Btn label={copied ? tr('Copied!') : tr('Copy message instead')} variant="ghost" disabled={!msg.trim()} onPress={async () => { setCopied(await copyText(`To: ${SITE.feedbackEmail}\nSubject: ${subject}\n\n${body()}`)); setTimeout(() => setCopied(false), 1500); }} />
         </View>
-        {sent ? <Banner tone="ok">{tr('Your mail app should have opened with the message ready to send. If nothing happened, use “Copy message instead” and email {email}.', { email: SITE.feedbackEmail })}</Banner> : null}
+        {sent === 'sent' ? <Banner tone="ok">{tr('Thank you! Your message has been sent.')}</Banner> : null}
+        {sent === 'fallback' ? <Banner tone="ok">{tr('Your mail app should have opened with the message ready to send. If nothing happened, use “Copy message instead” and email {email}.', { email: SITE.feedbackEmail })}</Banner> : null}
       </Card>
     </Screen>
   );
