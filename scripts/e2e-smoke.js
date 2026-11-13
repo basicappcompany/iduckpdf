@@ -148,6 +148,23 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   ok('merge finishes', (await page.getByText('Done!').count()) > 0);
   ok('merge reports 2 files into 6 pages', (await page.getByText(/2 files merged into 6 pages/).count()) > 0);
 
+  // search in the visitor's own language: the German name of a tool finds it (palette), and the helper answers a German sentence
+  await page.goto(BASE + '/de/');
+  await page.waitForFunction(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500); // the shortcut listener is attached just after hydration
+  await page.keyboard.press('Control+K');
+  await page.locator('input').last().fill('zusammenführen');
+  await page.waitForTimeout(400);
+  await page.keyboard.press('Enter');
+  await page.waitForURL('**/de/merge-pdf').catch(() => {});
+  ok('palette finds a tool by its German name', page.url().endsWith('/de/merge-pdf'), page.url());
+  await page.goto(BASE + '/de/chat');
+  await page.waitForFunction(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')), null, { timeout: 20000 }).catch(() => {});
+  await page.locator('input').last().fill('Ich möchte zwei PDFs zusammenführen');
+  await page.getByText('Senden', { exact: true }).click();
+  await page.getByText(/Das klingt nach/).first().waitFor({ timeout: 5000 }).catch(() => {});
+  ok('the helper understands a German sentence', (await page.getByText(/Das klingt nach/).count()) > 0);
+
   // the language picker really switches language (a full page load to /es/ and back)
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto(BASE + '/');

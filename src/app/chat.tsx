@@ -5,24 +5,26 @@ import { HUB_PATH, toolPath } from '../content/toolSlugs';
 import { ds } from '../lib/responsive';
 import { useTheme } from '../lib/theme';
 import { READY, bestMatch, type ToolDef } from '../tools';
+import { intentOf } from '../i18n/intent';
+import type { Lang } from '../i18n/locales';
 import { Btn, Chip, TextField, T } from '../ui/kit';
 import { Logo } from '../ui/Logo';
 import { Seo } from '../lib/seo';
-import { useT } from '../i18n/react';
+import { useLang, useT } from '../i18n/react';
 
 type Msg = { id: number; from: 'bot' | 'me'; text?: string; tool?: ToolDef; links?: { label: string; to: string }[] };
 
 type Tr = (s: string, v?: Record<string, string | number>) => string;
 
-function respond(text: string, tr: Tr): Omit<Msg, 'id' | 'from'> {
-  const s = text.toLowerCase();
-  if (/^(hi|hello|hey|yo|hiya)\b/.test(s)) return { text: tr('Hi! 🦆 Tell me what you want to do with your PDF, like “join two files” or “shrink this for email”.') };
-  if (/(safe|private|privacy|secure|upload|server|data)/.test(s)) return { text: tr('Most tools run inside your browser tab, so your PDF is processed on your device and not uploaded to us. The AI tools are the exception: with your own key, the text goes to the AI provider you choose. They warn you first.'), links: [{ label: tr('How it works'), to: '/about' }] };
-  if (/(bug|broken|not working|error|problem|issue|crash|feedback)/.test(s)) return { text: tr('Sorry about that! Tell us what happened and which file type it was, and we will look into it.'), links: [{ label: tr('Send feedback'), to: '/feedback' }] };
-  if (/(feature|suggest|wish|idea|missing|add a tool|request)/.test(s)) return { text: tr('We love ideas. Tell us what you wish this site could do.'), links: [{ label: tr('Request a feature'), to: '/request' }, { label: tr('See the roadmap'), to: '/roadmap' }] };
-  if (/(donate|support|tip|coffee|sponsor|pay)/.test(s)) return { text: tr('That is kind of you. There are no ads or paywalls here, and tips keep it that way.'), links: [{ label: tr('Support iDuckPDF'), to: '/donate' }] };
-  if (/(api key|settings|dark mode|theme|my key)/.test(s)) return { text: tr('Theme and AI keys live in Settings.'), links: [{ label: tr('Open Settings'), to: '/settings' }] };
-  const tool = bestMatch(text);
+function respond(text: string, tr: Tr, lang: Lang): Omit<Msg, 'id' | 'from'> {
+  const intent = intentOf(text, lang);
+  if (intent === 'greet') return { text: tr('Hi! 🦆 Tell me what you want to do with your PDF, like “join two files” or “shrink this for email”.') };
+  if (intent === 'privacy') return { text: tr('Most tools run inside your browser tab, so your PDF is processed on your device and not uploaded to us. The AI tools are the exception: with your own key, the text goes to the AI provider you choose. They warn you first.'), links: [{ label: tr('How it works'), to: '/about' }] };
+  if (intent === 'bug') return { text: tr('Sorry about that! Tell us what happened and which file type it was, and we will look into it.'), links: [{ label: tr('Send feedback'), to: '/feedback' }] };
+  if (intent === 'feature') return { text: tr('We love ideas. Tell us what you wish this site could do.'), links: [{ label: tr('Request a feature'), to: '/request' }, { label: tr('See the roadmap'), to: '/roadmap' }] };
+  if (intent === 'support') return { text: tr('That is kind of you. There are no ads or paywalls here, and tips keep it that way.'), links: [{ label: tr('Support iDuckPDF'), to: '/donate' }] };
+  if (intent === 'settings') return { text: tr('Theme and AI keys live in Settings.'), links: [{ label: tr('Open Settings'), to: '/settings' }] };
+  const tool = bestMatch(text, lang);
   if (tool) return { tool, text: tool.status === 'ready' ? tr('That sounds like “{name}”.', { name: tr(tool.name) }) : tr('That sounds like “{name}”, which is on the roadmap but not built yet.', { name: tr(tool.name) }) };
   return { text: tr('Hmm, I am not sure which tool that is. Try words like merge, split, compress, rotate, watermark or text. Or browse everything.'), links: [{ label: tr('Browse all PDF tools'), to: HUB_PATH }] };
 }
@@ -30,6 +32,7 @@ function respond(text: string, tr: Tr): Omit<Msg, 'id' | 'from'> {
 export default function Helper() {
   const { t } = useTheme();
   const tr = useT();
+  const lang = useLang();
   const STARTERS = ['Combine some PDFs', 'Make a PDF smaller', 'Turn photos into a PDF', 'Hide private info', 'Add page numbers', 'Is my file safe?'];
   const starterLabel = (s: string) => ({ 'Combine some PDFs': tr('Combine some PDFs'), 'Make a PDF smaller': tr('Make a PDF smaller'), 'Turn photos into a PDF': tr('Turn photos into a PDF'), 'Hide private info': tr('Hide private info'), 'Add page numbers': tr('Add page numbers'), 'Is my file safe?': tr('Is my file safe?') } as Record<string, string>)[s] || s;
   const width = useWidth();
@@ -51,7 +54,7 @@ export default function Helper() {
     setInput('');
     setTyping(true);
     setTimeout(() => {
-      setMsgs((m) => [...m, { id: nextId.current++, from: 'bot', ...respond(clean, tr) }]);
+      setMsgs((m) => [...m, { id: nextId.current++, from: 'bot', ...respond(clean, tr, lang) }]);
       setTyping(false);
     }, 450);
   };

@@ -1,5 +1,7 @@
 import { CATEGORIES, type CategoryId, type ToolDef, type ToolCtx, type ToolResult } from '../engine/types';
 import meta from './meta.generated.json';
+import { getCatalog, translate } from '../i18n/catalog';
+import { DEFAULT_LANG, localeOf, type Lang } from '../i18n/locales';
 
 export { CATEGORIES };
 export type { CategoryId, ToolDef };
@@ -59,23 +61,79 @@ export function scoreTool(t: ToolDef, query: string): number {
   return s;
 }
 
-export function searchTools(query: string, limit = 50): ToolDef[] {
-  return TOOLS.map((t) => ({ t, s: scoreTool(t, query) + (t.status === 'ready' ? 0.5 : 0) }))
+/** Lower-case and strip accents, so "última" matches "ultima" and "Zusammenführen" matches "zusammenfuhren". */
+export const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const SPLIT = /[^\p{L}\p{M}\p{N}]+/u;
+const wordsOf = (s: string) => fold(s).split(SPLIT).filter((w) => w.length > 1);
+
+/** What each tool is called and described as in a language, built once from the catalog (the same text the page shows), so people can search and ask in their own language. */
+type LangIndex = { name: Map<string, string>; text: Map<string, Set<string>>; common: Set<string> };
+const indexes: Partial<Record<Lang, LangIndex>> = {};
+function indexFor(lang: Lang): LangIndex | null {
+  if (lang === DEFAULT_LANG || localeOf(lang).overlay) return null;
+  if (indexes[lang]) return indexes[lang]!;
+  if (!getCatalog(lang)) return null; // the catalog script may still be loading: try again next time
+  const name = new Map<string, string>();
+  const text = new Map<string, Set<string>>();
+  const df = new Map<string, number>();
+  for (const t of TOOLS) {
+    const n = translate(lang, t.name);
+    name.set(t.id, fold(n));
+    const set = new Set(wordsOf(`${n} ${translate(lang, t.short)} ${translate(lang, t.desc)}`));
+    text.set(t.id, set);
+    for (const w of set) df.set(w, (df.get(w) ?? 0) + 1);
+  }
+  // words that appear in the text of many tools ("pdf", "de", "для") say nothing about which tool is meant; this works in any language without a stop-word list
+  const common = new Set([...df].filter(([, n]) => n > 7).map(([w]) => w));
+  return (indexes[lang] = { name, text, common });
+}
+
+function scoreInLang(t: ToolDef, query: string, ix: LangIndex): number {
+  const f = fold(query.trim());
+  if (!f) return 0;
+  const name = ix.name.get(t.id) ?? '';
+  if (name.startsWith(f)) return 100;
+  if (name.includes(f)) return 70;
+  const set = ix.text.get(t.id) ?? new Set<string>();
+  const nameWords = name.split(SPLIT).filter(Boolean);
+  const stem = (a: string, b: string) => {
+    const n = /[ऀ-৿]/.test(a) ? 3 : 4; // Hindi and Bengali words are shorter in letters
+    return a.length >= n && b.length >= n && a.slice(0, n) === b.slice(0, n);
+  };
+  let s = 0;
+  for (const w of wordsOf(query).filter((x) => !ix.common.has(x))) {
+    if (nameWords.includes(w)) s += 4;
+    else if (nameWords.some((n) => n.startsWith(w) || stem(n, w))) s += 3;
+    else if (set.has(w)) s += 2;
+    else if ([...set].some((x) => stem(x, w) || (w.length >= 5 && x.includes(w)))) s += 1.5; // a shared stem, or the word inside a longer one (kompres / mengompres)
+  }
+  return s;
+}
+
+/** English keywords still count in every language ("rotate", "ocr"), on top of what the tool is called in the visitor's language. */
+function scoreFor(t: ToolDef, query: string, lang: Lang): number {
+  const en = scoreTool(t, query);
+  const ix = indexFor(lang);
+  return ix ? Math.max(en, scoreInLang(t, query, ix) + (en < 70 ? en : 0)) : en;
+}
+
+export function searchTools(query: string, limit = 50, lang: Lang = DEFAULT_LANG): ToolDef[] {
+  return TOOLS.map((t) => ({ t, s: scoreFor(t, query, lang) + (t.status === 'ready' ? 0.5 : 0) }))
     .filter((x) => x.s > (query.trim() ? 0.5 : 0))
     .sort((a, b) => b.s - a.s)
     .slice(0, limit)
     .map((x) => x.t);
 }
 
-export function bestMatch(text: string): ToolDef | null {
+export function bestMatch(text: string, lang: Lang = DEFAULT_LANG): ToolDef | null {
   let best: ToolDef | null = null;
   let top = 0;
   for (const t of TOOLS) {
-    const s = scoreTool(t, text);
+    const s = scoreFor(t, text, lang);
     if (s > top) {
       top = s;
       best = t;
     }
   }
-  return top >= 2 ? best : null;
+  return top >= (lang === DEFAULT_LANG ? 2 : 1.5) ? best : null;
 }

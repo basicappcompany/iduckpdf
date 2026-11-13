@@ -4,7 +4,7 @@
  *   - every UI string found in the source (`tr('...')`, `translate(lang, '...')`) plus every tool and category name,
  *   - the title, description, answer, steps, uses and FAQ of every tool,
  *   - every guide (title, SEO title, description, intro, sections, FAQ) with the same number of sections and questions as English,
- *   - the home page FAQ and the title/description of every fixed page,
+ *   - the home page FAQ, the title/description of every fixed page and the words the helper chat listens for,
  *   - the same {placeholders} in a translation as in its English source, and the word "PDF" kept as "PDF".
  * Usage: tsx scripts/i18n-check.ts   (part of CI via npm run test:engine)
  */
@@ -81,6 +81,7 @@ export function problemsFor(lang: string, cat: any): string[] {
   }
   for (const p of FIXED_PAGES) need(str(cat.seo?.[p]?.title) && str(cat.seo?.[p]?.description), `seo: ${p} needs a title and a description`);
   need(Array.isArray(cat.homeFaq) && cat.homeFaq.length === HOME_FAQ.length && cat.homeFaq.every((f: any) => str(f.q) && str(f.a)), `homeFaq: needs ${HOME_FAQ.length} complete questions`);
+  for (const k of ['greet', 'privacy', 'bug', 'feature', 'support', 'settings']) need(Array.isArray(cat.chat?.[k]) && cat.chat[k].length > 0 && cat.chat[k].every(str), `chat.${k}: the helper chat needs words for this intent`);
 
   for (const t of READY) {
     const en = TOOL_SEO[t.id];

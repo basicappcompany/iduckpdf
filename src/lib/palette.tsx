@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useHref, useT } from '../i18n/react';
+import { useHref, useLang, useT } from '../i18n/react';
 import { useTheme } from './theme';
 import { READY, searchTools } from '../tools';
 import { toolPath } from '../content/toolSlugs';
@@ -64,6 +64,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
   const router = useRouter();
   const href = useHref();
   const tr = useT();
+  const lang = useLang();
   const [q, setQ] = useState('');
   const [sel, setSel] = useState(0);
 
@@ -86,7 +87,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
     const query = q.trim().toLowerCase();
     const pages: Item[] = PAGES.filter((p) => !query || (p.label + ' ' + tr(p.label) + ' ' + p.kw).toLowerCase().includes(query)).map((p) => ({ id: 'p' + p.to, label: tr(p.label), icon: p.icon, hint: tr('Page'), group: 'Pages' as const, run: go(p.to) }));
     const actions: Item[] = [{ id: 'theme', label: tr('Switch light / dark'), icon: '🌗', hint: tr('Action'), group: 'Actions' as const, run: () => { onClose(); toggle(); } }].filter((a) => !query || 'theme dark light mode night switch'.includes(query) || a.label.toLowerCase().includes(query) || 'Switch light / dark'.toLowerCase().includes(query));
-    const tools: Item[] = (query ? searchTools(query, 8) : READY.slice(0, 8)).map((tl) => ({
+    const tools: Item[] = (query ? searchTools(query, 8, lang) : READY.slice(0, 8)).map((tl) => ({
       id: 't' + tl.id,
       label: tr(tl.name),
       icon: tl.icon,
@@ -95,7 +96,7 @@ function Palette({ visible, onClose }: { visible: boolean; onClose: () => void }
       run: go(toolPath(tl.id)),
     }));
     return [...tools, ...pages, ...actions].slice(0, 14);
-  }, [q, go, onClose, toggle, tr]);
+  }, [q, go, onClose, toggle, tr, lang]);
 
   useEffect(() => setSel((s) => Math.min(s, Math.max(0, items.length - 1))), [items.length]);
 
