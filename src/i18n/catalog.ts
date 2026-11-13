@@ -20,6 +20,8 @@ export type Catalog = {
   homeFaq?: { q: string; a: string }[];
   /** [regex over the English message, translated template] for messages the tools build at run time ("Rotated 3 pages."). In the template $1 is a captured group and {p1:one|many} picks by whether group 1 is 1. */
   patterns?: [string, string][];
+  /** Words that tell the helper chat what a message is about, per intent (greet, privacy, bug, feature, support, settings), in this language. English words always work too. */
+  chat?: Record<string, string[]>;
 };
 
 const cache: Partial<Record<Lang, Catalog | null>> = {};
@@ -47,7 +49,8 @@ export function getCatalog(lang: Lang): Catalog | null {
 
 /** Test hook: install a catalog without a file. */
 export function setCatalog(lang: Lang, c: Catalog | null) {
-  cache[lang] = c;
+  if (c) cache[lang] = c;
+  else delete cache[lang]; // back to loading the real catalog
   delete compiled[lang];
 }
 

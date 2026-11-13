@@ -6,14 +6,15 @@ import { ToolCard } from '../ui/ToolCard';
 import { Seo } from '../lib/seo';
 import { SiteFooter } from '../ui/SiteFooter';
 import { useLocalSearchParams } from 'expo-router';
-import { useT } from '../i18n/react';
+import { useLang, useT } from '../i18n/react';
 
 export default function AllTools() {
   const tr = useT();
+  const lang = useLang();
   const params = useLocalSearchParams<{ q?: string }>();
   const [q, setQ] = useState(typeof params.q === 'string' ? params.q : '');
   const [cat, setCat] = useState<CategoryId | 'all'>('all');
-  const found = useMemo(() => (q.trim() ? searchTools(q, 60) : TOOLS), [q]);
+  const found = useMemo(() => (q.trim() ? searchTools(q, 60, lang) : TOOLS), [q, lang]);
   const cats = VISIBLE_CATEGORIES.filter((c) => cat === 'all' || c.id === cat);
 
   return (

@@ -17,6 +17,8 @@ import { TOOL_SEO } from '../src/content/toolSeo';
 import { GUIDES } from '../src/content/guides';
 import { HOME_FAQ } from '../src/content/homeFaq';
 import { toolPath } from '../src/content/toolSlugs';
+import { bestMatch, searchTools } from '../src/tools';
+import { intentOf } from '../src/i18n/intent';
 
 let pass = 0;
 let fail = 0;
@@ -105,6 +107,7 @@ const complete: Catalog = {
   homeFaq: HOME_FAQ.map((f) => ({ ...f })),
   tools: Object.fromEntries(READY.map((t) => [t.id, { name: t.name, short: t.short, desc: t.desc, ...TOOL_SEO[t.id] }])),
   guides: Object.fromEntries(GUIDES.map((g) => [g.slug, { ...g }])),
+  chat: Object.fromEntries(['greet', 'privacy', 'bug', 'feature', 'support', 'settings'].map((k) => [k, ['x']])),
 };
 const none = problemsFor('es', complete);
 check('a catalog that covers everything passes', none.length === 0, none.slice(0, 3).join(' | '));
@@ -114,6 +117,16 @@ const wrongSteps = { ...complete, tools: { ...complete.tools, merge: { ...comple
 check('the checker insists that steps mirror the English structure', problemsFor('es', wrongSteps).some((b) => b.includes('tools.merge.steps')));
 const wrongPlaceholder = { ...complete, ui: { ...complete.ui, 'How to use {name}': 'Cómo usar' } };
 check('the checker insists on the same placeholders', problemsFor('es', wrongPlaceholder).some((b) => b.includes('placeholders differ')));
+check('the checker insists on helper chat words', problemsFor('es', { ...complete, chat: undefined }).some((b) => b.includes('chat.greet')));
+
+/* ---- search and the helper in other languages (real catalogs from disk) ---- */
+const top = (q: string, lang: any) => searchTools(q, 3, lang)[0]?.id;
+check('search finds a tool by its German, French, Turkish and Hindi name', top('zusammenführen', 'de') === 'merge' && top('fusionner', 'fr') === 'merge' && top('birleştir', 'tr') === 'merge' && top('मर्ज', 'hi') === 'merge');
+check('search ignores accents and endings', top('zusammenfuhren', 'de') === 'merge' && bestMatch('ich möchte PDFs zusammenführen', 'de')?.id === 'merge');
+check('English words still work in other languages', top('rotate', 'de') === 'rotate' && top('rotate', 'ru') === 'rotate');
+check('the helper picks the right tool from a sentence in Russian, Indonesian and French', bestMatch('как сжать PDF', 'ru')?.id === 'compress' && bestMatch('perkecil PDF ini', 'id')?.id === 'compress' && bestMatch('je veux diviser un PDF', 'fr')?.id === 'split');
+check('English search is unchanged', top('merge', 'en') === 'merge' && bestMatch('shrink this for email')?.id === 'compress');
+check('the helper understands intents in other languages', intentOf('Hallo!', 'de') === 'greet' && intentOf('Hilfe bitte', 'de') !== 'greet' && intentOf('Sind meine Daten sicher?', 'de') === 'privacy' && intentOf('это не работает', 'ru') === 'bug' && intentOf('मेरी कुंजी कहाँ है', 'hi') === 'settings');
 
 es.live = false;
 setCatalog('es', null);
