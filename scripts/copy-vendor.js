@@ -14,8 +14,16 @@ const copy = (from, to) => {
 };
 
 try {
-  const pdfjs = path.join(nm, 'pdfjs-dist', 'build');
-  for (const f of ['pdf.min.js', 'pdf.worker.min.js']) copy(path.join(pdfjs, f), path.join(dest, f));
+  // The "legacy" build also runs on older Safari and Chrome versions. It is an ES module, loaded by scripts/pdfjs-loader.mjs.
+  const base = path.join(nm, 'pdfjs-dist');
+  const pdfjs = path.join(base, 'legacy', 'build');
+  for (const f of ['pdf.min.mjs', 'pdf.worker.min.mjs']) copy(path.join(pdfjs, f), path.join(dest, f));
+  copy(path.join(root, 'scripts', 'pdfjs-loader.mjs'), path.join(dest, 'pdfjs-loader.mjs'));
+  // WebAssembly decoders (JPEG 2000 and colour profiles), standard fonts and character maps, all served from this site
+  for (const d of ['wasm', 'standard_fonts', 'cmaps']) {
+    const from = path.join(base, d);
+    for (const f of fs.readdirSync(from)) copy(path.join(from, f), path.join(dest, 'pdfjs', d, f));
+  }
   console.log('[copy-vendor] pdf.js copied to public/vendor');
 } catch (e) {
   console.warn('[copy-vendor] pdf.js skipped:', e.message);

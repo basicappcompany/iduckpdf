@@ -17,7 +17,7 @@ import { writePptx } from '../src/engine/pptxwrite';
 const warn = console.warn;
 console.warn = (...a: unknown[]) => { if (!/polyfill|fetchStandardFontData/.test(String(a[0]))) warn(...a); };
 const nodeRequire = eval('require') as NodeRequire;
-const pdfjs = nodeRequire('pdfjs-dist/legacy/build/pdf.js');
+const pdfjs = nodeRequire('pdfjs-dist/legacy/build/pdf.mjs');
 const FONT_DIR = nodeRequire('path').join(process.cwd(), 'node_modules', 'pdfjs-dist', 'standard_fonts') + '/';
 (globalThis as any).window = { pdfjsLib: pdfjs };
 

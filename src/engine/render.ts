@@ -15,13 +15,13 @@ export function getPdfjs(): Promise<any> {
   if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
   if (!loader) {
     loader = new Promise((resolve, reject) => {
+      // pdf.js is an ES module; this tiny same-origin module imports it, sets the worker and hangs it on window.pdfjsLib
       const s = document.createElement('script');
-      s.src = '/vendor/pdf.min.js';
-      s.async = true;
+      s.type = 'module';
+      s.src = '/vendor/pdfjs-loader.mjs';
       s.onload = () => {
         const lib = window.pdfjsLib;
         if (!lib) return reject(new ToolError('The PDF engine failed to start.'));
-        lib.GlobalWorkerOptions.workerSrc = '/vendor/pdf.worker.min.js';
         resolve(lib);
       };
       s.onerror = () => {
@@ -37,7 +37,14 @@ export function getPdfjs(): Promise<any> {
 export async function openPdfjs(bytes: Uint8Array): Promise<any> {
   const lib = await getPdfjs();
   try {
-    return await lib.getDocument({ data: bytes.slice(), isEvalSupported: false }).promise;
+    return await lib.getDocument({
+      data: bytes.slice(),
+      isEvalSupported: false, // never compile PDF-supplied code (CVE-2024-4367)
+      wasmUrl: '/vendor/pdfjs/wasm/',
+      standardFontDataUrl: '/vendor/pdfjs/standard_fonts/',
+      cMapUrl: '/vendor/pdfjs/cmaps/',
+      cMapPacked: true,
+    }).promise;
   } catch (e: any) {
     if (e && e.name === 'PasswordException') throw new ToolError('This PDF is password-protected.');
     throw new ToolError('This PDF could not be opened. It may be damaged. Try the Repair tool.');
