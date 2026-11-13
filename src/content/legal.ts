@@ -58,7 +58,7 @@ export const PRIVACY: LegalDoc = {
     {
       h: 'Feedback and feature requests',
       p: [
-        'The feedback and feature-request pages send your message to our inbox through our email provider (Resend) when you press send. If sending is unavailable, they open your own email app with a pre-filled message instead, and nothing is sent until you press send there. We use your message and email address only to read and reply to it, and keep it only as long as it is useful.',
+        'The feedback and feature-request pages send your message to our inbox through Cloudflare email service when you press send. If sending is unavailable, they open your own email app with a pre-filled message instead, and nothing is sent until you press send there. We use your message and email address only to read and reply to it, and keep it only as long as it is useful.',
       ],
     },
     {
