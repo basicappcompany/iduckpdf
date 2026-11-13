@@ -4,6 +4,7 @@ import { useTheme } from '../lib/theme';
 import { useNavPress } from './nav';
 import { Anchor } from './Anchor';
 import { T } from './kit';
+import { FamilyLinks } from './Family';
 import { READY } from '../tools';
 import { GUIDE_INDEX as GUIDES } from '../content/guideIndex';
 import { SITE } from '../config';
@@ -48,6 +49,7 @@ export function SiteFooter() {
             <FooterLink to="/chat" label={tr('Ask the helper')} />
             <FooterLink to="/roadmap" label={tr('Roadmap')} />
             <FooterLink to="/about" label={tr('About')} />
+            <FooterLink to="/how-it-works" label={tr('How it works')} />
             <FooterLink to="/privacy" label={tr('Privacy policy')} />
             <FooterLink to="/terms" label={tr('Terms of use')} />
             <FooterLink to="/request" label={tr('Request a feature')} />
@@ -55,6 +57,7 @@ export function SiteFooter() {
             <FooterLink to="/donate" label={tr('Support us')} />
           </>
         ))}
+        <View style={{ flexGrow: 1, flexBasis: 200 }}><FamilyLinks /></View>
       </View>
       <T v="small" muted>
         © {new Date(SITE.updated).getFullYear()} {SITE.operator} · {SITE.name} · {SITE.domain} · {tr('Free PDF tools that run in your browser.')} {tr('Last updated {date}.', { date: SITE.updated })}

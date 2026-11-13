@@ -7,6 +7,7 @@ import { join } from 'path';
 import { READY, SOON } from '../src/tools';
 import { TOOL_SEO } from '../src/content/toolSeo';
 import { GUIDES } from '../src/content/guides';
+import { LANDINGS } from '../src/content/landing';
 import { SITE } from '../src/config';
 import { HUB_PATH, toolPath } from '../src/content/toolSlugs';
 import { TOOLS } from '../src/tools';
@@ -28,6 +29,7 @@ const pages: { path: string; prio: string; freq: string }[] = [
   { path: '/chat', prio: '0.5', freq: 'monthly' },
   { path: '/roadmap', prio: '0.4', freq: 'monthly' },
   { path: '/about', prio: '0.4', freq: 'yearly' },
+  ...LANDINGS.map((l) => ({ path: `/${l.slug}`, prio: l.kind === 'info' ? '0.5' : '0.8', freq: 'monthly' })),
   { path: '/privacy', prio: '0.3', freq: 'yearly' },
   { path: '/terms', prio: '0.3', freq: 'yearly' },
 ];
@@ -71,6 +73,9 @@ ${READY.map((t) => `- [${t.name}](${abs(toolPath(t.id))}): ${TOOL_SEO[t.id]?.ans
 
 ## Guides
 ${GUIDES.map((g) => `- [${g.title}](${abs('/guides/' + g.slug)}): ${g.description}`).join('\n')}
+
+## More pages
+${LANDINGS.map((l) => `- [${l.h1}](${abs('/' + l.slug)}): ${l.description}`).join('\n')}
 
 ${live.length > 1 ? `## Languages\nThe whole site is also available in:\n${live.filter((l) => l.code !== DEFAULT_LANG).map((l) => `- [${l.name} (${l.native})](${abs(localePath('/', l.code))})`).join('\n')}\n\n` : ''}## Optional
 - [All PDF tools](${abs(HUB_PATH)}): the full list, grouped by task
