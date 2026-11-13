@@ -16,6 +16,7 @@ import { LinkCard } from '../ui/LinkCard';
 import { toolPath } from '../content/toolSlugs';
 import { GUIDE_INDEX as GUIDES } from '../content/guideIndex';
 import { SITE } from '../config';
+import { ds } from '../lib/responsive';
 
 const POPULAR = ['merge', 'split', 'compress', 'images-to-pdf', 'page-numbers', 'text-watermark', 'pdf-to-images', 'inspect'];
 
@@ -45,11 +46,11 @@ export default function Home() {
         <Pressable
           onPress={open}
           accessibilityRole="button"
-          style={((s: any) => [{ width: '100%', maxWidth: 620, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderColor: t.line, borderRadius: 16, paddingHorizontal: 18, paddingVertical: 15, backgroundColor: t.card, marginTop: 6 }, t.shadow(4), s.hovered ? { transform: [{ translateX: -2 }, { translateY: -2 }] } : null]) as any}
+          style={((s: any) => [{ width: '100%', maxWidth: 620, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderColor: t.line, borderRadius: 16, paddingHorizontal: 18, paddingVertical: 15, backgroundColor: t.card, marginTop: 6 }, t.shadow(4), s.hovered ? { transform: [{ translateX: -2 }, { translateY: -2 }] } : null]) as any}
         >
           <Text style={{ fontSize: 18 }}>🔍</Text>
-          <Text style={{ flex: 1, color: t.muted, fontSize: 17 }}>{tr('What do you want to do with your PDF?')}</Text>
-          <Text style={{ color: t.muted, fontSize: 12, fontWeight: '800', borderWidth: 1.5, borderColor: t.muted, borderRadius: 6, paddingHorizontal: 6 }}>Ctrl K</Text>
+          <Text numberOfLines={1} style={{ flex: 1, minWidth: 0, color: t.muted, fontSize: 17 }}>{tr('What do you want to do with your PDF?')}</Text>
+          <Text {...ds('w560')} style={{ color: t.muted, fontSize: 12, fontWeight: '800', borderWidth: 1.5, borderColor: t.muted, borderRadius: 6, paddingHorizontal: 6 }}>Ctrl K</Text>
         </Pressable>
       </View>
 
