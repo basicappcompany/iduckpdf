@@ -37,6 +37,12 @@ export function LanguageSwitcher() {
   const nav = useNavPress();
   const { lang, path } = useLocation();
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open || Platform.OS !== 'web') return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
   const live = liveLocales();
   if (live.length < 2) return null;
   const here = localeOf(lang);
@@ -53,6 +59,10 @@ export function LanguageSwitcher() {
         <Text {...ds('w520')} style={{ color: t.ink, fontWeight: '800' }}>{here.short}</Text>
       </Pressable>
       {open ? (
+        // a transparent layer over the whole screen: a tap or click anywhere outside the menu closes it
+        <Pressable accessibilityLabel={tr('Close menu')} onPress={() => setOpen(false)} style={(Platform.OS === 'web' ? { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, cursor: 'default' } : { position: 'absolute', top: -2000, left: -2000, right: -2000, bottom: -2000 }) as any} />
+      ) : null}
+      {open ? (
         <View style={[{ position: 'absolute', top: 44, right: 0, minWidth: 210, maxHeight: 440, padding: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, backgroundColor: t.card, overflow: 'auto' as any }, t.shadow(4)]}>
           {live.map((l) => {
             const to = target(path, l.code);
@@ -62,6 +72,7 @@ export function LanguageSwitcher() {
                 <Pressable
                   accessibilityRole="link"
                   onPress={(e: any) => {
+                    setOpen(false);
                     remember(l.code);
                     if (Platform.OS === 'web') return goTo(to, e); // a real page load, so the language's catalog comes with its page
                     nav(to, true)(e);

@@ -178,6 +178,27 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.waitForURL((u) => !u.pathname.startsWith('/es'), { timeout: 10000 }).catch(() => {});
   ok('language picker returns to English', !new URL(page.url()).pathname.startsWith('/es'));
 
+  // the language menu closes on a tap anywhere else, on Escape and when a language is chosen
+  await page.goto(BASE + '/');
+  await page.waitForFunction(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(800);
+  const langBtn = page.getByRole('button', { name: /Change language/i });
+  const menuOpen = () => page.getByText('English (UK)', { exact: true }).isVisible().catch(() => false);
+  await langBtn.click();
+  ok('the language menu opens', await menuOpen());
+  await page.mouse.click(300, 600);
+  await page.waitForTimeout(300);
+  ok('a click outside closes the language menu', !(await menuOpen()));
+  await langBtn.click();
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(300);
+  ok('Escape closes the language menu', !(await menuOpen()));
+  await langBtn.click();
+  const box = await langBtn.boundingBox();
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2); // the button again, while the menu is open
+  await page.waitForTimeout(300);
+  ok('clicking the language button again closes the menu', !(await menuOpen()));
+
   // dark theme persists across reloads, no hydration complaints
   await page.evaluate(() => localStorage.setItem('duck.theme', 'dark'));
   problems.length = 0;
