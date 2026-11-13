@@ -9,6 +9,8 @@ const LEVELS: Record<string, { dpi: number; q: number }> = {
   strong: { dpi: 96, q: 0.55 },
   tiny: { dpi: 72, q: 0.4 },
 };
+// When a size target is set the tool keeps squeezing past "tiny" until the file fits (or the pictures become unreadable).
+const TARGET_LADDER: { dpi: number; q: number }[] = [LEVELS.balanced, LEVELS.strong, LEVELS.tiny, { dpi: 60, q: 0.35 }, { dpi: 48, q: 0.3 }];
 
 export const shrinkTools: ToolDef[] = [
   {
@@ -22,9 +24,26 @@ export const shrinkTools: ToolDef[] = [
     inputs: [{ key: 'files', label: 'PDF', accept: 'pdf' }],
     options: [
       {
+        key: 'target',
+        type: 'select',
+        label: 'Aim for a file size',
+        default: 'none',
+        options: [
+          { value: 'none', label: 'No target (use the level below)' },
+          { value: '100', label: 'Under 100 KB' },
+          { value: '200', label: 'Under 200 KB' },
+          { value: '300', label: 'Under 300 KB' },
+          { value: '500', label: 'Under 500 KB' },
+          { value: '1024', label: 'Under 1 MB' },
+          { value: '2048', label: 'Under 2 MB' },
+        ],
+        hint: 'Starts gentle and squeezes harder until the file fits. If it cannot fit, you get the smallest result and a note.',
+      },
+      {
         key: 'level',
         type: 'select',
         label: 'How hard to squeeze',
+        showIf: { key: 'target', eq: 'none' },
         default: 'balanced',
         options: [
           { value: 'lossless', label: 'Gentle: keep text selectable' },
@@ -43,6 +62,38 @@ export const shrinkTools: ToolDef[] = [
       const f = needOne(files.files);
       const before = f.size;
       let bytes: Uint8Array;
+      const limit = opts.target && opts.target !== 'none' ? Number(opts.target) * 1024 : 0;
+      if (limit) {
+        // Size target: try the gentle clean-up first (keeps text), then ever stronger picture compression, and stop at the first result that fits.
+        let best = await save(await loadDoc(f, { updateMetadata: false }));
+        let how = 'only the file structure was tidied, so text stays selectable';
+        if (best.length > limit) {
+          const src = await openPdfjs(await f.bytes());
+          for (let step = 0; step < TARGET_LADDER.length && best.length > limit; step++) {
+            const { dpi, q } = TARGET_LADDER[step];
+            const scale = dpi / 72;
+            const out = await PDFDocument.create();
+            for (let i = 1; i <= src.numPages; i++) {
+              const { canvas, viewport } = await renderPage(src, i, scale);
+              const img = await out.embedJpg(await canvasToBytes(canvas, 'image/jpeg', q));
+              const w = viewport.width / scale;
+              const h = viewport.height / scale;
+              out.addPage([w, h]).drawImage(img, { x: 0, y: 0, width: w, height: h });
+              progress((step + i / src.numPages) / TARGET_LADDER.length, `Squeezing: attempt ${step + 1} of ${TARGET_LADDER.length}, page ${i} of ${src.numPages}`);
+            }
+            const tried = await save(out);
+            if (tried.length < best.length) {
+              best = tried;
+              how = `pages were turned into ${dpi} dpi pictures, so text can no longer be selected`;
+            }
+          }
+        }
+        const fitted = best.length <= limit;
+        const notes = [`${fmtBytes(before)} → ${fmtBytes(best.length)} (${Math.round((1 - best.length / before) * 100)}% smaller); ${how}.`];
+        if (!fitted) notes.push(`This file could not get under ${fmtBytes(limit)}. The smallest result is ${fmtBytes(best.length)}. Many pages, large pages or photo-heavy pages make small targets out of reach; try splitting the PDF or removing pages first.`);
+        else if (best.length >= before) notes.push('This PDF was already small enough. Keep your original file.');
+        return { files: [pdfOut(`${baseName(f.name)}-smaller.pdf`, best.length < before ? best : new Uint8Array(await f.bytes()))], notes };
+      }
       if (opts.level === 'lossless') {
         const doc = await loadDoc(f, { updateMetadata: false });
         bytes = await save(doc);

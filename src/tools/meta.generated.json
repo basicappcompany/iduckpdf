@@ -1640,9 +1640,50 @@
   ],
   "options": [
    {
+    "key": "target",
+    "type": "select",
+    "label": "Aim for a file size",
+    "default": "none",
+    "options": [
+     {
+      "value": "none",
+      "label": "No target (use the level below)"
+     },
+     {
+      "value": "100",
+      "label": "Under 100 KB"
+     },
+     {
+      "value": "200",
+      "label": "Under 200 KB"
+     },
+     {
+      "value": "300",
+      "label": "Under 300 KB"
+     },
+     {
+      "value": "500",
+      "label": "Under 500 KB"
+     },
+     {
+      "value": "1024",
+      "label": "Under 1 MB"
+     },
+     {
+      "value": "2048",
+      "label": "Under 2 MB"
+     }
+    ],
+    "hint": "Starts gentle and squeezes harder until the file fits. If it cannot fit, you get the smallest result and a note."
+   },
+   {
     "key": "level",
     "type": "select",
     "label": "How hard to squeeze",
+    "showIf": {
+     "key": "target",
+     "eq": "none"
+    },
     "default": "balanced",
     "options": [
      {
