@@ -16,7 +16,7 @@ import { readXlsx } from '../src/engine/xlsx';
 const warn = console.warn;
 console.warn = (...a: unknown[]) => { if (!/polyfill|fetchStandardFontData/.test(String(a[0]))) warn(...a); }; // pdf.js chatter in Node
 const nodeRequire = eval('require') as NodeRequire;
-const pdfjs = nodeRequire('pdfjs-dist/legacy/build/pdf.js');
+const pdfjs = nodeRequire('pdfjs-dist/legacy/build/pdf.mjs');
 const FONT_DIR = nodeRequire('path').join(process.cwd(), 'node_modules', 'pdfjs-dist', 'standard_fonts') + '/';
 // pdf.js looks for window.pdfjsLib in the browser build of our loader; tell it we already have the library
 (globalThis as any).window = { pdfjsLib: pdfjs };
