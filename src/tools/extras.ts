@@ -1,6 +1,6 @@
 import { PDFDocument } from 'pdf-lib';
 import type { OutFile, ToolDef } from '../engine/types';
-import { ToolError, baseName, loadDoc, needOne, parsePages, pdfOut, save } from '../engine/util';
+import { ToolError, baseName, fmtBytes, loadDoc, needOne, parsePages, pdfOut, save } from '../engine/util';
 import { addImagePage, embedPicture, isPdfBytes } from '../engine/imagepage';
 import { extractImages } from '../engine/pdfimages';
 import { writePptx, type SlideDef } from '../engine/pptxwrite';
@@ -190,6 +190,20 @@ export const extraTools: ToolDef[] = [
       { key: 'orient', type: 'select', label: 'Orientation', default: 'auto', options: orientOpts, showIf: { key: 'size', ne: 'fit' } },
       { key: 'margin', type: 'number', label: 'Margin (mm)', default: 10, showIf: { key: 'size', ne: 'fit' } },
       { key: 'shrink', type: 'toggle', label: 'Shrink very large photos', default: true, hint: 'Recommended. Caps the longest side at 2200 px.' },
+      {
+        key: 'limit',
+        type: 'select',
+        label: 'Aim for a file size',
+        default: 'none',
+        options: [
+          { value: 'none', label: 'No size limit' },
+          { value: '200', label: 'Under 200 KB' },
+          { value: '500', label: 'Under 500 KB' },
+          { value: '1024', label: 'Under 1 MB' },
+          { value: '2048', label: 'Under 2 MB' },
+        ],
+        hint: 'Starts gentle and squeezes harder until the file fits. If it cannot fit, you get the smallest result and a note.',
+      },
     ],
     runLabel: 'Make PDF',
     tips: ['Turn Shrink off to keep your JPGs byte for byte: the file is bigger but the photos are untouched.', 'Photographing paper? Scan to PDF cleans up lighting and contrast.'],
@@ -200,13 +214,30 @@ export const extraTools: ToolDef[] = [
     status: 'ready',
     async run({ files, opts, progress }) {
       const list = files.files;
-      const doc = await PDFDocument.create();
-      for (let i = 0; i < list.length; i++) {
-        const img = await embedPicture(doc, list[i], { shrink: !!opts.shrink });
-        addImagePage(doc, img, { size: opts.size, orient: opts.orient || 'auto', marginMm: Math.max(0, Number(opts.margin) || 0) });
-        progress((i + 1) / list.length, `Added ${list[i].name}`);
+      const limit = opts.limit && opts.limit !== 'none' ? Number(opts.limit) * 1024 : 0;
+      const build = async (extra: { maxSide?: number; quality?: number }, step: number, steps: number) => {
+        const doc = await PDFDocument.create();
+        for (let i = 0; i < list.length; i++) {
+          const img = await embedPicture(doc, list[i], { shrink: !!opts.shrink || !!extra.maxSide, ...extra });
+          addImagePage(doc, img, { size: opts.size, orient: opts.orient || 'auto', marginMm: Math.max(0, Number(opts.margin) || 0) });
+          progress((step + (i + 1) / list.length) / steps, `Added ${list[i].name}`);
+        }
+        return save(doc);
+      };
+      const name = list.length === 1 ? `${baseName(list[0].name)}.pdf` : 'photos.pdf';
+      const base = `${list.length} photo${list.length === 1 ? '' : 's'} → ${list.length} page${list.length === 1 ? '' : 's'}.`;
+      if (!limit) return { files: [pdfOut(name, await build({}, 0, 1))], notes: [base] };
+      // size limit: start with the normal settings, then shrink the pictures harder until the PDF fits
+      const ladder: { maxSide?: number; quality?: number }[] = [{}, { maxSide: 1600, quality: 0.7 }, { maxSide: 1200, quality: 0.6 }, { maxSide: 900, quality: 0.5 }, { maxSide: 700, quality: 0.4 }, { maxSide: 500, quality: 0.35 }];
+      let best: Uint8Array | null = null;
+      for (let s = 0; s < ladder.length; s++) {
+        const bytes = await build(ladder[s], s, ladder.length);
+        if (!best || bytes.length < best.length) best = bytes;
+        if (bytes.length <= limit) break;
       }
-      return { files: [pdfOut(list.length === 1 ? `${baseName(list[0].name)}.pdf` : 'photos.pdf', await save(doc))], notes: [`${list.length} photo${list.length === 1 ? '' : 's'} → ${list.length} page${list.length === 1 ? '' : 's'}.`] };
+      const notes = [`${base} ${fmtBytes(best!.length)}.`];
+      if (best!.length > limit) notes.push(`This could not get under ${fmtBytes(limit)}. The smallest result is ${fmtBytes(best!.length)}. Use fewer photos or a bigger limit.`);
+      return { files: [pdfOut(name, best!)], notes };
     },
   },
   {

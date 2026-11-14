@@ -127,6 +127,10 @@
      {
       "value": "each",
       "label": "One file per page"
+     },
+     {
+      "value": "size",
+      "label": "By file size"
      }
     ]
    },
@@ -149,6 +153,17 @@
     "showIf": {
      "key": "mode",
      "eq": "every"
+    }
+   },
+   {
+    "key": "mb",
+    "type": "number",
+    "label": "Largest file size (MB)",
+    "default": 5,
+    "hint": "Each file stays under this size when it can. One very large page may be bigger on its own.",
+    "showIf": {
+     "key": "mode",
+     "eq": "size"
     }
    }
   ],
@@ -3419,6 +3434,35 @@
     "label": "Shrink very large photos",
     "default": true,
     "hint": "Recommended. Caps the longest side at 2200 px."
+   },
+   {
+    "key": "limit",
+    "type": "select",
+    "label": "Aim for a file size",
+    "default": "none",
+    "options": [
+     {
+      "value": "none",
+      "label": "No size limit"
+     },
+     {
+      "value": "200",
+      "label": "Under 200 KB"
+     },
+     {
+      "value": "500",
+      "label": "Under 500 KB"
+     },
+     {
+      "value": "1024",
+      "label": "Under 1 MB"
+     },
+     {
+      "value": "2048",
+      "label": "Under 2 MB"
+     }
+    ],
+    "hint": "Starts gentle and squeezes harder until the file fits. If it cannot fit, you get the smallest result and a note."
    }
   ],
   "runLabel": "Make PDF",
