@@ -17,6 +17,9 @@ export default function Roadmap() {
   const IDEAS = [
     { title: tr('More OCR languages'), blurb: tr('Arabic, Hindi, Chinese, Japanese and other scripts need larger fonts to write the invisible text layer.') },
     { title: tr('Closer Word, Excel and PowerPoint conversions'), blurb: tr('Headers and footers, text boxes, charts and exact fonts are not reproduced yet.') },
+    { title: tr('PDF to Markdown and a word counter'), blurb: tr('Turn a PDF into clean Markdown text for notes and AI tools, and count its words, characters and reading time. Both can run in your browser.') },
+    { title: tr('Bates numbering'), blurb: tr('Stamp every page with a running prefix and number (for example CASE-000123), the way legal and audit teams label documents.') },
+    { title: tr('Split a PDF by file size'), blurb: tr('Cut a long PDF into parts that each stay under a size limit, such as 5 MB for an email or an upload form.') },
     { title: tr('Android and iPhone apps'), blurb: tr('The site is built with React Native (via Expo), so the same code can become apps. Tools that draw pages need extra mobile work first.') },
   ];
   const added = NEW_TOOL_IDS.map((id) => byId(id)).filter(Boolean);

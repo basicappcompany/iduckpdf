@@ -10,6 +10,7 @@ Rules followed: no passwords typed, no accounts created, nothing bought. I did n
 | --- | --- |
 | Mozilla Observatory | **B+ (80/100)**, 11 of 12 tests passed. The one failure is `style-src 'unsafe-inline'` (the web UI toolkit writes inline `style` attributes). |
 | securityheaders.com | Could not be scanned from the command line (Cloudflare challenge on their side). Open <https://securityheaders.com/?q=iduckpdf.com&followRedirects=on> and note the grade; response headers at baseline had CSP, X-Frame-Options, nosniff, Referrer-Policy and Permissions-Policy, but no HSTS and no COOP. |
+| **After (2026-11-14)** | Mozilla Observatory **A+ (125/100)**, 0 tests failed. securityheaders.com still needs a manual look (their site blocks scripts); expected A or A+ now that HSTS, COOP and frame-ancestors are set. |
 | TLS | 1.3 works, 1.1 refused. HTTP redirects (301) to HTTPS. |
 | DNSSEC | Off (no DS record at the registry). |
 
@@ -144,5 +145,7 @@ Not done:
 - Part C4: gap list vs competitors: PDF to PDF/A, PDF to Markdown, word counter, Bates numbering, EPUB/ODT/RTF to PDF, marketplace label croppers. Not built (each new tool needs 10-language translations); not yet added to the roadmap page.
 - OUTREACH.md written (nothing posted).
 - Search Console / Bing exports, Rich Results Test, PageSpeed runs, securityheaders.com grade and final Observatory re-run: not done.
-- Observatory stays B+ until inline styles are removed from style-src (not attempted).
+- Observatory re-run: A+ (125), so the inline-style worry was unfounded.
+- PageSpeed: the API quota was exhausted and I was not allowed to install Lighthouse. Last measured mobile scores (before these changes): 93/94/93 with accessibility, best practices and SEO at 100. Re-run at pagespeed.web.dev for the home page, /merge-pdf, /compress-pdf and a guide.
+- Roadmap: added PDF to Markdown and word counter, Bates numbering and split by file size as ideas (10 languages). Other gaps seen at iLovePDF, Smallpdf and pdf.pi7.org: PDF/A, EPUB/ODT/RTF to PDF, marketplace label croppers, PDF highlighter.
 - Turkish/hreflang: covered by the existing completeness test only.
