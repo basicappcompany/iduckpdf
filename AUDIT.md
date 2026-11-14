@@ -136,13 +136,13 @@ Titles are shown without the " | iDuckPDF" suffix.
 
 Merged and live: PR 42 (headers, keyword titles/H1s, family links, How it works, security.txt) and PR 43 (pdf.js 6.5.438). Live tool suite 96/96 after each deploy.
 
-In PR "growth-pages" (open, NOT merged; CI must pass first): compress-to-a-size mode in Compress PDF, six size pages (100 KB to 2 MB), five job pages (email, form upload, combine PDF and JPG, bank statement / e-Aadhaar unlock, sign on phone) and three comparison pages (iLovePDF, Smallpdf, no-upload options) with sources and the 2026-11-14 check date. The new browser tests for these pages were written but not yet run locally.
+Also merged and live (PR 44, browser tests 102/102 locally and on the live site): compress-to-a-size mode in Compress PDF, six size pages (100 KB to 2 MB), five job pages (email, form upload, combine PDF and JPG, bank statement / e-Aadhaar unlock, sign on phone) and three comparison pages (iLovePDF, Smallpdf, no-upload options) with sources and the 2026-11-14 check date.
 
 Not done:
 - Part C1: already fine, all 51 tools already have a guide.
 - Part C2/C3 gaps: split PDF by size and JPG to PDF under a size limit need new engine work.
 - Part C4: gap list vs competitors: PDF to PDF/A, PDF to Markdown, word counter, Bates numbering, EPUB/ODT/RTF to PDF, marketplace label croppers. Not built (each new tool needs 10-language translations); not yet added to the roadmap page.
-- OUTREACH.md not written.
+- OUTREACH.md written (nothing posted).
 - Search Console / Bing exports, Rich Results Test, PageSpeed runs, securityheaders.com grade and final Observatory re-run: not done.
 - Observatory stays B+ until inline styles are removed from style-src (not attempted).
 - Turkish/hreflang: covered by the existing completeness test only.
