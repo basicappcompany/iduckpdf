@@ -29,7 +29,7 @@ async function makePdf(name, pages, text) {
 }
 
 /** A PNG made here (no image library needed): colour comes from fn(x, y) -> [r, g, b]. */
-function makePng(w, h, fn) {
+function makeFnPng(w, h, fn) {
   const zlib = require('zlib');
   const raw = Buffer.alloc((w * 3 + 1) * h);
   for (let y = 0; y < h; y++) {
@@ -51,7 +51,7 @@ function makePng(w, h, fn) {
 }
 async function makeImagePdf(name, pages, fn) {
   const d = await PDFDocument.create();
-  const img = await d.embedPng(makePng(900, 1200, fn));
+  const img = await d.embedPng(makeFnPng(900, 1200, fn));
   for (let i = 0; i < pages; i++) d.addPage([595, 842]).drawImage(img, { x: 0, y: 0, width: 595, height: 842 });
   const out = path.join(TMP, name);
   fs.writeFileSync(out, await d.save());
@@ -711,9 +711,11 @@ const fillPasswords = (a, b) => async (page) => {
     ok('size page: a smooth scan is brought under 100 KB', await done(page, 90000));
     const small = await download(page);
     ok('size page: the result really is under 100 KB', fs.statSync(small).size <= 100 * 1024, String(fs.statSync(small).size));
-    const noise = await makeImagePdf('noise.pdf', 3, () => [Math.random() * 256, Math.random() * 256, Math.random() * 256]);
+    const noise = await makeImagePdf('noise.pdf', 12, () => [Math.random() * 256, Math.random() * 256, Math.random() * 256]);
     await useTool(page, '/compress-pdf-to-100kb', [noise], async () => {}, /Shrink now/);
-    ok('size page: an unreachable target is reported honestly', (await done(page, 120000)) && (await page.getByText(/could not get under/i).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false)));
+    const finished = await done(page, 170000);
+    const reported = finished && (await page.getByText(/could not get under/i).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false));
+    ok('size page: an unreachable target is reported honestly', reported, finished ? (await page.locator('body').innerText()).replace(/\s+/g, ' ').match(/Done!.{0,300}/)?.[0] : 'did not finish');
     await page.goto(BASE + '/iduckpdf-vs-ilovepdf');
     ok('comparison page: table, sources and date are in the page', (await page.locator('table').count()) === 1 && (await page.getByText('Sources').count()) > 0 && (await page.getByText(/Last reviewed 2026-/).count()) > 0);
   }
@@ -740,4 +742,4 @@ const fillPasswords = (a, b) => async (page) => {
   const failed = results.filter((r) => !r.pass);
   console.log(`\n${results.length - failed.length}/${results.length} passed`);
   process.exit(failed.length ? 1 : 0);
-})().catch((e) => { console.error('E2E CRASH', e.message); process.exit(2); });
+})().catch((e) => { console.error('E2E CRASH', e.stack || e.message); process.exit(2); });
