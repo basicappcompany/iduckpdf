@@ -3,7 +3,7 @@ import type { ToolDef } from '../engine/types';
 import { MM, ToolError, baseName, colorOf, expandTokens, loadDoc, needOne, parsePages, pdfOut, safeText, save } from '../engine/util';
 import { processImage } from '../engine/imaging';
 
-const colorOptions = [
+export const colorOptions = [
   { value: 'black', label: 'Black' },
   { value: 'gray', label: 'Gray' },
   { value: 'red', label: 'Red' },
@@ -11,7 +11,7 @@ const colorOptions = [
   { value: 'green', label: 'Green' },
 ];
 
-const positions = [
+export const positions = [
   { value: 'bc', label: 'Bottom centre' },
   { value: 'br', label: 'Bottom right' },
   { value: 'bl', label: 'Bottom left' },
@@ -21,7 +21,7 @@ const positions = [
 ];
 
 /** x,y for text whose baseline starts at (x,y) given a 2-letter position code. */
-function place(pos: string, pw: number, ph: number, w: number, size: number, m: number): { x: number; y: number } {
+export function place(pos: string, pw: number, ph: number, w: number, size: number, m: number): { x: number; y: number } {
   const v = pos[0] === 't' ? ph - m - size : m;
   const h = pos[1] === 'l' ? m : pos[1] === 'r' ? pw - m - w : (pw - w) / 2;
   return { x: h, y: v };

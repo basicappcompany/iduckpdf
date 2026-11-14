@@ -607,4 +607,44 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
       { q: 'Can it invent numbers?', a: 'It is told to use only what is in the document and to leave missing cells empty, but language models can still err. Always check against the PDF.' },
     ],
   },
+
+  'word-count': {
+    title: 'PDF Word Counter: Count Words in a PDF, Free',
+    h1: 'PDF word counter',
+    description: 'Count the words, characters, sentences and pages in a PDF, with reading time and the most common words. Runs in your browser, no sign-up.',
+    answer: 'To count the words in a PDF, add the file, optionally limit the pages, and press Count now. You get the word, character, sentence and paragraph counts, an estimated reading time and the most common words. It works on PDFs with selectable text.',
+    steps: ['Add your PDF.', 'Leave the pages blank to count everything, or type a range such as 2-10.', 'Press Count now and copy or download the report.'],
+    uses: ['Check an essay or report against a word limit', 'Estimate how long a document takes to read', 'See which words a paper repeats most'],
+    faq: [
+      { q: 'Why does it find no words in my PDF?', a: 'A scanned PDF is only a picture of text. Run it through OCR PDF first, then count the words.' },
+      { q: 'How is a word counted?', a: 'A word is a run of letters or digits. Contractions like don’t and hyphenated words like e-mail count once. Counts can differ slightly from Word or Google Docs.' },
+      { q: 'Are headers, footers and page numbers counted?', a: 'Yes, if they are part of the PDF’s text. Limit the pages if you want to leave out a cover or appendix.' },
+    ],
+  },
+  bates: {
+    title: 'Bates Numbering for PDF: Add Bates Stamps, Free',
+    h1: 'Bates numbering for PDF',
+    description: 'Stamp a running ID such as CASE-000123 on every page of a PDF. Choose the prefix, start number, digits and position. Free, in your browser.',
+    answer: 'To add Bates numbers to a PDF, add the file, type a prefix such as CASE-, choose the first number, the digits and the position, then press Add numbers. Every page gets a running ID like CASE-000001, CASE-000002 and so on.',
+    steps: ['Add your PDF.', 'Set the prefix, the first number, how many digits and where the stamp goes.', 'Press Add numbers and download the stamped PDF.'],
+    uses: ['Label every page of a document set for a legal case or audit', 'Give exhibits a unique reference that can be cited', 'Continue numbering a second batch from where the first ended'],
+    faq: [
+      { q: 'How do I continue numbering from an earlier batch?', a: 'Set “First number” to the next number after the last page of the earlier batch, and keep the same prefix and digits.' },
+      { q: 'Can I stamp only some pages?', a: 'Yes. Type a range such as 2-last in “Only these pages”. Numbers run in order over the pages you choose.' },
+      { q: 'Does it change my original file?', a: 'No. You download a new PDF with the stamps; your original is untouched.' },
+    ],
+  },
+  'pdf-to-markdown': {
+    title: 'PDF to Markdown Converter, Free and Private',
+    h1: 'PDF to Markdown',
+    description: 'Convert a PDF into Markdown with headings, lists and paragraphs for notes, wikis and AI tools. Runs in your browser; the file is not uploaded.',
+    answer: 'To convert a PDF to Markdown, add the file, optionally pick the pages, and press Convert now. The text comes back as Markdown, with headings, lists and paragraphs guessed from font size and position. Check the result, then copy it or download the .md file.',
+    steps: ['Add your PDF.', 'Leave the pages blank for everything, or type a range.', 'Press Convert now, then copy the Markdown or download the .md file.'],
+    uses: ['Move a report into a notes app or wiki', 'Prepare a clean text version of a paper for an AI tool', 'Reuse the headings and lists of a document without retyping'],
+    faq: [
+      { q: 'How accurate are the headings and lists?', a: 'They are guessed from font size, boldness and position, so check the result. Simple documents convert well; complex layouts and tables may need tidying.' },
+      { q: 'Does it handle tables and images?', a: 'No. Tables come out as lines of text and images are left out. Use PDF to Excel for tables and Extract images for pictures.' },
+      { q: 'Why is the result empty?', a: 'A scanned PDF has no selectable text. Run OCR PDF first, then convert the searchable result.' },
+    ],
+  },
 };

@@ -179,6 +179,56 @@ async function pdfPages(bytes: Uint8Array): Promise<{ text: string; width: numbe
   const none = await throws(() => writePptx([]));
   check('pptx writer: no slides is refused', none instanceof Error);
 
+  // ---- text extras: word count, Bates numbering, PDF to Markdown ----
+  {
+    const td = await PDFDocument.create();
+    const hb = await td.embedFont(StandardFonts.HelveticaBold);
+    const hf = await td.embedFont(StandardFonts.Helvetica);
+    const pg1 = td.addPage([595, 842]);
+    pg1.drawText('Annual Report', { x: 50, y: 780, size: 28, font: hb });
+    pg1.drawText('Overview', { x: 50, y: 730, size: 18, font: hb });
+    pg1.drawText("The quick brown fox doesn't sleep; it jumps over the lazy dog.", { x: 50, y: 700, size: 11, font: hf });
+    pg1.drawText('Foxes are quick and clever animals that jump.', { x: 50, y: 686, size: 11, font: hf });
+    pg1.drawText('- first point', { x: 50, y: 650, size: 11, font: hf });
+    pg1.drawText('- second point', { x: 50, y: 636, size: 11, font: hf });
+    const pg2 = td.addPage([595, 842]);
+    pg2.drawText('Second page with exactly eight plain words here.', { x: 50, y: 780, size: 11, font: hf });
+    const tdBytes = await td.save();
+    const tf = pf('report.pdf', tdBytes, 'application/pdf');
+
+    const wc = await run('word-count', { files: [tf] });
+    check('word count: reports words, pages and reading time', !!wc.text && /Words: \d+/.test(wc.text) && /Pages counted: 2 of 2/.test(wc.text) && /reading time/.test(wc.text));
+    const n = Number(((wc.text || '').match(/Words: ([\d,]+)/) || [])[1]?.replace(/,/g, ''));
+    check('word count: the number is right (contractions count once)', n === 35, String(n));
+    check('word count: most common words are listed', /quick: 2/.test(wc.text || ''));
+    const wc2 = await run('word-count', { files: [tf] }, { pages: '2' });
+    check('word count: a page range limits the count', /Words: 8\b/.test(wc2.text || ''), (wc2.text || '').split('\n')[2]);
+    const blank = await PDFDocument.create();
+    blank.addPage([300, 300]);
+    const blankFile = pf('blank.pdf', await blank.save(), 'application/pdf');
+    const wc3 = await run('word-count', { files: [blankFile] });
+    check('word count: a PDF with no text says so', !wc3.text && (wc3.notes || []).some((x) => /No selectable text/.test(x)));
+
+    const bt = await run('bates', { files: [tf] }, { prefix: 'CASE-', start: 123, digits: 6 });
+    const bp = await pdfPages(bt.files![0].bytes);
+    check('bates: stamps a zero-padded running number on every page', /CASE-000123/.test(bp[0].text) && /CASE-000124/.test(bp[1].text), bp.map((x) => x.text.slice(-20)).join(' | '));
+    check('bates: the page count and original text are kept', bp.length === 2 && /Annual Report/.test(bp[0].text));
+    const bt2 = await run('bates', { files: [tf] }, { prefix: 'X', start: 5, digits: 3, pages: '2' });
+    const bp2 = await pdfPages(bt2.files![0].bytes);
+    check('bates: a page range stamps only those pages, starting at the first number', !/X005/.test(bp2[0].text) && /X005/.test(bp2[1].text));
+    const e1 = await throws(() => run('bates', { files: [tf] }, { start: -3 }));
+    check('bates: a negative first number is refused', e1 instanceof ToolError);
+
+    const md = await run('pdf-to-markdown', { files: [tf] });
+    check('markdown: the biggest text becomes a # heading', /^# Annual Report/m.test(md.text || ''), (md.text || '').slice(0, 60));
+    check('markdown: a smaller bold line becomes a sub-heading', /^#{2,3} Overview/m.test(md.text || ''));
+    check('markdown: body lines are joined into a paragraph', /quick brown fox[^\n]*Foxes are quick/.test((md.text || '').replace(/\n(?!\n)/g, ' ')));
+    check('markdown: bullets become list items', /^- first point/m.test(md.text || '') && /^- second point/m.test(md.text || ''));
+    check('markdown: the file is named .md', md.textName === 'report.md');
+    const md2 = await run('pdf-to-markdown', { files: [blankFile] });
+    check('markdown: a PDF with no text says so', !md2.text && (md2.notes || []).some((x) => /No selectable text/.test(x)));
+  }
+
   console.log(`\n${pass} passed, ${fail} failed.`);
   if (fail) {
     console.log('\nFailures:\n - ' + failures.join('\n - '));

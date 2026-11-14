@@ -140,7 +140,8 @@ Merged and live: PR 42 (headers, keyword titles/H1s, family links, How it works,
 Also merged and live (PR 44, browser tests 102/102 locally and on the live site): compress-to-a-size mode in Compress PDF, six size pages (100 KB to 2 MB), five job pages (email, form upload, combine PDF and JPG, bank statement / e-Aadhaar unlock, sign on phone) and three comparison pages (iLovePDF, Smallpdf, no-upload options) with sources and the 2026-11-14 check date.
 
 Not done:
-- Part C1: already fine, all 51 tools already have a guide.
+- Part C1: all tools have a guide (51 existed; 3 more written for the new tools, 54 in total).
+- Part C4: BUILT the three clearest-demand tools that run fully in the browser: PDF word counter (`/pdf-word-counter`), Bates numbering (`/bates-numbering-pdf`) and PDF to Markdown (`/pdf-to-markdown`), each with SEO copy, a guide and 10-language translations. Site now has 54 tools. Still not built: PDF/A, EPUB/ODT/RTF to PDF, marketplace label croppers, split by size, JPG to PDF under a size limit.
 - Part C2/C3 gaps: split PDF by size and JPG to PDF under a size limit need new engine work.
 - Part C4: gap list vs competitors: PDF to PDF/A, PDF to Markdown, word counter, Bates numbering, EPUB/ODT/RTF to PDF, marketplace label croppers. Not built (each new tool needs 10-language translations); not yet added to the roadmap page.
 - OUTREACH.md written (nothing posted).
@@ -148,5 +149,5 @@ Not done:
 - Observatory re-run: A+ (125), so the inline-style worry was unfounded.
 - PageSpeed: the API quota was exhausted and I was not allowed to install Lighthouse. Last measured mobile scores (before these changes): 93/94/93 with accessibility, best practices and SEO at 100. Re-run at pagespeed.web.dev for the home page, /merge-pdf, /compress-pdf and a guide.
 - Search Console (Domain property iduckpdf.com, signed in as the account in Chrome): checked 2026-11-14. Performance shows 0 clicks and 0 impressions (data only from 7 to 10 Nov, nothing yet) and the Page indexing report says "Processing data, please check again in a day or so". So there are no queries, ranking pages or indexing errors to list yet. Re-check in a few days. Bing Webmaster Tools not checked.
-- Roadmap: added PDF to Markdown and word counter, Bates numbering and split by file size as ideas (10 languages). Other gaps seen at iLovePDF, Smallpdf and pdf.pi7.org: PDF/A, EPUB/ODT/RTF to PDF, marketplace label croppers, PDF highlighter.
+- Roadmap ideas list: PDF to Markdown/word counter and Bates numbering are now built, so those two ideas should be removed from the roadmap page; split by file size remains. Other gaps seen at iLovePDF, Smallpdf and pdf.pi7.org: PDF/A, EPUB/ODT/RTF to PDF, marketplace label croppers, PDF highlighter.
 - Turkish/hreflang: covered by the existing completeness test only.

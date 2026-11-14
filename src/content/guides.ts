@@ -958,6 +958,60 @@ export const GUIDES: Guide[] = [
       { q: 'Is my PDF uploaded?', a: 'No. Pages are drawn and saved inside your browser tab.' },
     ],
   },
+  {
+    slug: 'how-to-count-words-in-a-pdf',
+    title: 'How to count words in a PDF',
+    seoTitle: 'How to Count Words in a PDF (Free Word Counter)',
+    description: 'Count the words, characters and reading time of any PDF in your browser, and what to do with scanned files. Free, no upload.',
+    tool: 'word-count',
+    related: ['extract-text', 'ocr', 'summarize'],
+    intro: 'To count words in a PDF, open Count the words, add the file and press Count now. You get the word, character, sentence and page counts plus an estimated reading time. It works on PDFs with selectable text; scans need OCR first.',
+    sections: [
+      { h: 'Count the words in three steps', p: ['Add your PDF to Count the words.', 'Leave the pages blank to count the whole file, or type a range such as 3-12.', 'Press Count now, then copy the report or download it.'] },
+      { h: 'A worked example', p: ['A 10-page essay has a limit of 2,500 words. Count the whole file, then count pages 2-9 to leave out the cover and the bibliography. If the report shows 2,610 words, you are about 110 words over.'] },
+      { h: 'Common mistakes', p: ['Counting a scanned PDF: it has no text layer, so run OCR PDF first. Forgetting the cover, headers and footers: they are counted unless you limit the pages. Comparing with Word: counts can differ slightly because tools split words differently.'] },
+    ],
+    faq: [
+      { q: 'Does it count words in images?', a: 'No. Only selectable text is counted. Run OCR PDF on a scan first.' },
+      { q: 'Is my PDF uploaded?', a: 'No. The words are counted inside your browser tab.' },
+    ],
+  },
+  {
+    slug: 'how-to-add-bates-numbers-to-a-pdf',
+    title: 'How to add Bates numbers to a PDF',
+    seoTitle: 'How to Add Bates Numbers to a PDF (Free)',
+    description: 'Stamp a running reference like CASE-000123 on every page of a PDF, and continue numbering across batches. Free, in your browser.',
+    tool: 'bates',
+    related: ['page-numbers', 'headers-footers', 'text-watermark'],
+    intro: 'To add Bates numbers, open Bates numbering, add the PDF, type a prefix such as CASE-, choose the first number and the number of digits, and press Add numbers. Every page is stamped with a running ID like CASE-000001.',
+    sections: [
+      { h: 'Stamp the pages in three steps', p: ['Add your PDF to Bates numbering.', 'Set the prefix, the first number, the digits and the position.', 'Press Add numbers and download the stamped PDF.'] },
+      { h: 'A worked example', p: ['A first batch ran from CASE-000001 to CASE-000240. For the second batch, set the first number to 241 and keep the prefix CASE- and 6 digits. The first page of the new file then reads CASE-000241, so the series continues without a gap.'] },
+      { h: 'Common mistakes', p: ['Changing the digits between batches, which breaks the sort order of the labels. Stamping before the document is final: add or remove pages first, then number. Placing the stamp over text: choose a corner position and keep the font small.'] },
+    ],
+    faq: [
+      { q: 'Can I change the font?', a: 'The stamp uses a fixed monospaced font so every number lines up. You can change its size, colour and position.' },
+      { q: 'Does it change my original file?', a: 'No. You download a new PDF; your original stays as it was.' },
+    ],
+  },
+  {
+    slug: 'how-to-convert-a-pdf-to-markdown',
+    title: 'How to convert a PDF to Markdown',
+    seoTitle: 'How to Convert a PDF to Markdown (Free, Private)',
+    description: 'Turn a PDF into Markdown text with headings and lists for notes and AI tools, and learn what the conversion cannot recover.',
+    tool: 'pdf-to-markdown',
+    related: ['extract-text', 'pdf-to-word', 'ocr'],
+    intro: 'To convert a PDF to Markdown, open PDF to Markdown, add the file and press Convert now. Headings, lists and paragraphs are guessed from font size and position, and you can copy the result or download a .md file. Scans need OCR first.',
+    sections: [
+      { h: 'Convert in three steps', p: ['Add your PDF to PDF to Markdown.', 'Leave the pages blank for the whole file, or type a range.', 'Press Convert now, check the result, then copy it or download the .md file.'] },
+      { h: 'A worked example', p: ['A report has a 24 pt title, 16 pt section headings and 11 pt body text. The title becomes a # heading, the section headings become ## headings, and each block of body lines becomes one paragraph. Lines that start with a dash or a bullet become list items.'] },
+      { h: 'Common mistakes', p: ['Expecting tables and images to come across: tables become lines of text and images are left out. Trusting the headings blindly: they are guessed, so skim the result. Converting a scan: with no text layer there is nothing to convert until you run OCR PDF.'] },
+    ],
+    faq: [
+      { q: 'Why are some headings missing?', a: 'Headings are detected from larger or bold text. If a document uses body-size text for headings, they come out as normal paragraphs.' },
+      { q: 'Is my PDF uploaded?', a: 'No. The conversion runs inside your browser tab.' },
+    ],
+  },
 ];
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug);

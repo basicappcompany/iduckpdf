@@ -720,6 +720,19 @@ const fillPasswords = (a, b) => async (page) => {
     ok('comparison page: table, sources and date are in the page', (await page.locator('table').count()) === 1 && (await page.getByText('Sources').count()) > 0 && (await page.getByText(/Last reviewed 2026-/).count()) > 0);
   }
 
+  // ---------- text extras: word counter, Bates numbering, PDF to Markdown ----------
+  {
+    const src = await makePdf('extras.pdf', 2, 'Hello brave new world');
+    await useTool(page, '/pdf-word-counter', [src], async () => {}, /Count now/);
+    ok('word counter: finishes and shows the counts', (await done(page)) && (await page.getByText(/Words: \d+/).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false)));
+    await useTool(page, '/bates-numbering-pdf', [src], async () => {}, /Add numbers/);
+    ok('bates: finishes and says which numbers were stamped', (await done(page)) && (await page.getByText(/CASE-000001 to CASE-000002/).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false)));
+    const stamped = await download(page);
+    ok('bates: the downloaded PDF has two pages', (await PDFDocument.load(fs.readFileSync(stamped))).getPageCount() === 2);
+    await useTool(page, '/pdf-to-markdown', [src], async () => {}, /Convert now/);
+    ok('markdown: finishes and shows the text', (await done(page)) && (await page.getByText(/Hello brave new world/).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false)));
+  }
+
   // ---------- (more groups are added below as tools ship) ----------
 
   // the Content-Security-Policy is really in force: an injected inline script must be blocked (set by the server from _headers)

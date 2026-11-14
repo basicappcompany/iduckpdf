@@ -1,6 +1,6 @@
 # iDuckPDF
 
-Free PDF tools in the browser: join, cut, arrange, sign, fill in forms, protect, read scans (OCR), convert to and from Word, Excel, PowerPoint and web pages, shrink, clean and compare PDFs. 51 tools, no sign-up, no watermark.
+Free PDF tools in the browser: join, cut, arrange, sign, fill in forms, protect, read scans (OCR), convert to and from Word, Excel, PowerPoint and web pages, shrink, clean and compare PDFs. 54 tools, no sign-up, no watermark.
 Built with **Expo (React Native + react-native-web)**, so one codebase serves the website today and can become the Android / iOS apps later.
 
 - Engines: [`pdf-lib`](https://pdf-lib.js.org) for editing and [`@cantoo/pdf-lib`](https://github.com/cantoo-scribe/pdf-lib) (a fork with AES-256 encryption, loaded only by the password tools), [`pdf.js`](https://mozilla.github.io/pdf.js/) for rendering and text, [`Tesseract.js`](https://tesseract.projectnaptha.com) for OCR, JSZip for ZIP and Office files. A small layout engine (`src/engine/layout.ts`) draws Word, HTML and Excel content into PDF pages.

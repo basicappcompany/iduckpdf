@@ -86,7 +86,7 @@ export const COMPARE_PAGES: Landing[] = [
       },
       {
         h: 'Where iDuckPDF is the better choice',
-        p: ['For private documents you would rather not upload, and for quick jobs with no sign-up or download cap, a tool that runs on your own device is simpler. All 51 iDuckPDF tools are free.'],
+        p: ['For private documents you would rather not upload, and for quick jobs with no sign-up or download cap, a tool that runs on your own device is simpler. All 54 iDuckPDF tools are free.'],
       },
     ],
     table: {
@@ -106,7 +106,7 @@ export const COMPARE_PAGES: Landing[] = [
     faq: [
       { q: 'Does Smallpdf keep my files?', a: 'Its privacy policy says it deletes files within one hour for users on an account unless you save them to its storage. Read the policy for the full detail.' },
       { q: 'Is iDuckPDF really free?', a: 'Yes. There is no paywall, daily limit or watermark. Optional tips help cover hosting.' },
-      { q: 'Which has more tools?', a: 'Smallpdf advertises 30+ tools; iDuckPDF has 51. Counting tools is not the same as quality, and Smallpdf has features, such as text editing, that iDuckPDF lacks.' },
+      { q: 'Which has more tools?', a: 'Smallpdf advertises 30+ tools; iDuckPDF has 54. Counting tools is not the same as quality, and Smallpdf has features, such as text editing, that iDuckPDF lacks.' },
       { q: 'Can iDuckPDF replace Smallpdf?', a: 'For merge, split, compress, sign, convert, OCR and similar jobs, often yes. For team accounts, text editing or apps, not yet.' },
     ],
     related: ['compress', 'sign', 'pdf-to-word'],
