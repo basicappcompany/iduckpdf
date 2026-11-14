@@ -57,7 +57,7 @@ export function Banner({ children, tone = 'info', style }: { children: React.Rea
 export function Pill({ children, tone }: { children: React.ReactNode; tone?: 'ok' | 'muted' | 'duck' }) {
   const { t } = useTheme();
   const bg = tone === 'ok' ? t.ok : tone === 'duck' ? t.duck : 'transparent';
-  const fg = tone === 'ok' ? '#0b2b1a' : tone === 'duck' ? t.duckInk : t.muted; // dark text on the green pill: white was 1.8:1
+  const fg = tone === 'ok' ? '#031209' : tone === 'duck' ? t.duckInk : t.muted; // dark text on the green pill: white was 1.8:1, #0b2b1a was 4.3:1, this is above 4.5:1
   return (
     <View style={{ borderWidth: 1.5, borderColor: tone ? bg : t.muted, backgroundColor: bg, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 1 }}>
       <Text style={{ color: fg, fontSize: 10.5, fontWeight: '800', letterSpacing: 0.4, textTransform: 'uppercase' }}>{children}</Text>
