@@ -147,5 +147,6 @@ Not done:
 - Search Console / Bing exports, Rich Results Test, PageSpeed runs, securityheaders.com grade and final Observatory re-run: not done.
 - Observatory re-run: A+ (125), so the inline-style worry was unfounded.
 - PageSpeed: the API quota was exhausted and I was not allowed to install Lighthouse. Last measured mobile scores (before these changes): 93/94/93 with accessibility, best practices and SEO at 100. Re-run at pagespeed.web.dev for the home page, /merge-pdf, /compress-pdf and a guide.
+- Search Console (Domain property iduckpdf.com, signed in as the account in Chrome): checked 2026-11-14. Performance shows 0 clicks and 0 impressions (data only from 7 to 10 Nov, nothing yet) and the Page indexing report says "Processing data, please check again in a day or so". So there are no queries, ranking pages or indexing errors to list yet. Re-check in a few days. Bing Webmaster Tools not checked.
 - Roadmap: added PDF to Markdown and word counter, Bates numbering and split by file size as ideas (10 languages). Other gaps seen at iLovePDF, Smallpdf and pdf.pi7.org: PDF/A, EPUB/ODT/RTF to PDF, marketplace label croppers, PDF highlighter.
 - Turkish/hreflang: covered by the existing completeness test only.
