@@ -304,5 +304,23 @@
   "title": "How to convert PDF to JPG",
   "description": "Turn the pages of a PDF into JPG images, one per page, bundled in a ZIP. Choose the sharpness and the file size.",
   "tool": "pdf-to-jpg"
+ },
+ {
+  "slug": "how-to-count-words-in-a-pdf",
+  "title": "How to count words in a PDF",
+  "description": "Count the words, characters and reading time of any PDF in your browser, and what to do with scanned files. Free, no upload.",
+  "tool": "word-count"
+ },
+ {
+  "slug": "how-to-add-bates-numbers-to-a-pdf",
+  "title": "How to add Bates numbers to a PDF",
+  "description": "Stamp a running reference like CASE-000123 on every page of a PDF, and continue numbering across batches. Free, in your browser.",
+  "tool": "bates"
+ },
+ {
+  "slug": "how-to-convert-a-pdf-to-markdown",
+  "title": "How to convert a PDF to Markdown",
+  "description": "Turn a PDF into Markdown text with headings and lists for notes and AI tools, and learn what the conversion cannot recover.",
+  "tool": "pdf-to-markdown"
  }
 ]

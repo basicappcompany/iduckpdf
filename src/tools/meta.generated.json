@@ -3544,6 +3544,199 @@
   "status": "ready"
  },
  {
+  "id": "word-count",
+  "name": "Count the words",
+  "short": "Words, characters and reading time.",
+  "desc": "Count the words, characters, sentences and pages in a PDF, with an estimated reading time and the most common words.",
+  "category": "insight",
+  "icon": "🧮",
+  "keywords": [
+   "word count",
+   "count words",
+   "characters",
+   "reading time",
+   "how many words",
+   "statistics",
+   "word counter"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)"
+   }
+  ],
+  "runLabel": "Count now",
+  "tips": [
+   "A scanned PDF is really a picture, so it has no text to copy. Run it through Read scans (OCR) first."
+  ],
+  "status": "ready"
+ },
+ {
+  "id": "bates",
+  "name": "Bates numbering",
+  "short": "Stamp a running ID on every page.",
+  "desc": "Stamp every page with a running prefix and number (for example CASE-000123), the way legal and audit teams label documents.",
+  "category": "markup",
+  "icon": "🏷️",
+  "keywords": [
+   "bates",
+   "bates numbering",
+   "bates stamp",
+   "legal",
+   "discovery",
+   "document id",
+   "running number",
+   "prefix"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "prefix",
+    "type": "text",
+    "label": "Prefix",
+    "default": "CASE-",
+    "placeholder": "e.g. CASE-"
+   },
+   {
+    "key": "start",
+    "type": "number",
+    "label": "First number",
+    "default": 1
+   },
+   {
+    "key": "digits",
+    "type": "number",
+    "label": "Digits (zero padding)",
+    "default": 6
+   },
+   {
+    "key": "pos",
+    "type": "select",
+    "label": "Position",
+    "default": "br",
+    "options": [
+     {
+      "value": "bc",
+      "label": "Bottom centre"
+     },
+     {
+      "value": "br",
+      "label": "Bottom right"
+     },
+     {
+      "value": "bl",
+      "label": "Bottom left"
+     },
+     {
+      "value": "tc",
+      "label": "Top centre"
+     },
+     {
+      "value": "tr",
+      "label": "Top right"
+     },
+     {
+      "value": "tl",
+      "label": "Top left"
+     }
+    ]
+   },
+   {
+    "key": "size",
+    "type": "number",
+    "label": "Font size",
+    "default": 10
+   },
+   {
+    "key": "color",
+    "type": "select",
+    "label": "Colour",
+    "default": "black",
+    "options": [
+     {
+      "value": "black",
+      "label": "Black"
+     },
+     {
+      "value": "gray",
+      "label": "Gray"
+     },
+     {
+      "value": "red",
+      "label": "Red"
+     },
+     {
+      "value": "blue",
+      "label": "Blue"
+     },
+     {
+      "value": "green",
+      "label": "Green"
+     }
+    ]
+   },
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Only these pages (blank = all)",
+    "placeholder": "e.g. 2-last"
+   }
+  ],
+  "runLabel": "Add numbers",
+  "status": "ready"
+ },
+ {
+  "id": "pdf-to-markdown",
+  "name": "PDF to Markdown",
+  "short": "Turn a PDF into Markdown text.",
+  "desc": "Convert the text of a PDF into Markdown with headings, lists and paragraphs, ready for notes, wikis and AI tools.",
+  "category": "convert",
+  "icon": "⬇️",
+  "keywords": [
+   "markdown",
+   "md",
+   "pdf to markdown",
+   "pdf to md",
+   "text",
+   "notes",
+   "llm",
+   "convert to text"
+  ],
+  "inputs": [
+   {
+    "key": "files",
+    "label": "PDF",
+    "accept": "pdf"
+   }
+  ],
+  "options": [
+   {
+    "key": "pages",
+    "type": "text",
+    "label": "Pages (blank = all)"
+   }
+  ],
+  "runLabel": "Convert now",
+  "tips": [
+   "A scanned PDF is really a picture, so it has no text to copy. Run it through Read scans (OCR) first."
+  ],
+  "status": "ready"
+ },
+ {
   "id": "translate",
   "name": "Translate a PDF",
   "short": "Translate a document into another language (your own AI key).",

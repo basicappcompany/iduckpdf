@@ -16,6 +16,7 @@ import { officeTools } from './office';
 import { sheetTools } from './sheets';
 import { slideTools } from './slides';
 import { extraTools } from './extras';
+import { textExtraTools } from './textextras';
 import { aiTools } from './aitools';
 import { soonTools } from './soon';
 
@@ -38,6 +39,7 @@ export const ALL_TOOLS: ToolDef[] = [
   ...sheetTools,
   ...slideTools,
   ...extraTools,
+  ...textExtraTools,
   ...aiTools,
   ...soonTools,
 ];

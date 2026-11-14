@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-11 · Status key: ✅ built and checked · 🟡 built, only partly checked · ⏳ stubbed / waiting · 🗺️ planned
 
-**Totals:** 51 tools built (46 checked end to end; the 5 AI tools are checked against a fake provider, in Node and in a browser, but never against a real one) · 0 on the roadmap: every announced tool is built · 51 guides (a how-to for every tool) · 1,256 pages built (1,190 indexable, 66 noindex) in 11 locales · 248 Node tests, 44 i18n tests and 132 browser checks, all run in CI.
+**Totals:** 54 tools built (49 checked end to end, the 3 text tools in Node only; the 5 AI tools are checked against a fake provider, in Node and in a browser, but never against a real one) · 0 on the roadmap: every announced tool is built · 54 guides (a how-to for every tool) · 1,256 pages built (1,190 indexable, 66 noindex) in 11 locales · 248 Node tests, 44 i18n tests and 132 browser checks, all run in CI.
 
 For the same picture as one visual page, with what is pending from the owner and what Claude can do alone, open `docs/status.html`.
 
@@ -24,7 +24,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | Settings (theme, own AI key) | 🟡 | saving a key stores it and it survives reload; no provider call tried |
 | Donate page + Dodo checkout function | ⏳ | page shows a friendly "not open yet" message; function written but **off** until keys exist, see TODO §2 |
 | About page, privacy policy, terms of use | ✅ | operator named (Basic App Company); analytics and OCR download disclosed |
-| Languages: English (US), English (UK), Bengali, German, Spanish, French, Hindi, Indonesian, Brazilian Portuguese, Russian, Turkish, with a flag menu | 🟡 | whole site translated (1,014 UI strings, 51 tools, 51 guides, FAQ, run-time messages per language); machine translation, no native-speaker review yet (TODO §10); legal pages stay English; the helper chat still matches English keywords only |
+| Languages: English (US), English (UK), Bengali, German, Spanish, French, Hindi, Indonesian, Brazilian Portuguese, Russian, Turkish, with a flag menu | 🟡 | whole site translated (1,014 UI strings, 54 tools, 54 guides, FAQ, run-time messages per language); machine translation, no native-speaker review yet (TODO §10); legal pages stay English; the helper chat still matches English keywords only |
 | Android / iOS apps | 🗺️ | future scope; native stubs in place, TODO §7 |
 
 ## Deployment
@@ -49,7 +49,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | Tool URLs that contain "pdf" | ✅ | `/merge-pdf`, `/ocr-pdf`, `/pdf-to-word` ... (map in `src/content/toolSlugs.ts`); hub is `/pdf-tools`; old `/tool/<id>` and `/tools` 301 via the generated `public/_redirects`; the build fails if a slug lacks "pdf", is duplicated or collides with a route |
 | Unique title, description, canonical per indexable page | ✅ | single source: `seoForPath()` in `src/lib/seoData.ts`, written into the HTML by `scripts/inject-seo.ts`; the app uses `seo-pages.json` (written by the build) when someone navigates inside it |
 | Structured data | ✅ | WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, CollectionPage, AboutPage, Organization (parent organisation, email), WebSite + SearchAction |
-| Unique copy for all 51 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
+| Unique copy for all 54 tools (answer-first summary, steps, uses, FAQ) | ✅ | `src/content/toolSeo.ts` |
 | 20 how-to guides + index | ✅ | `src/content/guides.ts` (11 added on 9 Nov for the new tools) |
 | Crawlable links, one `<h1>` per page, visible FAQ answers | ✅ | audited |
 | `sitemap.xml` (71 URLs), `robots.txt` (search + AI crawlers welcome), `llms.txt`, `llms-full.txt` | ✅ | generated from the tool/guide registries by `scripts/gen-seo.ts` |
@@ -68,7 +68,7 @@ For the same picture as one visual page, with what is pending from the owner and
 | Dependency audit | 🟡 | `npm audit`: 1 high (pdfjs-dist 3.x, mitigated: the only getDocument call sets isEvalSupported false) and moderate/critical findings in build-only tools (Expo CLI, optional canvas) that are never shipped; upgrading pdf.js to 4+ or Expo is a larger job, see TODO §9 |
 | Accessibility | ✅ | main landmark, heading order, names that match visible text, contrast |
 
-## Tools built (51)
+## Tools built (54)
 Join & cut 6 · Arrange & repair 8 · Stamp & annotate 7 · Make & extract 16 · Shrink & restyle 2 · Privacy & cleanup 6 · Compare & ask 6. This table is the registry; `docs/status.html` has a searchable, generated copy.
 
 | Category | Tool | URL | Status |

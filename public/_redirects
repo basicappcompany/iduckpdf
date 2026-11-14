@@ -48,6 +48,9 @@
 /tool/merge-pdf-images /merge-pdf-and-images 301
 /tool/jpg-to-pdf /jpg-to-pdf 301
 /tool/pdf-to-jpg /pdf-to-jpg 301
+/tool/word-count /pdf-word-counter 301
+/tool/bates /bates-numbering-pdf 301
+/tool/pdf-to-markdown /pdf-to-markdown 301
 /tool/translate /translate-pdf 301
 /tool/flashcards /pdf-to-flashcards 301
 /tool/ai-extract /extract-data-from-pdf 301

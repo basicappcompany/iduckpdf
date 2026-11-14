@@ -44,7 +44,7 @@ Code is done; it stays **off** until the steps below are complete.
 - [x] Analytics decided 2026-11-09: keep Cloudflare Web Analytics (cookie-free, page views only). The privacy policy discloses it. Figures: Cloudflare dashboard → Analytics & Logs → Web Analytics → iduckpdf.
 
 ## 5. Still to verify
-All 51 tools are covered by Node tests and by browser tests. The first 43 also ran against the live site on 2026-11-09, and the 5 picture tools added on 2026-11-11 on that day (see `TRACKER.md`). The 5 AI tools are tested against a fake provider, never a real one: that part is yours (status page item 9.5). What is left:
+All 54 tools are covered by Node tests and by browser tests. The first 43 also ran against the live site on 2026-11-09, and the 5 picture tools added on 2026-11-11 on that day (see `TRACKER.md`). The 5 AI tools are tested against a fake provider, never a real one: that part is yours (status page item 9.5). What is left:
 - [ ] Summarise with AI and Ask your PDF with a real key for each provider (OpenAI, Anthropic, Gemini). Only the missing-key path has been tried. Model names in `src/config.ts` → `AI_DEFAULTS` may need updating. *You add a key in Settings; I cannot enter keys.*
 - [x] Re-ran the older browser-only tools on the live site (2026-11-12): Photos to PDF, Scan to PDF, Grayscale, Black out text, Spot the differences, Logo or image stamp all pass, as part of the full `scripts/e2e-tools.js` run against `https://iduckpdf.com` (96/96). (PDF to pictures, Copy text, Make it smaller, Watermark and Inspect were re-run after the bundle split.)
 - [x] Firefox and Safari (WebKit): both suites pass in Playwright's Firefox and WebKit builds (`BROWSER=firefox` / `webkit`).
@@ -70,7 +70,7 @@ Ideas, not promises: more OCR languages (non-Latin scripts need larger fonts), c
 - [ ] Set up EAS Build and store listings.
 
 ## 8. SEO & GEO: what is done, and what only you can do
-Done in code (see `TRACKER.md`): every page pre-rendered to real HTML, unique titles/descriptions/canonicals, structured data (WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, Organization, WebSite), sitemap, `robots.txt` that welcomes search and AI crawlers, `llms.txt` / `llms-full.txt`, Open Graph card, manifest, icons, crawlable links, a how-to guide for every tool (51 guides).
+Done in code (see `TRACKER.md`): every page pre-rendered to real HTML, unique titles/descriptions/canonicals, structured data (WebApplication, HowTo, FAQPage, BreadcrumbList, Article, ItemList, Organization, WebSite), sitemap, `robots.txt` that welcomes search and AI crawlers, `llms.txt` / `llms-full.txt`, Open Graph card, manifest, icons, crawlable links, a how-to guide for every tool (54 guides).
 
 No code can guarantee a ranking. These steps, which need your accounts, are what actually move it:
 - [ ] **Deploy on the real domain** and confirm `SITE.url` in `src/config.ts` matches the final address exactly (apex `https://iduckpdf.com` vs `www`). The www redirect and forced HTTPS are done (see §3).
