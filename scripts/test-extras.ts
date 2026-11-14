@@ -229,6 +229,29 @@ async function pdfPages(bytes: Uint8Array): Promise<{ text: string; width: numbe
     check('markdown: a PDF with no text says so', !md2.text && (md2.notes || []).some((x) => /No selectable text/.test(x)));
   }
 
+  // ---- split by file size ----
+  {
+    const bd = await PDFDocument.create();
+    let seed = 12345;
+    const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) >> 16) & 255;
+    for (let i = 0; i < 6; i++) {
+      const px = new Uint8Array(nodeRequire('crypto').randomBytes(200 * 200 * 3));
+      const img = await bd.embedPng(encodePng(px, 200, 200, 3));
+      bd.addPage([300, 300]).drawImage(img, { x: 0, y: 0, width: 300, height: 300 });
+    }
+    const bf = pf('big.pdf', await bd.save(), 'application/pdf');
+    const sr = await run('split', { files: [bf] }, { mode: 'size', mb: 0.25 });
+    const sizes = sr.files!.map((x) => x.bytes.length);
+    let pagesTotal = 0;
+    for (const x of sr.files!) pagesTotal += (await PDFDocument.load(x.bytes)).getPageCount();
+    check('split by size: several files, every page kept once', sr.files!.length >= 2 && pagesTotal === 6, `${sr.files!.length} files, ${pagesTotal} pages`);
+    check('split by size: each file is under the limit', sizes.every((n) => n <= 0.25 * 1024 * 1024), sizes.join(','));
+    const one = await run('split', { files: [bf] }, { mode: 'size', mb: 50 });
+    check('split by size: a big limit gives one file', one.files!.length === 1);
+    const tiny = await run('split', { files: [bf] }, { mode: 'size', mb: 0.05 });
+    check('split by size: a page bigger than the limit stays alone and is reported', tiny.files!.length === 6 && (tiny.notes || []).some((x) => /over the limit/.test(x)));
+  }
+
   console.log(`\n${pass} passed, ${fail} failed.`);
   if (fail) {
     console.log('\nFailures:\n - ' + failures.join('\n - '));

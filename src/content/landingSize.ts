@@ -336,4 +336,64 @@ export const SIZE_AND_JOB_PAGES: Landing[] = [
     related: ['sign', 'add-text', 'fill'],
     reviewed: REVIEWED,
   },
+  {
+    slug: 'split-pdf-by-size',
+    kind: 'job',
+    title: 'Split a PDF by File Size, Free',
+    description: 'Cut a large PDF into parts that each stay under a size limit such as 5 MB, for email or an upload form. Runs in your browser; nothing is uploaded.',
+    h1: 'Split PDF by size',
+    answer:
+      'To split a PDF by size, add the file, choose the largest size each part may be (5 MB is preselected), and press Split now. The tool packs as many pages as fit under the limit into each file, checks the real sizes, and gives you the parts to download or as one ZIP.',
+    tool: 'split',
+    preset: { mode: 'size', mb: '5' },
+    steps: ['Add the PDF you want to split.', 'Type the largest size for each part in megabytes. Use a little less than the limit you must meet.', 'Press Split now and download the parts, or all of them as a ZIP.'],
+    sections: [
+      {
+        h: 'Good to know',
+        p: [
+          'Parts are cut on page boundaries, so a part can be a little under the limit but never splits a page in two. Pages stay in their original order, and the file names show which pages each part holds.',
+          'If one page is bigger than the limit by itself (a very large scan, for example), it becomes its own part and the result says so. Compress the PDF first, or choose a larger limit.',
+          'Splitting does not shrink anything: the parts add up to roughly the size of the original. To make the whole file smaller instead, use Compress PDF.',
+        ],
+      },
+    ],
+    faq: [
+      { q: 'Why is a part much smaller than my limit?', a: 'Because the next page would have pushed it over. Pages are never cut in half.' },
+      { q: 'Can I keep the original page order?', a: 'Yes. Parts follow the original order, and the part names show the page numbers.' },
+      { q: 'What if I want a set number of pages per file instead?', a: 'Use the Split PDF tool with “Every N pages”.' },
+      { q: 'Is my PDF uploaded?', a: 'No. The splitting happens in your browser tab.' },
+    ],
+    related: ['split', 'compress', 'merge'],
+    reviewed: REVIEWED,
+  },
+  {
+    slug: 'jpg-to-pdf-under-size-limit',
+    kind: 'job',
+    title: 'JPG to PDF Under a Size Limit, Free',
+    description: 'Turn JPG photos into one PDF that stays under 200 KB, 500 KB, 1 MB or 2 MB. Starts gentle and shrinks pictures only as far as needed. Runs in your browser.',
+    h1: 'JPG to PDF under a size limit',
+    answer:
+      'To make a PDF from JPG photos under a size limit, add the photos, choose the limit (500 KB is preselected), and press Make PDF. The tool builds the PDF normally first, then shrinks the pictures step by step until it fits, and tells you if the limit cannot be met.',
+    tool: 'jpg-to-pdf',
+    preset: { limit: '500' },
+    steps: ['Add your JPG photos and put them in order with the arrows.', 'Check the size limit the form or portal asks for, and pick it or the next size down.', 'Press Make PDF, then open the file to check that the writing is still readable.'],
+    sections: [
+      {
+        h: 'Good to know',
+        p: [
+          'Phone photos are several megabytes each, so a plain conversion is often far above a form’s limit. This page shrinks the pictures (lower resolution and quality) in steps and stops at the first result that fits, so you keep as much detail as possible.',
+          'Small limits need small pictures. A single document photo usually fits under 200 KB; several photos under 200 KB will look soft. If the result is not readable, raise the limit or use fewer photos.',
+          'Photographing paper? Use Scan to PDF instead for cleaner, higher-contrast pages, then compress the result with Compress PDF.',
+        ],
+      },
+    ],
+    faq: [
+      { q: 'Which limit should I pick?', a: 'The largest one that is still under the limit the form states. Bigger limits keep more detail.' },
+      { q: 'Does it work with PNG pictures?', a: 'Yes. PNG and WebP pictures are accepted and shrunk the same way.' },
+      { q: 'What if it says it could not reach the limit?', a: 'The note gives the smallest size reached. Use fewer photos, crop out empty space before adding them, or choose a bigger limit.' },
+      { q: 'Are my photos uploaded?', a: 'No. The PDF is built inside your browser tab.' },
+    ],
+    related: ['jpg-to-pdf', 'compress', 'scan-to-pdf'],
+    reviewed: REVIEWED,
+  },
 ];

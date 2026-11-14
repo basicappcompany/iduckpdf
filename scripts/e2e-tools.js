@@ -733,6 +733,19 @@ const fillPasswords = (a, b) => async (page) => {
     ok('markdown: finishes and shows the text', (await done(page)) && (await page.getByText(/Hello brave new world/).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false)));
   }
 
+  // ---------- split by size and JPG to PDF under a size limit ----------
+  {
+    const small = await makePdf('splitsize.pdf', 3, 'Split by size');
+    await useTool(page, '/split-pdf-by-size', [small], async () => {}, /Split now/);
+    ok('split by size page: a small PDF stays in one file', (await done(page)) && (await page.getByText(/Created 1 file from 3 pages, each under 5 MB/).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false)));
+    const noisePng = path.join(TMP, 'noise.png');
+    fs.writeFileSync(noisePng, makeFnPng(1200, 1600, () => [Math.random() * 256, Math.random() * 256, Math.random() * 256]));
+    await useTool(page, '/jpg-to-pdf-under-size-limit', [noisePng], async () => {}, /Make PDF/);
+    ok('jpg to pdf under a limit: finishes', await done(page, 120000));
+    const lim = await download(page);
+    ok('jpg to pdf under a limit: the PDF is under 500 KB', fs.statSync(lim).size <= 500 * 1024, String(fs.statSync(lim).size));
+  }
+
   // ---------- (more groups are added below as tools ship) ----------
 
   // the Content-Security-Policy is really in force: an injected inline script must be blocked (set by the server from _headers)
