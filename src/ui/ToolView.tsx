@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useHref, useLang, useT } from '../i18n/react';
+import type { Landing } from '../content/landing';
+import { LANDINGS_FOR_TOOL } from '../content/landingSlugs';
 import { toolSeoFor } from '../i18n/toolContent';
 import { useTheme } from '../lib/theme';
 import { KEYS, getJSON, setJSON } from '../lib/storage';
@@ -81,7 +83,7 @@ function OptionControl({ o, value, onChange, file, opts }: { o: Option; value: a
   );
 }
 
-export function ToolView({ tool }: { tool: ToolDef }) {
+export function ToolView({ tool, landing }: { tool: ToolDef; landing?: Landing }) {
   const { t } = useTheme();
   const router = useRouter();
   const href = useHref();
@@ -92,7 +94,7 @@ export function ToolView({ tool }: { tool: ToolDef }) {
     const first = tool.inputs[0];
     return h && first && first.accept === 'pdf' ? { [first.key]: first.multiple ? h : h.slice(0, 1) } : {};
   });
-  const [opts, setOpts] = useState<Record<string, any>>(() => defaultsFor(tool));
+  const [opts, setOpts] = useState<Record<string, any>>(() => ({ ...defaultsFor(tool), ...(landing?.preset || {}) }));
   const [phase, setPhase] = useState<'idle' | 'running' | 'done' | 'error'>('idle');
   const [prog, setProg] = useState({ f: 0, label: '' });
   const [res, setRes] = useState<ToolResult | null>(null);
@@ -183,10 +185,12 @@ export function ToolView({ tool }: { tool: ToolDef }) {
     router.push(href(toolPath(to)) as any);
   };
 
-  const seo = toolSeoFor(lang, tool.id);
+  const baseSeo = toolSeoFor(lang, tool.id);
+  // A landing page (compress to 100 KB, unlock a bank statement…) borrows this tool and brings its own heading, answer, steps and questions
+  const seo = landing && baseSeo ? { ...baseSeo, title: landing.title, description: landing.description, answer: landing.answer, steps: landing.steps?.length ? landing.steps : baseSeo.steps, faq: landing.faq, h1: landing.h1 } : baseSeo;
   const toolName = tr(tool.name);
   // English pages lead with the phrase people search ("Compress PDF"); the friendly name stays as the card label and a tag above
-  const h1 = (lang === 'en' || lang === 'en-gb') && seo?.h1 ? seo.h1 : '';
+  const h1 = landing ? landing.h1 : (lang === 'en' || lang === 'en-gb') && seo?.h1 ? seo.h1 : '';
   const related = inCategory(tool.category).filter((x) => x.id !== tool.id && x.status === 'ready').slice(0, 4);
   const cat = CATEGORIES.find((c) => c.id === tool.category);
 
@@ -348,7 +352,14 @@ export function ToolView({ tool }: { tool: ToolDef }) {
         </View>
       ) : null}
 
-      {seo ? (
+      {landing?.sections.map((s) => (
+        <View key={s.h} style={{ gap: 8 }}>
+          <T v="h2">{s.h}</T>
+          {s.p.map((p, i) => <T key={i}>{p}</T>)}
+        </View>
+      ))}
+
+      {seo && !landing ? (
         <View style={{ gap: 8 }}>
           <T v="h2">{tr('What people use it for')}</T>
           {seo.uses.map((u) => <T key={u}>• {u}</T>)}
@@ -358,8 +369,17 @@ export function ToolView({ tool }: { tool: ToolDef }) {
       <View style={{ gap: 10 }}>
         <T v="h2">{tr('Frequently asked questions')}</T>
         {[...(seo?.faq || (tool.faq || []).map((f) => ({ q: tr(f.q), a: tr(f.a) }))), ...GENERIC_FAQ.map((f) => ({ q: tr(f.q), a: tr(f.a) }))].map((f) => <Faq key={f.q} q={f.q} a={f.a} />)}
-        <T v="small" muted>{tr('Last reviewed {date}.', { date: SITE.updated })}</T>
+        <T v="small" muted>{tr('Last reviewed {date}.', { date: landing ? landing.reviewed : SITE.updated })}</T>
       </View>
+
+      {lang === 'en' && !landing && LANDINGS_FOR_TOOL[tool.id] ? (
+        <View style={{ gap: 10 }}>
+          <T v="h2">Popular uses</T>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {LANDINGS_FOR_TOOL[tool.id].map((x) => <Chip key={x.slug} label={x.label} to={`/${x.slug}`} />)}
+          </View>
+        </View>
+      ) : null}
 
       {related.length ? (
         <View style={{ gap: 10 }}>

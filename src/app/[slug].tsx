@@ -24,7 +24,11 @@ export default function ToolPage() {
   const id = idForSlug(String(slug));
   const tool = id ? byId(id) : undefined;
   const landing = !tool ? landingBySlug(String(slug)) : undefined;
-  if (landing) return <LandingView landing={landing} />;
+  if (landing) {
+    const lt = landing.tool ? byId(landing.tool) : undefined;
+    if (lt) return (<><Seo path={`/${landing.slug}`} /><ToolView key={landing.slug} tool={lt} landing={landing} /></>);
+    return <LandingView landing={landing} />;
+  }
   if (!tool) {
     return (
       <Screen narrow>

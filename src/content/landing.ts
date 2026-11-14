@@ -4,29 +4,17 @@
  * `src/ui/LandingView.tsx`, `src/lib/seoData.ts` gives it a title, canonical URL and JSON-LD, and `scripts/gen-seo.ts` lists it
  * in the sitemap and llms.txt. They are not translated, so they get no language versions (see gen-i18n and ENGLISH_ONLY_PATHS).
  */
-export type LandingFaq = { q: string; a: string };
-export type LandingTable = { caption: string; head: string[]; rows: string[][]; note?: string };
-export type Landing = {
-  slug: string; // URL path segment, e.g. 'how-it-works'
-  kind: 'info' | 'compare' | 'size' | 'job';
-  title: string; // <title> without the site name
-  description: string; // meta description, under 155 characters
-  h1: string;
-  answer: string; // 40 to 60 words, answer first
-  steps?: string[]; // numbered steps (also emitted as HowTo)
-  sections: { h: string; p: string[] }[]; // the "Good to know" body and other text
-  table?: LandingTable;
-  faq: LandingFaq[];
-  tool?: string; // tool id shown (and runnable) on the page
-  preset?: Record<string, string>; // option values the embedded tool starts with
-  related: string[]; // tool ids
-  reviewed: string; // ISO date, shown as "Last reviewed"
-  sources?: { label: string; url: string }[];
-};
+import type { Landing } from './landingTypes';
+import { REVIEWED } from './landingTypes';
+import { SIZE_AND_JOB_PAGES } from './landingSize';
+import { COMPARE_PAGES } from './landingCompare';
 
-export const REVIEWED = '2026-11-14';
+export type { Landing, LandingFaq, LandingTable } from './landingTypes';
+export { REVIEWED };
 
 export const LANDINGS: Landing[] = [
+  ...SIZE_AND_JOB_PAGES,
+  ...COMPARE_PAGES,
   {
     slug: 'how-it-works',
     kind: 'info',

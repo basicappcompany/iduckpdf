@@ -6,7 +6,7 @@ import { Seo } from '../lib/seo';
 import { useTheme } from '../lib/theme';
 import { byId } from '../tools';
 import { toolPath } from '../content/toolSlugs';
-import type { Landing } from '../content/landing';
+import { LANDINGS, type Landing } from '../content/landing';
 
 function Faq({ q, a }: { q: string; a: string }) {
   const { t } = useTheme();
@@ -81,6 +81,7 @@ export function LandingView({ landing: l }: { landing: Landing }) {
         <T v="h3">Related tools</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {related.map((x) => <Chip key={x.id} label={x.name} icon={x.icon} to={toolPath(x.id)} />)}
+          {(l.kind === 'compare' || l.kind === 'info' ? LANDINGS.filter((x) => x.kind === 'compare' && x.slug !== l.slug) : []).map((x) => <Chip key={x.slug} label={x.h1} to={`/${x.slug}`} />)}
           <Chip label="All PDF tools" to="/pdf-tools" />
         </View>
       </View>
