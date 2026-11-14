@@ -10,7 +10,7 @@ Rules followed: no passwords typed, no accounts created, nothing bought. I did n
 | --- | --- |
 | Mozilla Observatory | **B+ (80/100)**, 11 of 12 tests passed. The one failure is `style-src 'unsafe-inline'` (the web UI toolkit writes inline `style` attributes). |
 | securityheaders.com | Could not be scanned from the command line (Cloudflare challenge on their side). Open <https://securityheaders.com/?q=iduckpdf.com&followRedirects=on> and note the grade; response headers at baseline had CSP, X-Frame-Options, nosniff, Referrer-Policy and Permissions-Policy, but no HSTS and no COOP. |
-| **After (2026-11-14)** | Mozilla Observatory **A+ (125/100)**, 0 tests failed. securityheaders.com still needs a manual look (their site blocks scripts); expected A or A+ now that HSTS, COOP and frame-ancestors are set. |
+| **After (2026-11-14)** | Mozilla Observatory **A+ (125/100)**, 0 tests failed. securityheaders.com **A+** (checked 2026-11-14 16:47 UTC in the browser). |
 | TLS | 1.3 works, 1.1 refused. HTTP redirects (301) to HTTPS. |
 | DNSSEC | Off (no DS record at the registry). |
 
