@@ -99,7 +99,6 @@ export async function docxToBlocks(bytes: Uint8Array): Promise<DocxResult> {
   const relsXml = await read('word/_rels/document.xml.rels');
   if (relsXml) for (const r of Array.from(parseXml(relsXml).getElementsByTagName('Relationship'))) rels[(r as El).getAttribute('Id')] = { target: (r as El).getAttribute('Target') || '', external: (r as El).getAttribute('TargetMode') === 'External' };
 
-  // styles
   const styles: Record<string, Style> = {};
   let defaults: Style = { r: {}, p: {} };
   const stylesXml = await read('word/styles.xml');
@@ -121,7 +120,6 @@ export async function docxToBlocks(bytes: Uint8Array): Promise<DocxResult> {
     return out;
   };
 
-  // numbering
   const abstracts: Record<string, Record<number, Lvl>> = {};
   const nums: Record<string, string> = {};
   const numXml = await read('word/numbering.xml');

@@ -130,10 +130,8 @@ export function SignaturePad({ label, hint, value, onChange }: { label: string; 
       paintStrokes();
       commitDraw();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ink]);
 
-  // typed signature
   useEffect(() => {
     if (mode !== 'type') return;
     if (!text.trim()) return onChange('');
@@ -152,7 +150,6 @@ export function SignaturePad({ label, hint, value, onChange }: { label: string; 
     }
     ctx.fillText(text, 30, c.height / 2);
     onChange(trimToPng(c));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, text, font, ink]);
 
   // uploaded picture, optionally with the white background made transparent
@@ -175,7 +172,6 @@ export function SignaturePad({ label, hint, value, onChange }: { label: string; 
       ctx.putImageData(img, 0, 0);
     }
     onChange(removeBg ? trimToPng(c, 6) : c.toDataURL('image/png'));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, upload, removeBg]);
 
   const onFile = (f?: File | null) => {

@@ -149,7 +149,6 @@ export async function pptxToPdf(bytes: Uint8Array, doc: PDFDocument, fonts: Font
   const slidePaths = kids(kid(pres, 'sldIdLst'), 'sldId').map((s) => presRels[attr(s, 'r:id') || '']?.target).filter(Boolean) as string[];
   if (!slidePaths.length) throw new ToolError('This presentation has no slides.');
 
-  // theme colours
   const theme: Record<string, string> = {};
   const themePath = Object.values(presRels).find((r) => /theme$/.test(r.type))?.target || 'ppt/theme/theme1.xml';
   const themeXml = await read(themePath);
@@ -206,7 +205,6 @@ export async function pptxToPdf(bytes: Uint8Array, doc: PDFDocument, fonts: Font
     stats.slides++;
     const Y = (y: number) => SH - y;
 
-    // background
     const bgOf = (root: El | undefined) => fillOf(kid(kid(kid(root, 'cSld'), 'bg'), 'bgPr'), ctx);
     const bg = bgOf(slideXml) ?? bgOf(layout) ?? bgOf(master);
     if (bg) page.drawRectangle({ x: 0, y: 0, width: SW, height: SH, color: rgb(...bg) });

@@ -66,5 +66,4 @@ export const LANDINGS: Landing[] = [
   },
 ];
 
-export const LANDING_SLUGS = LANDINGS.map((l) => l.slug);
 export const landingBySlug = (slug: string) => LANDINGS.find((l) => l.slug === slug);

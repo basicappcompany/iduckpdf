@@ -18,7 +18,6 @@ import { slideTools } from './slides';
 import { extraTools } from './extras';
 import { textExtraTools } from './textextras';
 import { aiTools } from './aitools';
-import { soonTools } from './soon';
 
 // Re-exported so the UI can reach JSZip through the lazy engine chunk instead of pulling it into the first load.
 export { zipFiles } from '../engine/zip';
@@ -41,5 +40,4 @@ export const ALL_TOOLS: ToolDef[] = [
   ...extraTools,
   ...textExtraTools,
   ...aiTools,
-  ...soonTools,
 ];

@@ -42,7 +42,7 @@ function NavItem({ to, icon, label, active, small, pill }: { to: string; icon?: 
   );
 }
 
-function Group({ id, name, icon, open, onToggle, children }: { id: string; name: string; icon: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+function Group({ name, icon, open, onToggle, children }: { name: string; icon: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   const { t } = useTheme();
   return (
     <View>
@@ -91,7 +91,7 @@ export function Sidebar() {
 
         <Text style={{ color: t.muted, fontSize: 11, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 12, marginBottom: 2, paddingHorizontal: 10 }}>{tr('Tools')}</Text>
         {VISIBLE_CATEGORIES.map((c) => (
-          <Group key={c.id} id={c.id} name={tr(c.name)} icon={c.icon} open={!!openCats[c.id]} onToggle={() => setOpenCats((o) => ({ ...o, [c.id]: !o[c.id] }))}>
+          <Group key={c.id} name={tr(c.name)} icon={c.icon} open={!!openCats[c.id]} onToggle={() => setOpenCats((o) => ({ ...o, [c.id]: !o[c.id] }))}>
             {inCategory(c.id).map((tl) => (
               <NavItem key={tl.id} to={toolPath(tl.id)} icon={tl.icon} label={tr(tl.name)} small active={toolId === tl.id} pill={tl.status === 'soon' ? 'soon' : undefined} />
             ))}

@@ -1,5 +1,4 @@
 import type { Landing } from './landingTypes';
-import { REVIEWED } from './landingTypes';
 
 /**
  * Comparison pages. Facts here come from the other products' own public pages, checked on CHECKED, with the page linked as the source.

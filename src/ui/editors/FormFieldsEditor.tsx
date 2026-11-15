@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import type { PickedFile } from '../../engine/types';
 import { preloadEngine } from '../../tools';
@@ -32,7 +32,6 @@ export function FormFieldsEditor({ label, file, value, onChange }: { label: stri
       }
     })();
     return () => { dead = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file?.name, file?.size]);
 
   const set = (name: string, v: any) => onChange({ ...value, [name]: v });

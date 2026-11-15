@@ -1,5 +1,4 @@
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { useTheme } from '../lib/theme';
 import { useNavPress } from './nav';
 import { Anchor } from './Anchor';

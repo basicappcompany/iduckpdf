@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { TOOLS, byId } from '../tools';
 import { TOOL_SLUGS, HUB_PATH, idForSlug, toolPath } from '../content/toolSlugs';

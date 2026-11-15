@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useWidth } from '../lib/useWidth';
 import { HUB_PATH, toolPath } from '../content/toolSlugs';

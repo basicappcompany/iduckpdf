@@ -1,4 +1,3 @@
-import React from 'react';
 import { View } from 'react-native';
 import { READY, SOON } from '../tools';
 import { Btn, Card, Hl, Screen, T } from '../ui/kit';

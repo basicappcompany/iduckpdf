@@ -1,6 +1,6 @@
 import { PDFDocument, PDFName } from 'pdf-lib';
 import type { ToolDef } from '../engine/types';
-import { PAGE_SIZES, ToolError, baseName, fmtBytes, loadDoc, needOne, parsePages, pdfOut, save } from '../engine/util';
+import { PAGE_SIZES, ToolError, baseName, fmtBytes, loadDoc, needOne, pdfOut, save } from '../engine/util';
 import { canvasToBytes, getPdfjs, openPdfjs, renderPage } from '../engine/render';
 
 function sizeLabel(w: number, h: number): string {

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { VISIBLE_CATEGORIES, TOOLS, inCategory, searchTools, type CategoryId } from '../tools';
 import { Chip, Hl, Screen, T, TextField, CardGrid } from '../ui/kit';

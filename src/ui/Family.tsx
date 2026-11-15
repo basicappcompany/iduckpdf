@@ -1,4 +1,3 @@
-import React from 'react';
 import { Linking, Platform, Text, View } from 'react-native';
 import { useTheme } from '../lib/theme';
 import { useT } from '../i18n/react';

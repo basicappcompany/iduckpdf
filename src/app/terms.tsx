@@ -1,4 +1,3 @@
-import React from 'react';
 import { TERMS } from '../content/legal';
 import { LegalPage } from '../ui/LegalPage';
 

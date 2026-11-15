@@ -1,5 +1,3 @@
-import React from 'react';
-import { View } from 'react-native';
 import { GUIDE_INDEX as GUIDES } from '../../content/guideIndex';
 import { byId } from '../../tools';
 import { Hl, Screen, T, CardGrid } from '../../ui/kit';

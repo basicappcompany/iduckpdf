@@ -1,4 +1,3 @@
-import React from 'react';
 import { T } from '../kit';
 
 // The mobile apps are future scope; this keeps the native bundle compiling.

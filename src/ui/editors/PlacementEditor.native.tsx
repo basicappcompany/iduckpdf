@@ -1,4 +1,3 @@
-import React from 'react';
 import type { PickedFile, Placement } from '../../engine/types';
 import { T } from '../kit';
 
