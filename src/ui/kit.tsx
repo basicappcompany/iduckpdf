@@ -216,7 +216,6 @@ export function Screen({ children, narrow }: { children: React.ReactNode; narrow
 }
 
 export function Heading({ children }: { children: React.ReactNode }) {
-  const { t } = useTheme();
   return (
     <View style={{ alignSelf: 'flex-start' }}>
       <T v="h1">

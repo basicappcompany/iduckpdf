@@ -1,4 +1,4 @@
-import { PDFDocument, StandardFonts, degrees, rgb } from 'pdf-lib';
+import { StandardFonts, degrees, rgb } from 'pdf-lib';
 import type { ToolDef } from '../engine/types';
 import { MM, ToolError, baseName, colorOf, expandTokens, loadDoc, needOne, parsePages, pdfOut, safeText, save } from '../engine/util';
 import { processImage } from '../engine/imaging';

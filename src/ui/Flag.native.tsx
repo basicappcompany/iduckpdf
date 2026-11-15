@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text } from 'react-native';
 
 /** Phones draw flag emoji natively, so the app uses them. (Flag.tsx draws SVG flags for the web, where Windows has no flag emoji.) */

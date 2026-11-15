@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTheme } from '../lib/theme';
 
 // Web: inline SVG duck. (Logo.native.tsx falls back to an emoji until react-native-svg is added.)

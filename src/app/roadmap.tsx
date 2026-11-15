@@ -1,4 +1,3 @@
-import React from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../lib/theme';
 import { VISIBLE_CATEGORIES, READY, SOON, byId, inCategory } from '../tools';

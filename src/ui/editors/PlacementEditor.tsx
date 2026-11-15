@@ -25,7 +25,6 @@ export function PlacementEditor({ label, hint, file, signature, value, onChange 
   const drag = useRef<null | { mode: 'move' | 'size'; sx: number; sy: number; x: number; y: number; w: number }>(null);
   const page = clamp(Math.round(value.page || 1), 1, Math.max(1, pages || 1));
 
-  // open the PDF
   useEffect(() => {
     let dead = false;
     doc.current = null;
@@ -47,7 +46,6 @@ export function PlacementEditor({ label, hint, file, signature, value, onChange 
     return () => { dead = true; };
   }, [file?.name, file?.size]);
 
-  // draw the current page
   useEffect(() => {
     let dead = false;
     if (!doc.current || !pages) return;
@@ -70,7 +68,6 @@ export function PlacementEditor({ label, hint, file, signature, value, onChange 
     return () => { dead = true; };
   }, [pages, page]);
 
-  // aspect ratio of the signature
   useEffect(() => {
     if (!signature) return;
     const i = new Image();

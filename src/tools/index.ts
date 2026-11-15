@@ -36,7 +36,6 @@ export const byId = (id: string) => TOOLS.find((t) => t.id === id);
 export const inCategory = (c: CategoryId) => TOOLS.filter((t) => t.category === c);
 /** Categories that actually contain tools (the roadmap category is empty once everything announced is built). */
 export const VISIBLE_CATEGORIES = CATEGORIES.filter((c) => inCategory(c.id).length > 0);
-export const categoryName = (c: CategoryId) => CATEGORIES.find((x) => x.id === c)?.name || '';
 
 const STOP = new Set('pdf pdfs page pages file files two need want the and how can make into with this that you your one some please like would could should have help get from for all just'.split(' '));
 

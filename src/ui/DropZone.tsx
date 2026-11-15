@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useTheme } from '../lib/theme';
 import { useT } from '../i18n/react';
@@ -20,7 +20,6 @@ export function DropZone({ label, hint, accept, multiple, camera, onFiles, compa
   const { t } = useTheme();
   const tr = useT();
   const [over, setOver] = useState(false);
-  const kind = accept === 'pdf' ? 'PDF' : accept === 'image' ? 'image' : 'file';
   return (
     <div
       onDragOver={(e) => {

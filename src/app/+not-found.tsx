@@ -1,4 +1,3 @@
-import React from 'react';
 import { Btn, Screen, T } from '../ui/kit';
 import { Seo } from '../lib/seo';
 import { useT } from '../i18n/react';

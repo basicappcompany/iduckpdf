@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { AI_DEFAULTS } from '../config';
 import { useTheme, type Mode } from '../lib/theme';

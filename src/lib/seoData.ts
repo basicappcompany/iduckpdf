@@ -5,7 +5,7 @@
  * Paths are the addresses people see: '/merge-pdf' in English, '/es/merge-pdf' in Spanish.
  */
 import { SITE } from '../config';
-import { READY, TOOLS, byId } from '../tools';
+import { READY, byId } from '../tools';
 import { HUB_PATH, idForSlug, toolPath } from '../content/toolSlugs';
 import { PRIVACY, TERMS } from '../content/legal';
 import { homeFaqFor, pageSeoFor } from '../i18n/content';
@@ -225,7 +225,6 @@ export function seoForPath(raw: string): PageSeo {
 }
 
 /** Every path that should be pre-rendered. */
-export const ALL_TOOL_IDS = TOOLS.map((t) => t.id);
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 

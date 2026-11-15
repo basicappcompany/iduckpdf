@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { DONATE } from '../config';

@@ -232,8 +232,6 @@ async function pdfPages(bytes: Uint8Array): Promise<{ text: string; width: numbe
   // ---- split by file size ----
   {
     const bd = await PDFDocument.create();
-    let seed = 12345;
-    const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) >> 16) & 255;
     for (let i = 0; i < 6; i++) {
       const px = new Uint8Array(nodeRequire('crypto').randomBytes(200 * 200 * 3));
       const img = await bd.embedPng(encodePng(px, 200, 200, 3));

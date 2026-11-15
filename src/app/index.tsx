@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useTheme } from '../lib/theme';
 import { usePalette } from '../lib/palette';
@@ -15,7 +15,6 @@ import { SiteFooter } from '../ui/SiteFooter';
 import { LinkCard } from '../ui/LinkCard';
 import { toolPath } from '../content/toolSlugs';
 import { GUIDE_INDEX as GUIDES } from '../content/guideIndex';
-import { SITE } from '../config';
 import { ds } from '../lib/responsive';
 
 const POPULAR = ['merge', 'split', 'compress', 'images-to-pdf', 'page-numbers', 'text-watermark', 'pdf-to-images', 'inspect'];

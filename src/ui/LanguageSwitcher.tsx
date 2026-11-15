@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 import { Anchor } from './Anchor';
 import { ds } from '../lib/responsive';

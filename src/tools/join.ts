@@ -162,7 +162,7 @@ export const joinTools: ToolDef[] = [
         label = (g) => (g.length === 1 ? `page-${g[0] + 1}` : `pages-${g[0] + 1}-${g[g.length - 1] + 1}`);
       } else {
         groups = parseGroups(String(opts.ranges || ''), total);
-        label = (g, i) => `part-${i + 1}`;
+        label = (_g, i) => `part-${i + 1}`;
       }
       if (groups.length > 400) throw new ToolError('That would create more than 400 files. Pick bigger chunks.');
       const out: OutFile[] = [];
