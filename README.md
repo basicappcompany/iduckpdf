@@ -16,9 +16,9 @@ npm run export:web           # production build: clean -> tool metadata -> seo f
 npm run audit                # crawler-style SEO audit of dist/ (run after export:web)
 npm run typecheck            # also regenerates src/tools/meta.generated.json and src/content/guides.index.json
 npm run meta                 # regenerate those light indexes and the tool table in docs/status.html (run after editing src/tools/ or src/content/guides.ts)
-npm run test:engine          # 248 Node tests: the PDF engine, signing geometry, every Office/web conversion, the picture tools, and the AI tools (against a fake provider)
+npm run test:engine          # 278 Node checks (plus 51 language checks): the PDF engine, signing geometry, every Office/web conversion, the picture and newer tools, the AI tools (against a fake provider), the donate and contact functions
 npm run serve:dist           # serve dist/ on http://localhost:8080 (gzip, extensionless pages, 404.html)
-npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 36 site checks + 96 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
+npm run e2e                  # browser tests against the served site (with its real Content-Security-Policy): 45 site checks + 109 tool checks. Needs Chromium: npx playwright-core install chromium; BROWSER=firefox or webkit runs them in another engine
 node scripts/health-check.js # live-site health check: every sitemap URL, redirects, headers, canonicals (default https://iduckpdf.com)
 npm run indexnow -- --all # IndexNow: tell Bing and others about the sitemap URLs (CI does this after each deploy to main)
 npm run icons                # regenerate the duck icons and social card (outputs are committed)

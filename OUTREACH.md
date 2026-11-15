@@ -2,7 +2,7 @@
 
 Nothing here has been posted. Each entry has a draft in plain, honest wording. Before posting anywhere, read that place's current rules (they change), post from your own account, disclose that you made the site, and never ask for upvotes. Reply to every comment. One place per day is plenty.
 
-Facts you can rely on in every draft: free, no sign-up, no watermark, no ads; 51 tools; almost everything runs in the browser (files are not uploaded), except the 5 AI tools which send text to the provider you pick with your own key; Office conversions use a simplified layout; OCR covers 7 Latin-script languages; made by Basic App Company.
+Facts you can rely on in every draft: free, no sign-up, no watermark, no ads; 54 tools; almost everything runs in the browser (files are not uploaded), except the 5 AI tools which send text to the provider you pick with your own key; Office conversions use a simplified layout; OCR covers 7 Latin-script languages; made by Basic App Company.
 
 Short pitch (reuse): "iDuckPDF is a free PDF toolbox that runs in your browser: merge, split, compress to a size, sign, OCR, Word/Excel conversions and more. No sign-up, no watermark, no ads, and your files are not uploaded (the AI tools are the exception and use your own key)."
 
@@ -10,7 +10,7 @@ Short pitch (reuse): "iDuckPDF is a free PDF toolbox that runs in your browser: 
 
 1. **AlternativeTo** (alternativeto.net): add iDuckPDF as an alternative to iLovePDF and Smallpdf. Draft description: the short pitch plus "Honest limits: Office conversions are simplified, no desktop or mobile app yet." Tags: pdf, privacy, web.
 2. **Product Hunt**: launch page. Tagline: "Free PDF tools that never upload your file". First comment: why you built it (private documents), what runs locally, the known limits, and a request for feature ideas. Pick a weekday, and be ready to answer comments all day.
-3. **Hacker News, Show HN**: title "Show HN: iDuckPDF, 51 PDF tools that run in your browser (no upload)". Draft: a few lines on the engines (pdf-lib, pdf.js, Tesseract.js in WebAssembly, own Office converters), how to verify in the Network tab that nothing is uploaded, and the limits. Expect technical questions.
+3. **Hacker News, Show HN**: title "Show HN: iDuckPDF, 54 PDF tools that run in your browser (no upload)". Draft: a few lines on the engines (pdf-lib, pdf.js, Tesseract.js in WebAssembly, own Office converters), how to verify in the Network tab that nothing is uploaded, and the limits. Expect technical questions.
 4. **Indie Hackers**: product page and a short "what I built and why" post with honest numbers once you have them.
 5. **Slant / SaaSHub / Futurepedia-style directories**: submit the short pitch; use the "free, no sign-up" angle. Skip any directory that asks for payment.
 6. **Open-source-style "awesome" lists on GitHub**: only if the repo is made public (currently private, so it cannot be listed). Candidate lists to check: awesome lists for PDF tools and for privacy-respecting software. Open a pull request following each list's contribution rules; if the project is not open source, most lists will decline it.
