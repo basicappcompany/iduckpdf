@@ -29,6 +29,9 @@ export type PageSeo = {
   jsonLd: object[];
 };
 
+// Article dates as full ISO 8601 date-times with a time zone, which Google's structured-data checks expect.
+const asDateTime = (d: string): string => (d.length === 10 ? d + 'T00:00:00+00:00' : d);
+
 // the guides index is served at /guides/ (the host redirects /guides to it), and a language home at /es/, so those are their canonical addresses
 export function abs(p: string): string {
   if (p.startsWith('http')) return p;
@@ -166,8 +169,9 @@ export function seoForPath(raw: string): PageSeo {
             description: g.description,
             url: L(path),
             mainEntityOfPage: L(path),
-            dateModified: SITE.updated,
-            datePublished: SITE.updated,
+            dateModified: asDateTime(SITE.updated),
+            datePublished: asDateTime(SITE.updated),
+            image: abs(SITE.ogImage),
             inLanguage: localeOf(lang).hreflang,
             author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
             publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
@@ -197,7 +201,7 @@ export function seoForPath(raw: string): PageSeo {
       type: l.kind === 'compare' || l.kind === 'info' ? 'article' : 'website',
       jsonLd: [
         ...(l.kind === 'compare' || l.kind === 'info'
-          ? [{ '@context': 'https://schema.org', '@type': 'Article', headline: l.h1, description: l.description, url: L(path), inLanguage: 'en', datePublished: l.reviewed, dateModified: l.reviewed, author: { '@type': 'Organization', name: SITE.operator, url: SITE.url }, publisher: { '@id': `${SITE.url}/#org` } }]
+          ? [{ '@context': 'https://schema.org', '@type': 'Article', headline: l.h1, description: l.description, url: L(path), inLanguage: 'en', datePublished: asDateTime(l.reviewed), dateModified: asDateTime(l.reviewed), image: abs(SITE.ogImage), author: { '@type': 'Organization', name: SITE.operator, url: SITE.url }, publisher: { '@id': `${SITE.url}/#org` } }]
           : [{ '@context': 'https://schema.org', '@type': 'WebPage', name: l.h1, description: l.description, url: L(path), inLanguage: 'en', dateModified: l.reviewed }]),
         ...(lt ? [appLd(l.h1, l.description)] : []),
         ...(l.steps?.length ? [howToLd(l.h1, l.answer, l.steps)] : []),
