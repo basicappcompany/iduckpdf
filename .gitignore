@@ -67,3 +67,9 @@ src/app/id/
 src/app/pt-br/
 src/app/ru/
 src/app/tr/
+
+# JVM crash logs and local secrets
+hs_err_pid*.log
+.env
+.env.*
+.dev.vars
