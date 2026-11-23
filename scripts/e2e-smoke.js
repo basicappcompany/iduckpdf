@@ -170,11 +170,11 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.goto(BASE + '/');
   await page.waitForFunction(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')), null, { timeout: 20000 }).catch(() => {});
   await page.getByRole('button', { name: /Change language/i }).click();
-  await page.getByText('Español', { exact: true }).click();
+  await page.getByTestId('lang-menu').getByText('Español', { exact: true }).click();
   await page.waitForURL(/\/es\/?$/, { timeout: 10000 }).catch(() => {});
   ok('language picker opens the Spanish page', /\/es\/?$/.test(page.url()) && (await page.evaluate(() => document.documentElement.lang)) === 'es');
   await page.getByRole('button', { name: /Cambiar idioma/i }).click().catch(() => {});
-  await page.getByText('English (US)', { exact: true }).click().catch(() => {});
+  await page.getByTestId('lang-menu').getByText('English (US)', { exact: true }).click().catch(() => {});
   await page.waitForURL((u) => !u.pathname.startsWith('/es'), { timeout: 10000 }).catch(() => {});
   ok('language picker returns to English', !new URL(page.url()).pathname.startsWith('/es'));
 
@@ -183,7 +183,7 @@ const ok = (name, pass, extra = '') => { results.push({ name, pass }); console.l
   await page.waitForFunction(() => Object.keys(document.getElementById('root') || {}).some((k) => k.startsWith('__react')), null, { timeout: 20000 }).catch(() => {});
   await page.waitForTimeout(800);
   const langBtn = page.getByRole('button', { name: /Change language/i });
-  const menuOpen = () => page.getByText('English (UK)', { exact: true }).isVisible().catch(() => false);
+  const menuOpen = () => page.getByTestId('lang-menu').getByText('English (UK)', { exact: true }).isVisible().catch(() => false);
   await langBtn.click();
   ok('the language menu opens', await menuOpen());
   await page.mouse.click(300, 600);
