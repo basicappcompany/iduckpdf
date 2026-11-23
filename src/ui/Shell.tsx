@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocation, useT } from '../i18n/react';
-import { LanguageHint, LanguageSwitcher } from './LanguageSwitcher';
+import { LanguageHint, LanguageLinks, LanguageSwitcher } from './LanguageSwitcher';
 import { useNavPress } from './nav';
 import { Anchor } from './Anchor';
 import { FamilyLinks } from './Family';
@@ -107,6 +107,7 @@ export function Sidebar() {
         <NavItem to="/about" icon="🦆" label={tr('About')} active={path === '/about'} />
         <NavItem to="/how-it-works" icon="🔍" label={tr('How it works')} active={path === '/how-it-works'} />
         <FamilyLinks compact />
+        <LanguageLinks />
       </ScrollView>
     </View>
   );

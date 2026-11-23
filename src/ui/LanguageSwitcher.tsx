@@ -8,10 +8,15 @@ import { useTheme } from '../lib/theme';
 import { KEYS, getItem, setItem } from '../lib/storage';
 import { useLocation, useT } from '../i18n/react';
 import { translate } from '../i18n/catalog';
-import { isLang, liveLocales, localeOf, localePath, type Lang } from '../i18n/locales';
+import { DEFAULT_LANG, isLang, liveLocales, localeOf, localePath, type Lang } from '../i18n/locales';
+import { LANDING_SLUG_LIST } from '../content/landingSlugs';
 
-/** Where the same page lives in another language. Switching is a plain link (a full page load) so the new language's catalog loads with its page. */
-const target = (path: string, lang: Lang) => localePath(path, lang);
+/**
+ * Where the same page lives in another language. Switching is a plain link (a full page load) so the new language's catalog loads with its page.
+ * English-only landing pages have no translated copy, so for those the link goes to the language's home page instead of a missing address.
+ */
+const target = (path: string, lang: Lang) =>
+  lang !== DEFAULT_LANG && LANDING_SLUG_LIST.includes(path.slice(1).split(/[?#/]/)[0]) ? localePath('/', lang) : localePath(path, lang);
 
 function remember(lang: Lang) {
   setItem(KEYS.lang, lang);
@@ -63,7 +68,7 @@ export function LanguageSwitcher() {
         <Pressable accessibilityLabel={tr('Close menu')} onPress={() => setOpen(false)} style={(Platform.OS === 'web' ? { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, cursor: 'default' } : { position: 'absolute', top: -2000, left: -2000, right: -2000, bottom: -2000 }) as any} />
       ) : null}
       {open ? (
-        <View style={[{ position: 'absolute', top: 44, right: 0, minWidth: 210, maxHeight: 440, padding: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, backgroundColor: t.card, overflow: 'auto' as any }, t.shadow(4)]}>
+        <View testID="lang-menu" style={[{ position: 'absolute', top: 44, right: 0, minWidth: 210, maxHeight: 440, padding: 6, borderWidth: 2, borderColor: t.line, borderRadius: 12, backgroundColor: t.card, overflow: 'auto' as any }, t.shadow(4)]}>
           {live.map((l) => {
             const to = target(path, l.code);
             const active = l.code === lang;
@@ -87,6 +92,46 @@ export function LanguageSwitcher() {
           })}
         </View>
       ) : null}
+    </View>
+  );
+}
+
+/**
+ * Every language as a plain link, always in the page (the menu above only exists after a click, so a crawler never sees it).
+ * Without these, the pages in the other languages are linked from nowhere except the sitemap and the hreflang tags.
+ * Lives at the bottom of the sidebar, which is rendered on every page.
+ */
+export function LanguageLinks() {
+  const { t } = useTheme();
+  const tr = useT();
+  const nav = useNavPress();
+  const { lang, path } = useLocation();
+  const live = liveLocales();
+  if (live.length < 2) return null;
+  return (
+    <View testID="lang-links">
+      <Text style={{ color: t.muted, fontSize: 11, fontWeight: '900', letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 12, marginBottom: 6, paddingHorizontal: 10 }}>{tr('Change language')}</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 10 }}>
+        {live.map((l) => {
+          const to = target(path, l.code);
+          const active = l.code === lang;
+          return (
+            <Anchor key={l.code} to={to} exact lang={l.hreflang}>
+              <Pressable
+                accessibilityRole="link"
+                onPress={(e: any) => {
+                  remember(l.code);
+                  if (Platform.OS === 'web') return goTo(to, e);
+                  nav(to, true)(e);
+                }}
+                style={((s: any) => ({ borderWidth: 1.5, borderColor: t.line, borderRadius: 8, paddingVertical: 3, paddingHorizontal: 8, backgroundColor: active ? t.duck : s.hovered ? t.soft : 'transparent' })) as any}
+              >
+                <Text style={{ color: active ? t.duckInk : t.ink, fontWeight: active ? '900' : '700', fontSize: 13 }}>{l.native}</Text>
+              </Pressable>
+            </Anchor>
+          );
+        })}
+      </View>
     </View>
   );
 }
