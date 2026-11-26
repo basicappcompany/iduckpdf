@@ -30,6 +30,7 @@ const langOf = new Map<string, string>();
 const titles = new Map<string, string[]>();
 const descs = new Map<string, string[]>();
 let indexable = 0;
+let overlayPages = 0; // indexable English (UK) pages: hreflang alternates only, not sitemap URLs
 
 for (const pg of pages) {
   const { html, path } = pg;
@@ -38,6 +39,7 @@ for (const pg of pages) {
   if (!robots) fail(path, 'missing robots meta');
   if (noindex) continue; // placeholders and forms only need to say noindex
   indexable++;
+  if (/^\/en-gb(\/|$)/.test(path)) overlayPages++;
 
   const titleTags = html.match(/<title[ >]/g) || [];
   const title = one(html, /<title[^>]*>([^<]*)<\/title>/);
@@ -126,7 +128,7 @@ for (const u of urls) {
   const ok = u === '/' || base === '' ? existsSync(join(dist, 'index.html')) : existsSync(join(dist, base + '.html')) || existsSync(join(dist, base, 'index.html'));
   if (!ok) fail('sitemap', `${u} has no page`);
 }
-if (urls.length !== indexable) fail('sitemap', `${urls.length} URLs in the sitemap but ${indexable} indexable pages`);
+if (urls.length !== indexable - overlayPages) fail('sitemap', `${urls.length} URLs in the sitemap but ${indexable - overlayPages} indexable pages outside the English (UK) overlay`);
 
 // every tool page URL contains "pdf" (a ranking requirement), and every 301 redirect points at a page that exists
 {
