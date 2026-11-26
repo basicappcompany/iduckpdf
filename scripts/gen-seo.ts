@@ -40,7 +40,8 @@ const entries = pages.flatMap((p) => {
   const multi = live.length > 1 && !ENGLISH_ONLY_PATHS.includes(p.path);
   const versions = multi ? live : live.filter((l) => l.code === DEFAULT_LANG);
   const alt = multi ? [...live.map((l) => ({ hreflang: l.hreflang, href: abs(localePath(p.path, l.code)) })), { hreflang: 'x-default', href: abs(p.path) }] : [];
-  return versions.map((l) => {
+  // overlay locales (English UK) are near-copies of English: keep them as hreflang alternates, but do not list them as sitemap URLs of their own
+  return versions.filter((l) => !l.overlay).map((l) => {
     const links = alt.map((a) => `<xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${esc(a.href)}"/>`).join('');
     return `  <url><loc>${esc(abs(localePath(p.path, l.code)))}</loc><lastmod>${SITE.updated}</lastmod><changefreq>${p.freq}</changefreq><priority>${p.prio}</priority>${links}</url>`;
   });
